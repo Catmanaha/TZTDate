@@ -1,0 +1,25 @@
+@model User
+
+@{
+    ViewData["Title"] = "Account";
+}
+
+<form enctype="multipart/form-data" asp-action="UploadAvatar" asp-controller="User" method="post" class="account-form">
+    <img src="~/Assets/@Model.ProfilePicPath" alt="profile img">
+    <input type="file" name="file" id="file">
+    <button>Save Changes</button>
+</form>
+
+<style>
+    .account-form {
+        display: flex;
+        flex-direction: column;
+        width: 300px;
+        gap: 30px;
+    }
+
+    .account-form img {
+        width: 300px;
+        height: 300px;
+    }
+</style>

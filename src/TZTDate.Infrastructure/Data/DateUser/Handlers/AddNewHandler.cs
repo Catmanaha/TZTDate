@@ -2,7 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using TZTBank.Infrastructure.Data.DateUser.Commands;
 using TZTDate.Core.Data.DateUser.Enums;
-using TZTDate.Infrastructure.Data.DateUser;
+using TZTDate.Core.Data.DateUser;
 
 namespace TZTBank.Infrastructure.Data.BankUser.Handlers;
 

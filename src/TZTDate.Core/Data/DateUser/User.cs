@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using TZTDate.Core.Data.DateUser.Enums;
 
-namespace TZTDate.Infrastructure.Data.DateUser;
+namespace TZTDate.Core.Data.DateUser;
 
 public class User : IdentityUser
 {
