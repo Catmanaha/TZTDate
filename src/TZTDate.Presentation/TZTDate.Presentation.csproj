@@ -3,7 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\TZTDate.Infrastructure\TZTDate.Infrastructure.csproj" />
   </ItemGroup>
-
+  
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
