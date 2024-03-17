@@ -1,0 +1,47 @@
+@{
+    string username = string.Empty;
+    string email = string.Empty;
+    string password = string.Empty;
+    int age = default;
+    Gender gender = default;
+    string location = string.Empty;
+    string description = string.Empty;
+
+}
+
+<h1>Register</h1>
+
+<form asp-action="Register" method="post">
+    <div class="text-danger" asp-validation-summary="All"></div>
+
+    <div class="form-group">
+        <label asp-for="@username">Username</label>
+        <input asp-for="@username" type="text" class="form-control">
+    </div>
+    <div class="form-group">
+        <label asp-for="@email">Email</label>
+        <input asp-for="@email" type="email" class="form-control">
+    </div>
+    <div class="form-group">
+        <label asp-for="@password">Password</label>
+        <input asp-for="@password" type="password" class="form-control">
+    </div>
+    <div class="form-group">
+        <label asp-for="@age">Age</label>
+        <input asp-for="@age" type="number" class="form-control">
+    </div>
+    <div class="form-group">
+        <label asp-for="@gender">Gender</label>
+        <select asp-for="@gender" asp-items="Html.GetEnumSelectList<Gender>()"></select>
+    </div>
+    <div class="form-group">
+        <label asp-for="@location">Location</label>
+        <input asp-for="@location" type="text" class="form-control">
+    </div>
+    <div class="form-group">
+        <label asp-for="@description">Description</label>
+        <input asp-for="@description" type="text" class="form-control">
+    </div>
+    <br>
+    <button type="submit" class="btn btn-primary">Register</button>
+</form>

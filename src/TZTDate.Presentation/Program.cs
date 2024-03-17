@@ -1,17 +1,24 @@
+using System.Reflection;
+using System.Security.Claims;
+using TZTDate.Core.Data.DateUser.Enums;
+using TZTDate.Infrastructure.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admins", p =>
+    {
+        p.RequireRole(ClaimTypes.Role, UserRoles.Admin.ToString());
+    });
+});
+
 builder.Services.AddControllersWithViews();
 
-var app = builder.Build();
+builder.Services.InitDbContext(builder.Configuration, Assembly.GetExecutingAssembly());
+builder.Services.Inject();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
+var app = builder.Build();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
