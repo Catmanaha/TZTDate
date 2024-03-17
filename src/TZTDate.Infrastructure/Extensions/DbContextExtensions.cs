@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TZTDate.Infrastructure.Data;
-using TZTDate.Infrastructure.Data.DateUser;
+using TZTDate.Core.Data.DateUser;
 
 namespace TZTDate.Infrastructure.Extensions;
 

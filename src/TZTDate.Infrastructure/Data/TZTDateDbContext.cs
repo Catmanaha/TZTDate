@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using TZTDate.Infrastructure.Data.DateUser;
+using TZTDate.Core.Data.DateUser;
 
 namespace TZTDate.Infrastructure.Data;
 

@@ -6,7 +6,7 @@
     Gender gender = default;
     string location = string.Empty;
     string description = string.Empty;
-
+    string profilePicPath = "https://www.iprcenter.gov/image-repository/blank-profile-picture.png/@@images/image.png";
 }
 
 <h1>Register</h1>
@@ -41,6 +41,9 @@
     <div class="form-group">
         <label asp-for="@description">Description</label>
         <input asp-for="@description" type="text" class="form-control">
+    </div>
+    <div class="form-group" hidden>
+        <input asp-for="@profilePicPath">
     </div>
     <br>
     <button type="submit" class="btn btn-primary">Register</button>
