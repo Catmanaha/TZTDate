@@ -1,4 +1,4 @@
-namespace TZTDate.Core.Data.DateMessage;    
+namespace TZTDate.Core.Data.DateMessage.Entities;    
 public class Message
 {
     public int MessageId { get; set; }
