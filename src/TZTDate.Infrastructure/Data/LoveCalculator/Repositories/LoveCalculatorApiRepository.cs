@@ -26,7 +26,7 @@ public class LoveCalculatorApiRepository : ILoveCalculatorRepository
 
     public async Task<LoveCalculatorModel> GetLovePercentage(string fname, string sname)
     {
-        var result = await client.GetAsync($"love-calculator?fname={fname}&sname={sname}");
+        var result = await client.GetAsync($"fname={fname}/sname={sname}");
         var json = await result.Content.ReadAsStringAsync();
         var parsed = JObject.Parse(json);
         return JsonSerializer.Deserialize<LoveCalculatorModel>(json);

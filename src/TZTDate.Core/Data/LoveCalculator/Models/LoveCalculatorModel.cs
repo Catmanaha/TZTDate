@@ -1,4 +1,4 @@
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +12,6 @@ namespace TZTDate.Core.Data.LoveCalculator.Models
         public string? fname { get; set; }  
         [JsonProperty("second name")]
         public string? sname { get; set; }
-        [JsonProperty("percentage match")]
-        public string? percentage { get; set; }
         public string? result { get; set; }
     }
 }
