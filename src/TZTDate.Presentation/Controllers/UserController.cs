@@ -16,7 +16,7 @@ public class UserController : Controller
     private readonly UserManager<User> userManager;
     private readonly TZTDateDbContext context;
 
-    public UserController(ISender sender, SignInManager<User> signInManager, UserManager<User> userManager,TZTDateDbContext context)
+    public UserController(ISender sender, SignInManager<User> signInManager, UserManager<User> userManager, TZTDateDbContext context)
     {
         this.sender = sender;
         this.signInManager = signInManager;
@@ -131,5 +131,21 @@ public class UserController : Controller
         await context.SaveChangesAsync();
 
         return base.RedirectToAction("Account", "User");
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Profiles()
+    {
+        var users = await context.Users.ToListAsync();
+
+        return View(users);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Details(string id)
+    {
+        var user = await context.Users.FirstOrDefaultAsync(user => user.Id == id);
+
+        return View(user);
     }
 }

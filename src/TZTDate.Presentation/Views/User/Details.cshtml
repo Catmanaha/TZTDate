@@ -1,0 +1,105 @@
+@model User
+
+@{
+    ViewData["Title"] = $"{Model.UserName}'s Details";
+}
+
+<div class="details-img-div">
+    <img src="~/Assets/@Model.ProfilePicPath" alt="profile-pic">
+    <a href="/Chat/Chat?id=@Model.Id">Chat Now</a>
+</div>
+
+<div class="details-divs">
+    <div class="interests">
+        <label><b>My Interests</b></label>
+        <p style="margin-top: 20px;">@Model.Interests</p>
+    </div>
+    <div class="about-me">
+        <label><b>About Me</b></label>
+        <p style="margin-top: 20px;"><strong>Live in: </strong> @Model.Location</p>
+        <p><strong>Name: </strong> @Model.UserName</p>
+        <p><strong>Email: </strong> @Model.Email</p>
+        <p><strong>Gender: </strong> @Model.Gender</p>
+    </div>
+    <div class="looking-for">
+        <label><b>I'm Looking For</b></label>
+        <p style="margin-top: 20px;"><strong>Searching For Ages Between: </strong>@Model.SearchingAgeStart and
+            @Model.SearchingAgeEnd</p>
+        <p><strong>Searching For: </strong> @Model.SearchingGender</p>
+        <p>@Model.Description</p>
+
+    </div>
+</div>
+
+<style>
+    .details-img-div {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+    }
+    .details-img-div a {
+        margin-bottom: 30px;
+        margin-top: 18px;
+        color: #fff;
+        background-color: #346931;
+        text-decoration: none;
+        width: 400px;
+        padding: 5px 15px;
+        border-radius: 10px;
+    }
+
+    .details-img-div a:hover {
+        transition: 0.4s ease;
+        background-color: #094206;
+    }
+
+    .details-img-div img {
+        max-width: 400px;
+        max-height: 400px;
+        display: flex;
+        align-items: center;
+    }
+
+    .details-divs {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .interests {
+        display: flex;
+        flex-direction: column;
+        background-color: #ededed;
+        border-radius: 20px;
+        padding: 50px;
+        text-align: center;
+        width: 400px;
+    }
+
+    .looking-for {
+        display: flex;
+        flex-direction: column;
+        background-color: #ededed;
+        border-radius: 20px;
+        padding: 50px;
+        text-align: center;
+        width: 400px;
+    }
+
+    .about-me {
+        display: flex;
+        flex-direction: column;
+        background-color: #ededed;
+        border-radius: 20px;
+        padding: 50px;
+        text-align: center;
+        width: 400px;
+    }
+
+    .details-divs b {
+        font-size: 20px;
+    }
+</style>
