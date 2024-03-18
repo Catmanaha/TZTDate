@@ -1,0 +1,28 @@
+@model LoveCalculatorModel?
+
+@{
+    string fname = string.Empty;
+    string sname = string.Empty;
+
+}
+
+<h1>Love Calculator</h1>
+
+<form asp-action="Index" method="post">
+    <div class="text-danger" asp-validation-summary="All"></div>
+
+    <div class="form-group">
+        <label asp-for="@fname">First Name</label>
+        <input asp-for="@fname" type="text" class="form-control">
+    </div>
+    <div class="form-group">
+        <label asp-for="@sname">Second Name</label>
+        <input asp-for="@sname" type="text" class="form-control">
+    </div>
+    <br>
+    <button type="submit" class="btn btn-primary">Login</button>
+</form>
+
+@if (Model is not null) {
+    <span>Result: @Model.result</span>
+}

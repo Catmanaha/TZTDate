@@ -3,7 +3,7 @@ using Moq;
 using TZTBank.Core.Data.DateUser.Dtos;
 using TZTBank.Infrastructure.Data.BankUser.Handlers;
 using TZTBank.Infrastructure.Data.DateUser.Commands;
-using TZTDate.Infrastructure.Data.DateUser;
+using TZTDate.Core.Data.DateUser;
 
 namespace TZTDate.UnitTests.Data.DateUser.Handlers;
 

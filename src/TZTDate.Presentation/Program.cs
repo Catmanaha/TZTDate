@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Security.Claims;
 using TZTDate.Core.Data.DateUser.Enums;
 using TZTDate.Infrastructure.Extensions;
+using TZTDate.Core.Data.DateApi.Managers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,7 @@ builder.Services.AddAuthorization(options =>
     });
 });
 
+builder.Services.Configure<ApiManager>(builder.Configuration.GetSection("ApiManager"));
 builder.Services.AddControllersWithViews();
 
 builder.Services.Inject();
