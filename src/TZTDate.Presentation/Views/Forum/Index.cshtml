@@ -1,23 +1,24 @@
+@model string
 @{
     ViewData["Title"] = "Chat";
 }
 
 
 <div class="container">
-    <div class="row">
+    <div class="row" hidden>
         <div class="col-3">Connection Id</div>
         <div class="col-6"><span id="connectionId" /></div>
     </div>
     <div class="row">&nbsp;</div>
-    <div class="row">
+    <div class="row" hidden>
         <div class="col-2">User</div>
-        <div class="col-4"><input type="text" id="userInput" /></div>
+        <div class="col-4"><input type="text" id="userInput" value="@Model"><input/></div>
     </div>
     <div class="row">
         <div class="col-2">Message</div>
         <div class="col-4"><input type="text" id="messageInput" /></div>
     </div>
-    <div class="row">
+    <div class="row" hidden>
         <div class="col-2">Receiver Id</div>
         <div class="col-4"><input type="text" id="receiverId" /></div>
     </div>
@@ -25,7 +26,7 @@
     <div class="row">&nbsp;</div>
     <div class="row">
         <div class="col-6">
-            <input type="button" id="sendToUser" value="Send Message" />&nbsp;&nbsp;
+            <input type="button" id="sendToUser" value="Send Message" hidden/>&nbsp;&nbsp;
             <input type="button" id="sendButton" value="Send Message to All" />
 
         </div>
