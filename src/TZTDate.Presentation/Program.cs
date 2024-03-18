@@ -1,3 +1,5 @@
+using TZTDate.Infrastructure.Data.DependencyInjections;
+using TZTDate.Infrastructure.Data.Hubs;
 using System.Reflection;
 using System.Security.Claims;
 using TZTDate.Core.Data.DateUser.Enums;
@@ -15,10 +17,16 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddControllersWithViews();
 
-builder.Services.InitDbContext(builder.Configuration, Assembly.GetExecutingAssembly());
 builder.Services.Inject();
+builder.Services.InitMediatR();
+builder.Services.InitSignalR();
+builder.Services.InitResponse();
+builder.Services.InitDbContext(builder.Configuration, Assembly.GetExecutingAssembly());
 
 var app = builder.Build();
+
+app.UseResponseCompression();
+app.MapHub<ChatHub>("/chathub");
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
