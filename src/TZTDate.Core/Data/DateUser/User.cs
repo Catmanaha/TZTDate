@@ -11,4 +11,9 @@ public class User : IdentityUser
     public string? Description { get; set; }
     public string? ProfilePicPath { get; set; }
     public DateTime CreatedAt { get; set; }
+
+    public Gender? SearchingGender { get; set; }
+    public int SearchingAgeStart { get; set; }
+    public int SearchingAgeEnd { get; set; }
+    public string? Interests { get; set; }
 }

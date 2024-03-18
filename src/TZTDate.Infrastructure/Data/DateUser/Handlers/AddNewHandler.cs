@@ -32,7 +32,11 @@ public class AddNewHandler : IRequestHandler<AddNewCommand>
             Description = request.UserRegisterDto.Description,
             Location = request.UserRegisterDto.Location,
             Gender = request.UserRegisterDto.Gender,
-            ProfilePicPath = request.UserRegisterDto.ProfilePicPath
+            ProfilePicPath = request.UserRegisterDto.ProfilePicPath,
+            SearchingGender = request.UserRegisterDto.SearchingGender,
+            SearchingAgeStart = request.UserRegisterDto.SearchingAgeStart,
+            SearchingAgeEnd = request.UserRegisterDto.SearchingAgeEnd,
+            Interests = request.UserRegisterDto.Interests,
         };
 
         var result = await userManager.CreateAsync(user, request.UserRegisterDto.Password);
