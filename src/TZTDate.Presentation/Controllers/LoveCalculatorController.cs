@@ -1,0 +1,40 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using TZTDate.Core.Data.LoveCalculator.Dtos;
+using TZTDate.Core.Data.LoveCalculator.Repositories;
+
+namespace TZTDate.Presentation.Controllers;
+
+public class LoveCalculatorController : Controller
+{
+    private readonly ILoveCalculatorRepository loveCalculatorRepository;
+
+    public LoveCalculatorController(ILoveCalculatorRepository loveCalculatorRepository)
+    {
+        this.loveCalculatorRepository = loveCalculatorRepository;
+    }
+
+    public IActionResult Index()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Index(LoveCalculatorDto loveCalculatorDto)
+    {
+        var result = await loveCalculatorRepository.GetLovePercentage(loveCalculatorDto.fname, loveCalculatorDto.sname);
+       
+        return View(result);
+    }
+
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error()
+    {
+        return View("Error!");
+    }
+}
