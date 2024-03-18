@@ -29,4 +29,9 @@ public class UserRegisterDto
 
     [Required(ErrorMessage = "ProfilePicPath cannot be empty")]
     public string? ProfilePicPath { get; set; }
+
+    public Gender? SearchingGender { get; set; }
+    public int SearchingAgeStart { get; set; }
+    public int SearchingAgeEnd { get; set; }
+    public string? Interests { get; set; }
 }

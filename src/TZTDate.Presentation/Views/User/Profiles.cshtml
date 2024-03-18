@@ -1,0 +1,62 @@
+@model IEnumerable<User>
+
+@{
+    ViewData["Title"] = "All Profiles";
+}
+
+@if (!Model.Any() || Model is null)
+{
+    <p>There is no profiles</p>
+}
+else
+{
+    <div class="profiles">
+        @foreach (var profile in Model)
+        {
+            <div class="profile">
+                <div>
+                    <a href="/User/Details?id=@profile.Id"><img src="~/Assets/@profile.ProfilePicPath"></a>
+                    <p>@profile.UserName, @profile.Age</p>
+                    <span>@profile.Description</span>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<style>
+    .profiles {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+
+    .profile {
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .profile div {
+        width: 250px;
+        height: auto;
+        border-radius: 10px;
+        background-color: #f2f2f2;
+    }
+
+    .profile img {
+        border-radius: 10px 10px 0px 0px;
+        width: 250px;
+        height: 200px;
+    }
+
+    .profile p {
+        padding: 15px 15px 0px 15px;
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    .profile span {
+        padding: 15px;
+    }
+</style>
