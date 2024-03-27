@@ -3,7 +3,7 @@ using System.Text.Json;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using TZTDate.Core.Data.DateApi.Managers;
-using TZTDate.Core.Data.LoveCalculator.Models;
+using TZTDate.Core.Data.DateApi.Models;
 using TZTDate.Core.Data.LoveCalculator.Repositories;
 
 namespace TZTDate.Infrastructure.Data.LoveCalculator.Repositories;
