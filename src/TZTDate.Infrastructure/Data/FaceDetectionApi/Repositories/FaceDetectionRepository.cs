@@ -45,10 +45,16 @@ public class FaceDetectionRepository : IFaceDetectionRepository
 
         var responseContent = await response.Content.ReadFromJsonAsync<FaceDetectResponse>();
 
+        fileStream.Close();
+
         if (responseContent?.FaceNum == 0)
         {
+            File.Delete(destinationAvatarPath);
+
             return false;
         }
+
+        File.Delete(destinationAvatarPath);
 
         return true;
     }
