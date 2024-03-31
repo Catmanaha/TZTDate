@@ -2,7 +2,81 @@
 
 @{
     ViewData["Title"] = "All Profiles";
+
+    string searchByName = default;
+    string startAge = ViewData["SearchingStartAge"].ToString();
+    string endAge = ViewData["SearchingEndAge"].ToString();
+    string interests = default;
+    Gender searchGender = ViewData["SearchingGender"] == "Male" ? Gender.Male : Gender.Female;
+
+    bool isChecked = false;
 }
+
+<form class="search-form">
+    <label class="search-input-label">
+        Searching username
+        <input type="text" name="searchByName" placeholder="Username" asp-for="@searchByName">
+    </label>
+    <label class="search-input-label">
+        Searching start age
+        <input type="number" name="startAge" placeholder="Start Age" asp-for="@startAge">
+    </label>
+    <label class="search-input-label">
+        Searching end age
+        <input type="number" name="endAge" placeholder="End Age" asp-for="@endAge">
+    </label>
+    <label class="search-input-label">
+        Searching Gender
+        <select name="searchGender" asp-for="@searchGender" asp-items="Html.GetEnumSelectList<Gender>()"></select>
+    </label>
+    <input type="text" name="interests" id="interest" asp-for="@interests">
+    <div>
+        <h1>Searching Interests</h1
+        <label>Sport<input type="checkbox" name="interest" value="sport"></label>
+        <label>Games<input type="checkbox" name="interest" value="games"></label>
+        <label>Traveling<input type="checkbox" name="interest" value="traveling"></label>
+        <label>Reading<input type="checkbox" name="interest" value="reading"></label>
+        <label>Cooking<input type="checkbox" name="interest" value="cooking"></label>
+        <label>Hiking<input type="checkbox" name="interest" value="hiking"></label>
+        <label>Photography<input type="checkbox" name="interest" value="photography"></label>
+        <label>Music<input type="checkbox" name="interest" value="music"></label>
+        <label>Painting<input type="checkbox" name="interest" value="painting"></label>
+        <label>Writing<input type="checkbox" name="interest" value="writing"></label>
+        <label>Gardening<input type="checkbox" name="interest" value="gardening"></label>
+        <label>Yoga<input type="checkbox" name="interest" value="yoga"></label>
+        <label>Meditation<input type="checkbox" name="interest" value="meditation"></label>
+        <label>Astronomy<input type="checkbox" name="interest" value="astronomy"></label>
+        <label>Dancing<input type="checkbox" name="interest" value="dancing"></label>
+        <label>Film-making<input type="checkbox" name="interest" value="film-making"></label>
+        <label>Bird-watching<input type="checkbox" name="interest" value="bird-watching"></label>
+        <label>Knitting<input type="checkbox" name="interest" value="knitting"></label>
+        <label>Surfing<input type="checkbox" name="interest" value="surfing"></label>
+        <label>Scuba diving<input type="checkbox" name="interest" value="scuba diving"></label>
+        <label>Chess<input type="checkbox" name="interest" value="chess"></label>
+        <label>Calligraphy<input type="checkbox" name="interest" value="calligraphy"></label>
+    </div>
+
+    <button type="submit"><span class="material-symbols-outlined">search</span></button>
+</form>
+
+<script>
+    var checkboxes = document.querySelectorAll('input[type="checkbox"][name="interest"]');
+
+    var interest = document.getElementById('interest');
+
+    checkboxes.forEach(function (checkbox) {
+        checkbox.addEventListener('change', function () {
+            if (checkbox.checked) {
+                interest.value += checkbox.value + ' ';
+            } else {
+                var valueToRemove = checkbox.value + ' ';
+                interest.value = interest.value.replace(valueToRemove, '');;
+            }
+        });
+    });
+
+    window.onload = document.getElementById("interest").value = '';
+</script>
 
 @if (!Model.Any() || Model is null)
 {
@@ -10,14 +84,13 @@
 }
 else
 {
-    <div class="profiles">
+    <div class="profiles" id="profiles">
         @foreach (var profile in Model)
         {
             <div class="profile">
                 <div>
                     <a href="/User/Details?id=@profile.Id"><img src="~/Assets/@profile.ProfilePicPath"></a>
                     <p>@profile.UserName, @profile.Age</p>
-                    <span>@profile.Description</span>
                 </div>
             </div>
         }
@@ -25,6 +98,63 @@ else
 }
 
 <style>
+    h1 {
+        font-size: 20px;
+        margin-top: 20px
+    }
+
+    .search-input-label {
+        padding: 10px;
+        background-color: #f1f1f1;
+        border-radius: 5px;
+    }
+
+    .search-form {
+        margin-bottom: 70px;
+    }
+
+    .search-form label {
+        margin: 10px 30px 10px 0;
+    }
+
+    .search-form input {
+        padding: 8px 15px;
+        border-radius: 4px;
+        color: #000;
+        border: 0.5px solid #000;
+    }
+
+    .search-form select {
+        padding: 8px 15px;
+        border-radius: 4px;
+        color: #000;
+        border: 0.5px solid #000;
+    }
+
+    input[type="checkbox"][name="interest"] {
+        width: 20px;
+        height: 20px;
+        margin: 10px 10px 10px 10px;
+        cursor: pointer;
+    }
+
+    .search-form button {
+        padding: 5px 0 0 0;
+        height: 40px;
+        width: 200px;
+        position: absolute;
+        margin-top: 10px;
+        border-radius: 3px;
+        color: #fff;
+        background-color: #003cff;
+        border: none;
+    }
+
+    .search-form button:hover {
+        background-color: #0034df;
+        transition: 0.4s ease;
+    }
+
     .profiles {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -48,6 +178,12 @@ else
         border-radius: 10px 10px 0px 0px;
         width: 250px;
         height: 200px;
+        border: 0.1px solid #000;
+    }
+
+    .profile img:hover {
+        opacity: 0.8;
+        transition: 0.2s ease;
     }
 
     .profile p {
