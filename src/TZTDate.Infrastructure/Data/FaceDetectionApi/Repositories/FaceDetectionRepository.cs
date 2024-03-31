@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using TZTDate.Core.Data.FaceDetectionApi.Managers;
 using TZTDate.Core.Data.FaceDetectionApi.Models;
@@ -20,21 +21,32 @@ public class FaceDetectionRepository : IFaceDetectionRepository
         apiKey = options.Value.ApiKey;
 
     }
-    public async Task<bool> Detect(string filePath)
+    public async Task<bool> Detect(IFormFile file)
     {
+        var fileExtensionFormFile = new FileInfo(file.FileName).Extension;
+
+        var filename = $"Temp{Guid.NewGuid()}{fileExtensionFormFile}";
+
+        var destinationAvatarPath = $"wwwroot/Assets/{filename}";
+
+        using var fileStreamCreate = System.IO.File.Create(destinationAvatarPath);
+        await file.CopyToAsync(fileStreamCreate);
+        fileStreamCreate.Close();
+
         var multipart = new MultipartFormDataContent();
-        var fileExtension = Path.GetExtension(filePath)[1..];
-        var fileStream = new FileStream(filePath, FileMode.Open);
+        var fileExtension = Path.GetExtension(destinationAvatarPath)[1..];
+        var fileStream = new FileStream(destinationAvatarPath, FileMode.Open);
         var streamContent = new StreamContent(fileStream);
         streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue($"image/{fileExtension}");
 
-        multipart.Add(streamContent, "image_file", Path.GetFileName(filePath));
+        multipart.Add(streamContent, "image_file", Path.GetFileName(destinationAvatarPath));
 
         var response = await client.PostAsync($"?api_key={apiKey}&api_secret={apiSecret}", multipart);
 
         var responseContent = await response.Content.ReadFromJsonAsync<FaceDetectResponse>();
-        
-        if (responseContent?.FaceNum == 0) {
+
+        if (responseContent?.FaceNum == 0)
+        {
             return false;
         }
 

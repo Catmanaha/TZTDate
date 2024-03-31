@@ -2,8 +2,14 @@
 
 @{
     ViewData["Title"] = "Account";
+    string? imageError = (string?)TempData["ImageError"];
 }
 
+@if (imageError is not null) {
+    <span class="text-danger">@imageError</span>
+}
+
+<div class="text-danger" asp-validation-summary="All"></div>
 <form enctype="multipart/form-data" asp-action="UploadAvatar" asp-controller="User" method="post" class="account-form">
     <img src="~/Assets/@Model.ProfilePicPath" alt="profile img">
     <input type="file" name="file" id="file">
