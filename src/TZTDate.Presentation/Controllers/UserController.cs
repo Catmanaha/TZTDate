@@ -6,6 +6,7 @@ using TZTBank.Core.Data.DateUser.Dtos;
 using TZTBank.Infrastructure.Data.DateUser.Commands;
 using TZTDate.Core.Data.DateUser;
 using TZTDate.Core.Data.FaceDetectionApi.Repositories;
+using TZTDate.Core.Data.DateUser.Enums;
 using TZTDate.Infrastructure.Data;
 
 namespace TZTDate.Presentation.Controllers;
@@ -151,9 +152,43 @@ public class UserController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Profiles()
+    public async Task<IActionResult> Profiles(string? searchByName, int? startAge, int? endAge, string? interests, Gender? searchGender)
     {
+        var me = await userManager.GetUserAsync(User);
+
         var users = await context.Users.ToListAsync();
+
+        users = users.Where(u => u.Id != me.Id).ToList(); // so that the user does not see himself
+
+        if (!string.IsNullOrEmpty(searchByName))
+        {
+            users = users.Where(u => u.UserName.ToLower().Contains(searchByName.ToLower())).ToList();
+        }
+
+        if (startAge.HasValue && startAge != 0)
+        {
+            users = users.Where(u => u.Age >= startAge).ToList();
+        }
+
+        if (endAge.HasValue && endAge != 0)
+        {
+            users = users.Where(u => u.Age <= endAge).ToList();
+        }
+
+        if (searchGender is not null)
+        {
+            users = users.Where(u => u.Gender == searchGender).ToList();
+        }
+
+        if (interests is not null)
+        {
+            string[] interestsArray = interests.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            users = users.Where(u => u.Interests != null && u.Interests.Split(' ', StringSplitOptions.RemoveEmptyEntries).Intersect(interestsArray).Any()).ToList();
+        }
+
+        ViewData["SearchingStartAge"] = me.SearchingAgeStart;
+        ViewData["SearchingEndAge"] = me.SearchingAgeEnd;
+        ViewData["SearchingGender"] = me.SearchingGender;
 
         return View(users);
     }
