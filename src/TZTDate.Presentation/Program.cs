@@ -5,6 +5,7 @@ using System.Security.Claims;
 using TZTDate.Core.Data.DateUser.Enums;
 using TZTDate.Infrastructure.Extensions;
 using TZTDate.Core.Data.DateApi.Managers;
+using TZTDate.Core.Data.FaceDetectionApi.Managers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,7 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.Configure<ApiManager>(builder.Configuration.GetSection("ApiManager"));
+builder.Services.Configure<FaceDetectionApiManager>(builder.Configuration.GetSection("FaceDetectionApiManager"));
 builder.Services.AddControllersWithViews();
 
 builder.Services.Inject();

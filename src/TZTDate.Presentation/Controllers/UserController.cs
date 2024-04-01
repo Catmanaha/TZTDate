@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using TZTBank.Core.Data.DateUser.Dtos;
 using TZTBank.Infrastructure.Data.DateUser.Commands;
 using TZTDate.Core.Data.DateUser;
+using TZTDate.Core.Data.FaceDetectionApi.Repositories;
 using TZTDate.Core.Data.DateUser.Enums;
 using TZTDate.Infrastructure.Data;
 
@@ -16,13 +17,20 @@ public class UserController : Controller
     private readonly SignInManager<User> signInManager;
     private readonly UserManager<User> userManager;
     private readonly TZTDateDbContext context;
+    private readonly IFaceDetectionRepository faceDetectionRepository;
 
-    public UserController(ISender sender, SignInManager<User> signInManager, UserManager<User> userManager, TZTDateDbContext context)
+    public UserController(ISender sender, 
+                          SignInManager<User> signInManager, 
+                          UserManager<User> userManager, 
+                          TZTDateDbContext context,
+                          IFaceDetectionRepository faceDetectionRepository
+    )
     {
         this.sender = sender;
         this.signInManager = signInManager;
         this.userManager = userManager;
         this.context = context;
+        this.faceDetectionRepository = faceDetectionRepository;
     }
 
     public async Task<IActionResult> Logout()
@@ -115,6 +123,12 @@ public class UserController : Controller
     [HttpPost]
     public async Task<IActionResult> UploadAvatar(IFormFile file)
     {
+        var detect = await faceDetectionRepository.Detect(file);
+        if (!detect) {
+            TempData["ImageError"] = "Image must contain your face";
+            return RedirectToAction("Account");
+        }
+
         User user = await userManager.GetUserAsync(User);
         var newUserId = user.Id;
 
@@ -126,6 +140,9 @@ public class UserController : Controller
 
         using var fileStream = System.IO.File.Create(destinationAvatarPath);
         await file.CopyToAsync(fileStream);
+
+
+        
 
         User path = await context.Users.FirstOrDefaultAsync(e => e.Id == user.Id);
         path.ProfilePicPath = filename;

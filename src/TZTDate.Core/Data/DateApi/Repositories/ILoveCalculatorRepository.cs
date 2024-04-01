@@ -1,4 +1,4 @@
-using TZTDate.Core.Data.LoveCalculator.Models;
+using TZTDate.Core.Data.DateApi.Models;
 
 namespace TZTDate.Core.Data.LoveCalculator.Repositories;
 

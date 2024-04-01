@@ -1,4 +1,4 @@
-namespace TZTDate.Core.Data.LoveCalculator.Dtos;
+namespace TZTDate.Core.Data.DateApi.Dtos;
 
 public class LoveCalculatorDto
 {
