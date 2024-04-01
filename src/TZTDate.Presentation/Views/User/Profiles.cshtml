@@ -29,7 +29,7 @@
         Searching Gender
         <select name="searchGender" asp-for="@searchGender" asp-items="Html.GetEnumSelectList<Gender>()"></select>
     </label>
-    <input type="text" name="interests" id="interest" asp-for="@interests">
+    <input type="text" name="interests" id="interest" asp-for="@interests" hidden>
     <div>
         <h1>Searching Interests</h1
         <label>Sport<input type="checkbox" name="interest" value="sport"></label>
