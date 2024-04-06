@@ -5,16 +5,64 @@
     string? imageError = (string?)TempData["ImageError"];
 }
 
-@if (imageError is not null) {
+@if (imageError is not null)
+{
     <span class="text-danger">@imageError</span>
 }
 
-<div class="text-danger" asp-validation-summary="All"></div>
-<form enctype="multipart/form-data" asp-action="UploadAvatar" asp-controller="User" method="post" class="account-form">
-    <img src="~/Assets/@Model.ProfilePicPath" alt="profile img">
-    <input type="file" name="file" id="file">
-    <button>Save Changes</button>
-</form>
+<div>
+    <div class="form-group">
+        <label asp-for="@Model.UserName">Username</label>
+        <input disabled asp-for="@Model.UserName" type="text" class="form-control">
+    </div>
+    <div class="form-group">
+        <label asp-for="@Model.Email">Email</label>
+        <input disabled asp-for="@Model.Email" type="text" class="form-control">
+    </div>
+</div>
+
+<div>
+    <div class="form-group">
+        <label asp-for="@Model.Address.Country">Country</label>
+        <input disabled asp-for="@Model.Address.Country" type="text" class="form-control">
+    </div>
+    <div class="form-group">
+        <label asp-for="@Model.Address.City">City</label>
+        <input disabled asp-for="@Model.Address.City" type="text" class="form-control">
+    </div>
+    <div class="form-group">
+        <label asp-for="@Model.Address.PostCode">PostCode</label>
+        <input disabled asp-for="@Model.Address.PostCode" type="number" class="form-control">
+    </div>
+    <div class="form-group">
+        <label asp-for="@Model.Address.Street">Street</label>
+        <input disabled asp-for="@Model.Address.Street" type="text" class="form-control">
+    </div>
+    <div class="form-group">
+        <label asp-for="@Model.Address.District">District</label>
+        <input disabled asp-for="@Model.Address.District" type="text" class="form-control">
+    </div>
+</div>
+
+<div class="imageGrid">
+    @foreach (var path in Model.ProfilePicPaths)
+    {
+        <div class="imageWrapper">
+            <img src="~/Assets/@path">
+        </div>
+    }
+</div>
+
+
+
+
+@* <div class="text-danger" asp-validation-summary="All"></div>
+<form enctype="multipart/form-data" asp-action="UploadAvatar" asp-controller="User" method="post"
+class="account-form">
+<img src="~/Assets/@Model.ProfilePicPath" alt="profile img">
+<input type="file" name="file" id="file">
+<button>Save Changes</button>
+</form> *@
 
 <style>
     .account-form {

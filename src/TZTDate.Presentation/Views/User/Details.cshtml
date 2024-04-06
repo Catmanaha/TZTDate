@@ -5,7 +5,7 @@
 }
 
 <div class="details-img-div">
-    <img src="~/Assets/@Model.ProfilePicPath" alt="profile-pic">
+    @* <img src="~/Assets/@Model.ProfilePicPath" alt="profile-pic"> *@
     @* <a href="/Chat/Chat?id=@Model.Id">Chat Now</a> *@
     <br>
 </div>
@@ -17,7 +17,7 @@
     </div>
     <div class="about-me">
         <label><b>About Me</b></label>
-        <p style="margin-top: 20px;"><strong>Live in: </strong> @Model.Location</p>
+        <p style="margin-top: 20px;"><strong>Live in: </strong> @Model.Address</p>
         <p><strong>Name: </strong> @Model.UserName</p>
         <p><strong>Email: </strong> @Model.Email</p>
         <p><strong>Gender: </strong> @Model.Gender</p>

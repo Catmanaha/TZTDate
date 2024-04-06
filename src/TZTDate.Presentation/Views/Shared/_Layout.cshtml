@@ -9,6 +9,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet" href="~/css/Register.css">
+
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TZTDate.Presentation.styles.css" asp-append-version="true" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
@@ -42,8 +45,7 @@
                         {
                             <li><a class="nav-link text-dark" asp-controller="User" asp-action="Login">Login</a>
                             </li>
-                            <li><a class="nav-link text-dark" asp-controller="User"
-                                    asp-action="Register">Register</a></li>
+                            <li><a class="nav-link text-dark" asp-controller="User" asp-action="Register">Register</a></li>
                         }
                         @if (isAuthenticated)
                         {
@@ -52,20 +54,18 @@
                                     asp-action="Profiles">Profiles</a>
                             </li>
                             <li>
-                                <a class="nav-link text-dark" asp-controller="Forum"
-                                    asp-action="Index">Forum</a>
+                                <a class="nav-link text-dark" asp-controller="Forum" asp-action="Index">Forum</a>
                             </li>
                             <li>
-                                <a class="nav-link text-dark" asp-controller="LoveCalculator"
-                                    asp-action="Index">Love Calculator</a>
+                                <a class="nav-link text-dark" asp-controller="LoveCalculator" asp-action="Index">Love
+                                    Calculator</a>
                             </li>
                             <li>
-                                <a class="nav-link text-dark" asp-controller="User"
-                                    asp-action="Account">Account</a>
+                                <a class="nav-link text-dark" asp-controller="User" asp-action="Account">Account</a>
                             </li>
                             <li>
-                                <a class="nav-link text-dark" asp-controller="User"
-                                    asp-action="Logout"><span class="material-symbols-outlined">logout</span></a>
+                                <a class="nav-link text-dark" asp-controller="User" asp-action="Logout"><span
+                                        class="material-symbols-outlined">logout</span></a>
                             </li>
                         }
                     </ul>
@@ -82,6 +82,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/Register.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 
