@@ -116,3 +116,132 @@ document
             navigateToFormStep(stepNumber);
         });
     });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const input1 = document.getElementById("searchingAgeStart");
+    const input2 = document.getElementById("searchingAgeEnd");
+    const errorMessage = document.getElementById("errorMessage");
+    const nextButton = document.getElementById("next3");
+
+    function handleInputChange() {
+        const value1 = parseFloat(input1.value);
+        const value2 = parseFloat(input2.value);
+
+        if (value1 > value2) {
+            errorMessage.textContent =
+                "Age start cannot be greater than age end";
+            input1.style.borderColor = "red";
+            input2.style.borderColor = "red";
+            nextButton.setAttribute("disabled", "disabled");
+        } else {
+            errorMessage.textContent = "";
+            input1.style.borderColor = "";
+            input2.style.borderColor = "";
+            nextButton.removeAttribute("disabled");
+        }
+    }
+
+    input1.addEventListener("input", handleInputChange);
+    input2.addEventListener("input", handleInputChange);
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const sectionStep1 = document.getElementById("step-1");
+    const nextButton = document.getElementById("next1");
+
+    const inputs = sectionStep1.querySelectorAll("input[required], select[required]");
+
+    function checkInputsValidity() {
+        let isValid = true;
+
+        inputs.forEach(input => {
+            if (!input.checkValidity()) {
+                isValid = false;
+            }
+        });
+
+        return isValid;
+    }
+
+    function handleInputChange() {
+        if (checkInputsValidity()) {
+            nextButton.removeAttribute("disabled");
+        } else {
+            nextButton.setAttribute("disabled", "disabled");
+        }
+    }
+
+    inputs.forEach(input => {
+        input.addEventListener("input", handleInputChange);
+    });
+
+    handleInputChange();
+});
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const sectionStep1 = document.getElementById("step-2");
+    const nextButton = document.getElementById("next2");
+
+    const inputs = sectionStep1.querySelectorAll("input[required], select[required]");
+
+    function checkInputsValidity() {
+        let isValid = true;
+
+        inputs.forEach(input => {
+            if (!input.checkValidity()) {
+                isValid = false;
+            }
+        });
+
+        return isValid;
+    }
+
+    function handleInputChange() {
+        if (checkInputsValidity()) {
+            nextButton.removeAttribute("disabled");
+        } else {
+            nextButton.setAttribute("disabled", "disabled");
+        }
+    }
+
+    inputs.forEach(input => {
+        input.addEventListener("input", handleInputChange);
+    });
+
+    handleInputChange();
+});
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const sectionStep1 = document.getElementById("step-4");
+    const saveButton = document.getElementById("save");
+
+    const inputs = sectionStep1.querySelectorAll("input[required], select[required]");
+
+    function checkInputsValidity() {
+        let isValid = true;
+
+        inputs.forEach(input => {
+            if (!input.checkValidity()) {
+                isValid = false;
+            }
+        });
+
+        return isValid;
+    }
+
+    function handleInputChange() {
+        if (checkInputsValidity()) {
+            saveButton.removeAttribute("disabled");
+        } else {
+            saveButton.setAttribute("disabled", "disabled");
+        }
+    }
+
+    inputs.forEach(input => {
+        input.addEventListener("input", handleInputChange);
+    });
+
+    handleInputChange();
+});

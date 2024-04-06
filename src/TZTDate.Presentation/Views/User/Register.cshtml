@@ -76,34 +76,34 @@
                 <div class="mt-3">
                     <div class="form-group">
                         <label asp-for="@username">Username</label>
-                        <input asp-for="@username" type="text" class="form-control">
+                        <input required asp-for="@username" type="text" class="form-control">
                     </div>
 
                     <div class="form-group">
                         <label asp-for="@email">Email</label>
-                        <input asp-for="@email" type="email" class="form-control">
+                        <input required asp-for="@email" type="email" class="form-control">
                     </div>
 
                     <div class="form-group">
                         <label asp-for="@password">Password</label>
-                        <input asp-for="@password" type="password" class="form-control">
+                        <input required asp-for="@password" type="password" class="form-control">
                     </div>
                     <div class="form-group">
                         <label asp-for="@birthDateTime">Password</label>
-                        <input asp-for="@birthDateTime" type="datetime-local" class="form-control">
+                        <input required asp-for="@birthDateTime" type="datetime-local" class="form-control">
                     </div>
                     <div class="form-group" style="display: flex; flex-direction: column;">
                         <label asp-for="@gender">Gender</label>
-                        <select asp-for="@gender" asp-items="Html.GetEnumSelectList<Gender>()"
+                        <select required asp-for="@gender" asp-items="Html.GetEnumSelectList<Gender>()"
                             style="padding: 5px 15px;"></select>
                     </div>
                     <div class="form-group">
                         <label asp-for="@description">Description</label>
-                        <input asp-for="@description" type="text" class="form-control">
+                        <input required asp-for="@description" type="text" class="form-control">
                     </div>
                 </div>
                 <div class="mt-3">
-                    <button class="button btn-navigate-form-step" type="button" step_number="2">Next</button>
+                    <button id="next1" class="button btn-navigate-form-step" type="button" step_number="2">Next</button>
                 </div>
             </section>
             <section id="step-2" class="form-step d-none">
@@ -111,36 +111,36 @@
                 <div class="mt-3">
                     <div class="form-group">
                         <label asp-for="@country">Country</label>
-                        <input asp-for="@country" type="text" class="form-control">
+                        <input required asp-for="@country" type="text" class="form-control">
                     </div>
                     <div class="form-group">
                         <label asp-for="@city">City</label>
-                        <input asp-for="@city" type="text" class="form-control">
+                        <input required asp-for="@city" type="text" class="form-control">
                     </div>
                     <div class="form-group">
                         <label asp-for="@postCode">PostCode</label>
-                        <input asp-for="@postCode" type="number" class="form-control">
+                        <input required asp-for="@postCode" type="number" class="form-control">
                     </div>
                     <div class="form-group">
                         <label asp-for="@street">Street</label>
-                        <input asp-for="@street" type="text" class="form-control">
+                        <input required asp-for="@street" type="text" class="form-control">
                     </div>
                     <div class="form-group">
                         <label asp-for="@district">District</label>
-                        <input asp-for="@district" type="text" class="form-control">
+                        <input required asp-for="@district" type="text" class="form-control">
                     </div>
                     <div hidden class="form-group">
                         <label asp-for="@longitude">Longitude</label>
-                        <input asp-for="@longitude" type="text" class="form-control" pattern="^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)$">
+                        <input required asp-for="@longitude" type="text" class="form-control" pattern="^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)$">
                     </div>
                     <div hidden class="form-group">
                         <label asp-for="@latitude">Latitude</label>
-                        <input asp-for="@latitude" type="text" class="form-control" pattern="^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)$">
+                        <input required asp-for="@latitude" type="text" class="form-control" pattern="^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)$">
                     </div>
                 </div>
                 <div class="mt-3">
                     <button class="button btn-navigate-form-step" type="button" step_number="1">Prev</button>
-                    <button class="button btn-navigate-form-step" type="button" step_number="3">Next</button>
+                    <button id="next2" class="button btn-navigate-form-step" type="button" step_number="3">Next</button>
                 </div>
             </section>
             <section id="step-3" class="form-step d-none">
@@ -148,19 +148,20 @@
                 <div class="mt-3">
                     <div class="form-group" style="display: flex; flex-direction: column;">
                         <label asp-for="@searchingGender">Searching Gender</label>
-                        <select asp-for="@searchingGender" asp-items="Html.GetEnumSelectList<Gender>()"
+                        <select required asp-for="@searchingGender" asp-items="Html.GetEnumSelectList<Gender>()"
                             style="padding: 5px 15px;"></select>
                     </div>
 
                     <div class="form-group">
                         <label asp-for="@searchingAgeStart">Searching Age Start</label>
-                        <input asp-for="@searchingAgeStart" type="number" class="form-control">
+                        <input required asp-for="@searchingAgeStart" type="number" class="form-control">
                     </div>
 
                     <div class="form-group">
                         <label asp-for="@searchingAgeEnd">Searching Age End</label>
-                        <input asp-for="@searchingAgeEnd" type="number" class="form-control">
+                        <input required asp-for="@searchingAgeEnd" type="number" class="form-control">
                     </div>
+                    <p id="errorMessage" class="text-danger"></p>
                     <div>
                         <input id="interests" asp-for="@interests" type="text" class="form-control" hidden>
                         <label style="font-weight: 500;">Interests</label>
@@ -280,7 +281,7 @@
                 </div>
                 <div class="mt-3">
                     <button class="button btn-navigate-form-step" type="button" step_number="2">Prev</button>
-                    <button class="button btn-navigate-form-step" type="button" step_number="4">Next</button>
+                    <button id="next3" class="button btn-navigate-form-step" type="button" step_number="4">Next</button>
                 </div>
             </section>
             <section id="step-4" class="form-step d-none">
@@ -290,44 +291,44 @@
                         <div class="imageWrapper">
                             <img id="upload1" src="@defaultProfilePic" alt="Uploaded Image">
                             <label asp-for="@image1" class="uploadButton">Upload Image</label>
-                            <input asp-for="@image1" type="file" accept="image/*"
+                            <input required asp-for="@image1" type="file" accept="image/*"
                                 onchange="previewImage(event, 'upload1')">
                         </div>
                         <div class="imageWrapper">
                             <img id="upload2" src="@defaultProfilePic" alt="Uploaded Image">
                             <label asp-for="@image2" class="uploadButton">Upload Image</label>
-                            <input asp-for="@image2" type="file" accept="image/*"
+                            <input required asp-for="@image2" type="file" accept="image/*"
                                 onchange="previewImage(event, 'upload2')">
                         </div>
                         <div class="imageWrapper">
                             <img id="upload3" src="@defaultProfilePic" alt="Uploaded Image">
                             <label asp-for="@image3" class="uploadButton">Upload Image</label>
-                            <input asp-for="@image3" type="file" accept="image/*"
+                            <input required asp-for="@image3" type="file" accept="image/*"
                                 onchange="previewImage(event, 'upload3')">
                         </div>
                         <div class="imageWrapper">
                             <img id="upload4" src="@defaultProfilePic" alt="Uploaded Image">
                             <label asp-for="@image4" class="uploadButton">Upload Image</label>
-                            <input asp-for="@image4" type="file" accept="image/*"
+                            <input required asp-for="@image4" type="file" accept="image/*"
                                 onchange="previewImage(event, 'upload4')">
                         </div>
                         <div class="imageWrapper">
                             <img id="upload5" src="@defaultProfilePic" alt="Uploaded Image">
                             <label asp-for="@image5" class="uploadButton">Upload Image</label>
-                            <input asp-for="@image5" type="file" accept="image/*"
+                            <input required asp-for="@image5" type="file" accept="image/*"
                                 onchange="previewImage(event, 'upload5')">
                         </div>
                         <div class="imageWrapper">
                             <img id="upload6" src="@defaultProfilePic" alt="Uploaded Image">
                             <label asp-for="@image6" class="uploadButton">Upload Image</label>
-                            <input asp-for="@image6" type="file" accept="image/*"
+                            <input required asp-for="@image6" type="file" accept="image/*"
                                 onchange="previewImage(event, 'upload6')">
                         </div>
                     </div>
                 </div>
                 <div class="mt-3">
                     <button class="button btn-navigate-form-step" type="button" step_number="3">Prev</button>
-                    <button class="button submit-btn" type="submit">Save</button>
+                    <button id="save" class="button submit-btn" type="submit">Save</button>
                 </div>
             </section>
         </form>

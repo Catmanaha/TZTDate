@@ -184,3 +184,7 @@ ul.form-stepper li a .form-stepper-circle {
 input[type="file"] {
     display: none;
 }
+
+input:invalid{
+    border: 3px solid red;
+}

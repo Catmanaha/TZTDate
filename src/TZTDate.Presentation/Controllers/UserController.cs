@@ -99,7 +99,7 @@ public class UserController : Controller
 
         if (userdto.ReturnUrl is null)
         {
-            return RedirectToAction("Account", "User");
+            return RedirectToAction("Profiles");
         }
 
         return RedirectPermanent(userdto.ReturnUrl);

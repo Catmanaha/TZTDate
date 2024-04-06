@@ -2,12 +2,6 @@
 
 @{
     ViewData["Title"] = "Account";
-    string? imageError = (string?)TempData["ImageError"];
-}
-
-@if (imageError is not null)
-{
-    <span class="text-danger">@imageError</span>
 }
 
 <div>
@@ -18,6 +12,10 @@
     <div class="form-group">
         <label asp-for="@Model.Email">Email</label>
         <input disabled asp-for="@Model.Email" type="text" class="form-control">
+    </div>
+    <div class="form-group">
+        <label asp-for="@Model.Age">Age</label>
+        <input disabled asp-for="@Model.Age" type="text" class="form-control">
     </div>
 </div>
 

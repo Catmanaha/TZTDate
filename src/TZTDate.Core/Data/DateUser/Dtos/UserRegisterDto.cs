@@ -49,8 +49,15 @@ public class UserRegisterDto
     [Required(ErrorMessage = "Description cannot be empty")]
     public string? Description { get; set; }
 
+    [Required]
     public Gender? SearchingGender { get; set; }
+
+    [Required]
+    [Range(int.MinValue, double.MaxValue, ErrorMessage = "SearchingAgeStart cannot be negative or be more than 100")]
     public int SearchingAgeStart { get; set; }
+    
+    [Required]
+    [Range(int.MinValue, 100, ErrorMessage = "SearchingAgeEnd cannot be negative or be more than 100")]
     public int SearchingAgeEnd { get; set; }
 
     [Required(ErrorMessage = "Interests cannot be empty")]

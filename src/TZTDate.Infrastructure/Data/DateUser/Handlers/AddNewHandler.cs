@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using TZTBank.Infrastructure.Data.DateUser.Commands;
 using TZTDate.Core.Data.DateUser.Enums;
 using TZTDate.Core.Data.DateUser;
-using Microsoft.EntityFrameworkCore;
 using TZTDate.Infrastructure.Data;
 using System.Reflection;
 using Microsoft.AspNetCore.Http;
