@@ -1,4 +1,15 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿var lessButton = document.querySelector('.expand-less');
+var moreButton = document.querySelector('.expand-more');
+var moreDiv = document.querySelector('.expand-more-div');
 
-// Write your JavaScript code.
+lessButton.addEventListener('click', () => {
+    lessButton.style.display = 'none';
+    moreButton.style.display = 'block';
+    moreDiv.style.display = 'block';
+})
+
+moreButton.addEventListener('click', () => {
+    moreButton.style.display = 'none';
+    moreDiv.style.display = 'none';
+    lessButton.style.display = 'block';
+})

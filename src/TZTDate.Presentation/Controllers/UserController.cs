@@ -19,9 +19,9 @@ public class UserController : Controller
     private readonly TZTDateDbContext context;
     private readonly IFaceDetectionRepository faceDetectionRepository;
 
-    public UserController(ISender sender, 
-                          SignInManager<User> signInManager, 
-                          UserManager<User> userManager, 
+    public UserController(ISender sender,
+                          SignInManager<User> signInManager,
+                          UserManager<User> userManager,
                           TZTDateDbContext context,
                           IFaceDetectionRepository faceDetectionRepository
     )
@@ -124,7 +124,8 @@ public class UserController : Controller
     public async Task<IActionResult> UploadAvatar(IFormFile file)
     {
         var detect = await faceDetectionRepository.Detect(file);
-        if (!detect) {
+        if (!detect)
+        {
             TempData["ImageError"] = "Image must contain your face";
             return RedirectToAction("Account");
         }
@@ -142,7 +143,7 @@ public class UserController : Controller
         await file.CopyToAsync(fileStream);
 
 
-        
+
 
         User path = await context.Users.FirstOrDefaultAsync(e => e.Id == user.Id);
         path.ProfilePicPath = filename;
