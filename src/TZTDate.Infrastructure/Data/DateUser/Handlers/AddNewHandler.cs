@@ -29,15 +29,17 @@ public class AddNewHandler : IRequestHandler<AddNewCommand>
             throw new NullReferenceException($"{nameof(request.UserRegisterDto)} cannot be null");
         }
 
+        if ((await userManager.FindByEmailAsync(request.UserRegisterDto.Email)) is not null)
+        {
+            throw new NullReferenceException($"{request.UserRegisterDto.Email} already exists");
+
+        }
+
         var address = new Address
         {
             City = request.UserRegisterDto.City,
             Country = request.UserRegisterDto.Country,
-            District = request.UserRegisterDto.District,
-            Latitude = request.UserRegisterDto.Latitude,
-            Longitude = request.UserRegisterDto.Longitude,
-            PostCode = request.UserRegisterDto.PostCode,
-            Street = request.UserRegisterDto.Street
+            State = request.UserRegisterDto.State,
         };
 
         await tZTDateDbContext.Addresses.AddAsync(address);
