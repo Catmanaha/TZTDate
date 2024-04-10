@@ -5,7 +5,10 @@
 }
 
 <div class="details-img-div">
-    @* <img src="~/Assets/@Model.ProfilePicPath" alt="profile-pic"> *@
+    @foreach (var profilePicPath in @Model.ProfilePicPaths)
+    {
+        <img src="~/Assets/@profilePicPath" alt="profile-pic"> 
+    }
     @* <a href="/Chat/Chat?id=@Model.Id">Chat Now</a> *@
     <br>
 </div>
@@ -35,11 +38,9 @@
 <style>
     .details-img-div {
         display: flex;
-        align-items: center;
-        flex-direction: column;
-        width: 100%;
-        justify-content: center;
-        text-align: center;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        padding: 20px;
     }
     .details-img-div a {
         margin-bottom: 30px;
@@ -58,10 +59,12 @@
     }
 
     .details-img-div img {
-        max-width: 400px;
-        max-height: 400px;
-        display: flex;
-        align-items: center;
+        width: calc(33.33% - 20px);
+        max-height: 300px;
+        margin-bottom: 20px;
+        object-fit: contain;
+        border: 2px solid #ddd;
+        border-radius: 5px;
     }
 
     .details-divs {
