@@ -99,7 +99,7 @@ public class UserController : Controller
 
         if (userdto.ReturnUrl is null)
         {
-            return RedirectToAction("Account", "User");
+            return RedirectToAction("Profiles");
         }
 
         return RedirectPermanent(userdto.ReturnUrl);
@@ -110,8 +110,9 @@ public class UserController : Controller
     public async Task<IActionResult> Account()
     {
         User user = await userManager.GetUserAsync(User);
+        var userWithAddress = await userManager.Users.Include(x => x.Address).FirstOrDefaultAsync(o => o.Id == user.Id);
 
-        return View(user);
+        return View(userWithAddress);
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -123,31 +124,30 @@ public class UserController : Controller
     [HttpPost]
     public async Task<IActionResult> UploadAvatar(IFormFile file)
     {
-        var detect = await faceDetectionRepository.Detect(file);
-        if (!detect)
-        {
-            TempData["ImageError"] = "Image must contain your face";
-            return RedirectToAction("Account");
-        }
+        // var detect = await faceDetectionRepository.Detect(file);
+        // if (!detect) {
+        //     TempData["ImageError"] = "Image must contain your face";
+        //     return RedirectToAction("Account");
+        // }
 
-        User user = await userManager.GetUserAsync(User);
-        var newUserId = user.Id;
+        // User user = await userManager.GetUserAsync(User);
+        // var newUserId = user.Id;
 
-        var fileExtension = new FileInfo(file.FileName).Extension;
+        // var fileExtension = new FileInfo(file.FileName).Extension;
 
-        var filename = $"{newUserId}{fileExtension}";
+        // var filename = $"{newUserId}{fileExtension}";
 
-        var destinationAvatarPath = $"wwwroot/Assets/{filename}";
+        // var destinationAvatarPath = $"wwwroot/Assets/{filename}";
 
-        using var fileStream = System.IO.File.Create(destinationAvatarPath);
-        await file.CopyToAsync(fileStream);
-
+        // using var fileStream = System.IO.File.Create(destinationAvatarPath);
+        // await file.CopyToAsync(fileStream);
 
 
 
-        User path = await context.Users.FirstOrDefaultAsync(e => e.Id == user.Id);
-        path.ProfilePicPath = filename;
-        await context.SaveChangesAsync();
+
+        // User path = await context.Users.FirstOrDefaultAsync(e => e.Id == user.Id);
+        // path.ProfilePicPath = filename;
+        // await context.SaveChangesAsync();
 
         return base.RedirectToAction("Account", "User");
     }

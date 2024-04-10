@@ -2,231 +2,315 @@
     string username = string.Empty;
     string email = string.Empty;
     string password = string.Empty;
-    int age = default;
+    DateTime birthDateTime = default;
     Gender gender = default;
-    string location = string.Empty;
+    string country = string.Empty;
+    string city = string.Empty;
+    string state = string.Empty;
     string description = string.Empty;
-    string profilePicPath = "https://www.iprcenter.gov/image-repository/blank-profile-picture.png/@@images/image.png";
 
     Gender searchingGender = default;
     int searchingAgeStart = default;
     int searchingAgeEnd = default;
     string? interests = default;
+
+    string defaultProfilePic =
+    "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg";
+
+    IFormFile? image1 = default;
+    IFormFile? image2 = default;
+    IFormFile? image3 = default;
+    IFormFile? image4 = default;
+    IFormFile? image5 = default;
+    IFormFile? image6 = default;
 }
 
-<h1>Register</h1>
+<div>
+    <h1>Register</h1>
 
-<form asp-action="Register" method="post">
-    <div class="text-danger" asp-validation-summary="All"></div>
+    <div id="multi-step-form-container">
+        <ul class="form-stepper form-stepper-horizontal text-center mx-auto pl-0">
+            <li class="form-stepper-active text-center form-stepper-list" step="1">
+                <a class="mx-2">
+                    <span class="form-stepper-circle">
+                        <span>1</span>
+                    </span>
+                    <div class="label">User Details</div>
+                </a>
+            </li>
+            <li class="form-stepper-unfinished text-center form-stepper-list" step="2">
+                <a class="mx-2">
+                    <span class="form-stepper-circle text-muted">
+                        <span>2</span>
+                    </span>
+                    <div class="label text-muted">Location</div>
+                </a>
+            </li>
+            <li class="form-stepper-unfinished text-center form-stepper-list" step="3">
+                <a class="mx-2">
+                    <span class="form-stepper-circle text-muted">
+                        <span>3</span>
+                    </span>
+                    <div class="label text-muted">Preferences</div>
+                </a>
+            </li>
+            <li class="form-stepper-unfinished text-center form-stepper-list" step="4">
+                <a class="mx-2">
+                    <span class="form-stepper-circle text-muted">
+                        <span>4</span>
+                    </span>
+                    <div class="label text-muted">Photos</div>
+                </a>
+            </li>
 
-    <div class="form-group">
-        <label asp-for="@username">Username</label>
-        <input asp-for="@username" type="text" class="form-control">
+        </ul>
+        <form asp-action="Register" id="userAccountSetupForm" name="userAccountSetupForm" enctype="multipart/form-data"
+            method="POST">
+            <div class="text-danger" asp-validation-summary="All"></div>
+            <section id="step-1" class="form-step">
+                <h2 class="font-normal">User Details</h2>
+                <div class="mt-3">
+                    <div class="form-group">
+                        <label asp-for="@username">Username</label>
+                        <input required asp-for="@username" type="text" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="@email">Email</label>
+                        <input required asp-for="@email" type="email" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="@password">Password</label>
+                        <input required asp-for="@password" type="password" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="@birthDateTime">Birth date and time</label>
+                        <input required asp-for="@birthDateTime" type="datetime-local" class="form-control">
+                    </div>
+                    <div class="form-group" style="display: flex; flex-direction: column;">
+                        <label asp-for="@gender">Gender</label>
+                        <select required asp-for="@gender" asp-items="Html.GetEnumSelectList<Gender>()"
+                            style="padding: 5px 15px;"></select>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="@description">Description</label>
+                        <input required asp-for="@description" type="text" class="form-control">
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button id="next1" class="button btn-navigate-form-step" type="button" step_number="2">Next</button>
+                </div>
+            </section>
+            <section id="step-2" class="form-step d-none">
+                <h2 class="font-normal">Location</h2>
+                <div class="mt-3">
+                    <select asp-for="@country" class="form-select country" aria-label="Default select example" onchange="loadStates()">
+                        <option disabled selected>Select Country</option>
+                    </select>
+                    <br>
+                    <select asp-for="@state" class="form-select state" aria-label="Default select example" onchange="loadCities()">
+                        <option disabled selected>Select State</option>
+                    </select>
+                    <br>
+                    <select asp-for="@city" class="form-select city" aria-label="Default select example">
+                        <option disabled selected>Select City</option>
+                    </select>
+                </div>
+                <div class="mt-3">
+                    <button class="button btn-navigate-form-step" type="button" step_number="1">Prev</button>
+                    <button id="next2" class="button btn-navigate-form-step" type="button" step_number="3">Next</button>
+                </div>
+            </section>
+            <section id="step-3" class="form-step d-none">
+                <h2 class="font-normal">Preferences</h2>
+                <div class="mt-3">
+                    <div class="form-group" style="display: flex; flex-direction: column;">
+                        <label asp-for="@searchingGender">Searching Gender</label>
+                        <select required asp-for="@searchingGender" asp-items="Html.GetEnumSelectList<Gender>()"
+                            style="padding: 5px 15px;"></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="@searchingAgeStart">Searching Age Start</label>
+                        <input required asp-for="@searchingAgeStart" type="number" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="@searchingAgeEnd">Searching Age End</label>
+                        <input required asp-for="@searchingAgeEnd" type="number" class="form-control">
+                    </div>
+                    <p id="errorMessage" class="text-danger"></p>
+                    <div>
+                        <input id="interests" asp-for="@interests" type="text" class="form-control" hidden>
+                        <label style="font-weight: 500;">Interests</label>
+                        <br>
+                        <label>
+                            Sport
+                            <input type="checkbox" name="interest" value="sport">
+                        </label>
+
+                        <label>
+                            Games
+                            <input type="checkbox" name="interest" value="games">
+                        </label>
+
+                        <label>
+                            Traveling
+                            <input type="checkbox" name="interest" value="traveling">
+                        </label>
+
+                        <label>
+                            Reading
+                            <input type="checkbox" name="interest" value="reading">
+                        </label>
+
+                        <label>
+                            Cooking
+                            <input type="checkbox" name="interest" value="cooking">
+                        </label>
+
+                        <label>
+                            Hiking
+                            <input type="checkbox" name="interest" value="hiking">
+                        </label>
+
+                        <label>
+                            Photography
+                            <input type="checkbox" name="interest" value="photography">
+                        </label>
+
+                        <label>
+                            Music
+                            <input type="checkbox" name="interest" value="music">
+                        </label>
+
+                        <label>
+                            Painting
+                            <input type="checkbox" name="interest" value="painting">
+                        </label>
+
+                        <label>
+                            Writing
+                            <input type="checkbox" name="interest" value="writing">
+                        </label>
+
+                        <label>
+                            Gardening
+                            <input type="checkbox" name="interest" value="gardening">
+                        </label>
+
+                        <label>
+                            Yoga
+                            <input type="checkbox" name="interest" value="yoga">
+                        </label>
+
+                        <label>
+                            Meditation
+                            <input type="checkbox" name="interest" value="meditation">
+                        </label>
+
+                        <label>
+                            Astronomy
+                            <input type="checkbox" name="interest" value="astronomy">
+                        </label>
+
+                        <label>
+                            Dancing
+                            <input type="checkbox" name="interest" value="dancing">
+                        </label>
+
+                        <label>
+                            Film-making
+                            <input type="checkbox" name="interest" value="film-making">
+                        </label>
+
+                        <label>
+                            Bird-watching
+                            <input type="checkbox" name="interest" value="bird-watching">
+                        </label>
+
+                        <label>
+                            Knitting
+                            <input type="checkbox" name="interest" value="knitting">
+                        </label>
+
+                        <label>
+                            Surfing
+                            <input type="checkbox" name="interest" value="surfing">
+                        </label>
+
+                        <label>
+                            Scuba diving
+                            <input type="checkbox" name="interest" value="scuba diving">
+                        </label>
+
+                        <label>
+                            Chess
+                            <input type="checkbox" name="interest" value="chess">
+                        </label>
+
+                        <label>
+                            Calligraphy
+                            <input type="checkbox" name="interest" value="calligraphy">
+                        </label>
+
+
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button class="button btn-navigate-form-step" type="button" step_number="2">Prev</button>
+                    <button id="next3" class="button btn-navigate-form-step" type="button" step_number="4">Next</button>
+                </div>
+            </section>
+            <section id="step-4" class="form-step d-none">
+                <h2 class="font-normal">Photos</h2>
+                <div class="mt-3">
+                    <div class="imageGrid">
+                        <div class="imageWrapper">
+                            <img id="upload1" src="@defaultProfilePic" alt="Uploaded Image">
+                            <label asp-for="@image1" class="uploadButton">Upload Image</label>
+                            <input required asp-for="@image1" type="file" accept="image/*"
+                                onchange="previewImage(event, 'upload1')">
+                        </div>
+                        <div class="imageWrapper">
+                            <img id="upload2" src="@defaultProfilePic" alt="Uploaded Image">
+                            <label asp-for="@image2" class="uploadButton">Upload Image</label>
+                            <input required asp-for="@image2" type="file" accept="image/*"
+                                onchange="previewImage(event, 'upload2')">
+                        </div>
+                        <div class="imageWrapper">
+                            <img id="upload3" src="@defaultProfilePic" alt="Uploaded Image">
+                            <label asp-for="@image3" class="uploadButton">Upload Image</label>
+                            <input required asp-for="@image3" type="file" accept="image/*"
+                                onchange="previewImage(event, 'upload3')">
+                        </div>
+                        <div class="imageWrapper">
+                            <img id="upload4" src="@defaultProfilePic" alt="Uploaded Image">
+                            <label asp-for="@image4" class="uploadButton">Upload Image</label>
+                            <input required asp-for="@image4" type="file" accept="image/*"
+                                onchange="previewImage(event, 'upload4')">
+                        </div>
+                        <div class="imageWrapper">
+                            <img id="upload5" src="@defaultProfilePic" alt="Uploaded Image">
+                            <label asp-for="@image5" class="uploadButton">Upload Image</label>
+                            <input required asp-for="@image5" type="file" accept="image/*"
+                                onchange="previewImage(event, 'upload5')">
+                        </div>
+                        <div class="imageWrapper">
+                            <img id="upload6" src="@defaultProfilePic" alt="Uploaded Image">
+                            <label asp-for="@image6" class="uploadButton">Upload Image</label>
+                            <input required asp-for="@image6" type="file" accept="image/*"
+                                onchange="previewImage(event, 'upload6')">
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button class="button btn-navigate-form-step" type="button" step_number="3">Prev</button>
+                    <button id="save" class="button submit-btn" type="submit">Save</button>
+                </div>
+            </section>
+        </form>
     </div>
 
-    <div class="form-group">
-        <label asp-for="@email">Email</label>
-        <input asp-for="@email" type="email" class="form-control">
-    </div>
-
-    <div class="form-group">
-        <label asp-for="@password">Password</label>
-        <input asp-for="@password" type="password" class="form-control">
-    </div>
-
-    <div class="form-group">
-        <label asp-for="@age">Age</label>
-        <input asp-for="@age" type="number" class="form-control">
-    </div>
-
-    <div class="form-group" style="display: flex; flex-direction: column;">
-        <label asp-for="@gender">Gender</label>
-        <select asp-for="@gender" asp-items="Html.GetEnumSelectList<Gender>()" style="padding: 5px 15px;"></select>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="@location">Location</label>
-        <input asp-for="@location" type="text" class="form-control">
-    </div>
-
-    <div class="form-group">
-        <label asp-for="@description">Description</label>
-        <input asp-for="@description" type="text" class="form-control">
-    </div>
-
-    <div class="form-group" style="display: flex; flex-direction: column;">
-        <label asp-for="@searchingGender">Searching Gender</label>
-        <select asp-for="@searchingGender" asp-items="Html.GetEnumSelectList<Gender>()" style="padding: 5px 15px;"></select>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="@searchingAgeStart">Searching Age Start</label>
-        <input asp-for="@searchingAgeStart" type="number" class="form-control">
-    </div>
-
-    <div class="form-group">
-        <label asp-for="@searchingAgeEnd">Searching Age End</label>
-        <input asp-for="@searchingAgeEnd" type="number" class="form-control">
-    </div>
-
-    <div>
-        <input id="interests" asp-for="@interests" type="text" class="form-control" hidden>
-        <label style="font-weight: 500;">Interests</label>
-        <br>
-        <label>
-            Sport
-            <input type="checkbox" name="interest" value="sport">
-        </label>
-
-        <label>
-            Games
-            <input type="checkbox" name="interest" value="games">
-        </label>
-
-        <label>
-            Traveling
-            <input type="checkbox" name="interest" value="traveling">
-        </label>
-
-        <label>
-            Reading
-            <input type="checkbox" name="interest" value="reading">
-        </label>
-
-        <label>
-            Cooking
-            <input type="checkbox" name="interest" value="cooking">
-        </label>
-
-        <label>
-            Hiking
-            <input type="checkbox" name="interest" value="hiking">
-        </label>
-
-        <label>
-            Photography
-            <input type="checkbox" name="interest" value="photography">
-        </label>
-
-        <label>
-            Music
-            <input type="checkbox" name="interest" value="music">
-        </label>
-
-        <label>
-            Painting
-            <input type="checkbox" name="interest" value="painting">
-        </label>
-
-        <label>
-            Writing
-            <input type="checkbox" name="interest" value="writing">
-        </label>
-
-        <label>
-            Gardening
-            <input type="checkbox" name="interest" value="gardening">
-        </label>
-
-        <label>
-            Yoga
-            <input type="checkbox" name="interest" value="yoga">
-        </label>
-
-        <label>
-            Meditation
-            <input type="checkbox" name="interest" value="meditation">
-        </label>
-
-        <label>
-            Astronomy
-            <input type="checkbox" name="interest" value="astronomy">
-        </label>
-
-        <label>
-            Dancing
-            <input type="checkbox" name="interest" value="dancing">
-        </label>
-
-        <label>
-            Film-making
-            <input type="checkbox" name="interest" value="film-making">
-        </label>
-
-        <label>
-            Bird-watching
-            <input type="checkbox" name="interest" value="bird-watching">
-        </label>
-
-        <label>
-            Knitting
-            <input type="checkbox" name="interest" value="knitting">
-        </label>
-
-        <label>
-            Surfing
-            <input type="checkbox" name="interest" value="surfing">
-        </label>
-
-        <label>
-            Scuba diving
-            <input type="checkbox" name="interest" value="scuba diving">
-        </label>
-
-        <label>
-            Chess
-            <input type="checkbox" name="interest" value="chess">
-        </label>
-
-        <label>
-            Calligraphy
-            <input type="checkbox" name="interest" value="calligraphy">
-        </label>
-
-
-    </div>
-
-    <div class="form-group" hidden>
-        <input asp-for="@profilePicPath">
-    </div>
-    <br>
-    <button type="submit" class="btn btn-primary">Register</button>
-</form>
-
-<style>
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    input[type="checkbox"][name="interest"] {
-        width: 20px;
-        height: 20px;
-        margin: 10px 50px 10px 10px;
-        cursor: pointer;
-    }
-
-    .form-group label {
-        font-weight: 500;
-    }
-
-    .search-form label {
-        margin: 10px 50px 10px 0;
-    }
-</style>
-
-<script>
-    var checkboxes = document.querySelectorAll('input[type="checkbox"][name="interest"]');
-
-    var interest = document.getElementById('interests');
-
-    checkboxes.forEach(function (checkbox) {
-        checkbox.addEventListener('change', function () {
-            if (checkbox.checked) {
-                interest.value += checkbox.value + ' ';
-            } else {
-                var valueToRemove = checkbox.value + ' ';
-                interest.value = interest.value.replace(valueToRemove, '');;
-            }
-        });
-    });
-</script>
+</div>

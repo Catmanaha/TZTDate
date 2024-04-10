@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TZTDate.Infrastructure.Data;
@@ -11,9 +12,11 @@ using TZTDate.Infrastructure.Data;
 namespace TZTDate.Presentation.Migrations
 {
     [DbContext(typeof(TZTDateDbContext))]
-    partial class TZTDateDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240406105356_Add Addresses")]
+    partial class AddAddresses
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -168,7 +171,19 @@ namespace TZTDate.Presentation.Migrations
                     b.Property<string>("Country")
                         .HasColumnType("text");
 
-                    b.Property<string>("State")
+                    b.Property<string>("District")
+                        .HasColumnType("text");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<int>("PostCode")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Street")
                         .HasColumnType("text");
 
                     b.HasKey("Id");

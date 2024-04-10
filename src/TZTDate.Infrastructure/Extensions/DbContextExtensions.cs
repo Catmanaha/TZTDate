@@ -27,6 +27,7 @@ public static class DbContextExtensions
             options.UseNpgsql(connectionString, o =>
                 {
                     o.MigrationsAssembly(assembly.FullName);
+                    
                 });
         });
 
