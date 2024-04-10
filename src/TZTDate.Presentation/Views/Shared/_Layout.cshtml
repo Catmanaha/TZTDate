@@ -1,6 +1,7 @@
 ﻿@{
     bool isAuthenticated = base.User.Identity.IsAuthenticated;
 }
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,75 +10,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-
     <link rel="stylesheet" href="~/css/Register.css">
-
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TZTDate.Presentation.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/main.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/footer.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/header.css" asp-append-version="true">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 
 <body>
     <header>
+        <a href="/Home/Main" class="logo">TZT<span>Date</span></a>
+
         <nav class="navbar">
-            <div class="container">
-
-                <div class="navbar-header">
-                    <button class="navbar-toggler" data-toggle="open-navbar1">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </button>
-                    <a href="#">
-                        <h4>TZT<span>Date</span></h4>
-                    </a>
-                </div>
-
-                <div class="navbar-menu" id="open-navbar1">
-                    <ul class="navbar-nav">
-                        <li><a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        @if (!isAuthenticated)
-                        {
-                            <li><a class="nav-link text-dark" asp-controller="User" asp-action="Login">Login</a>
-                            </li>
-                            <li><a class="nav-link text-dark" asp-controller="User" asp-action="Register">Register</a></li>
-                        }
-                        @if (isAuthenticated)
-                        {
-                            <li>
-                                <a class="nav-link text-dark" asp-area="" asp-controller="User"
-                                    asp-action="Profiles">Profiles</a>
-                            </li>
-                            <li>
-                                <a class="nav-link text-dark" asp-controller="Forum" asp-action="Index">Forum</a>
-                            </li>
-                            <li>
-                                <a class="nav-link text-dark" asp-controller="LoveCalculator" asp-action="Index">Love
-                                    Calculator</a>
-                            </li>
-                            <li>
-                                <a class="nav-link text-dark" asp-controller="User" asp-action="Account">Account</a>
-                            </li>
-                            <li>
-                                <a class="nav-link text-dark" asp-controller="User" asp-action="Logout"><span
-                                        class="material-symbols-outlined">logout</span></a>
-                            </li>
-                        }
-                    </ul>
-                </div>
-            </div>
+            @if (isAuthenticated)
+            {
+                <a asp-controller="Home" asp-action="Index">Home</a>
+            }
+            @if (!isAuthenticated)
+            {
+                <a class="login" asp-controller="User" asp-action="Login">Login</a>
+                <a class="register" asp-controller="User" asp-action="Register">Register</a>
+            }
+            @if (isAuthenticated)
+            {
+                <a asp-controller="User" asp-action="Profiles">Profiles</a>
+                <a asp-controller="Forum" asp-action="Index">Forum</a>
+                <a asp-controller="LoveCalculator" asp-action="Index">Love Calculator</a>
+                <a asp-controller="User" asp-action="Account">Account</a>
+                <a asp-controller="User" asp-action="Logout"><span class="material-symbols-outlined">logout</span></a>
+            }
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+    <main style="padding-top: 86px;">
+        @RenderBody()
+    </main>
+    <footer>
+        <div>
+            <h3>Review</h3>
+            <a href="/Blogs">Blog TZTDate</a>
+            <a href="https://badoo.com/terms#terms">Terms</a>
+            <a href="https://bumbcdn.com/big/documents/bumble/2023/statement-on-modern-slavery-act.pdf">Modern Slavery
+                Act</a>
+            <p>Copyright &copy; 2024 by TZTDate | All Rights Reserved.</p>
+        </div>
+
+        <div>
+            <h3>Language</h3>
+
+            <button class="expand-less">Language <span class="material-symbols-outlined">expand_less</span></button>
+
+            <button class="expand-more" style="display: none;">Language <span class="material-symbols-outlined">expand_more</span></button>
+
+            <div class="expand-more-div" style="display: none;">
+                <button style="background-color: #f6f6f6 !important;">English</button>
+                <br>
+                <button>Spain</button>
+                <br>
+                <button style="border-style: none solid solid solid !important; border-radius: 0px 0px 15px 15px;">Russian</button>
+            </div>
+        </div>
+    </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
