@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using TZTDate.BlogApi.Data;
 using TZTDate.BlogApi.Dtos;
 using TZTDate.BlogApi.Models;
+using TZTDate.BlogApi.Services.Base;
 
 namespace TZTDate.BlogApi.Controllers;
 
@@ -12,95 +11,41 @@ namespace TZTDate.BlogApi.Controllers;
 [Route("api/v1/[controller]/[action]")]
 public class ArticleController : ControllerBase
 {
-    private readonly BlogDbContext blogDbContext;
+    private readonly IArticleService articleService;
 
-    public ArticleController(BlogDbContext blogDbContext)
+    public ArticleController(IArticleService articleService)
     {
-        this.blogDbContext = blogDbContext;
+        this.articleService = articleService;
     }
 
     [HttpGet]
     public async Task<ActionResult<Article>> GetById(int articleId)
     {
-        var article = await blogDbContext.Articles.Include(x => x.Contents).FirstOrDefaultAsync(x => x.Id == articleId);
-
-        if (article is null)
-        {
-            return BadRequest($"No article found with {articleId} id");
-        }
-
-        return Ok(article);
+        return Ok(await articleService.GetByIdAsync(articleId));
     }
 
     [HttpDelete]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int articleId)
     {
-        var article = await blogDbContext.Articles.Include(x => x.Contents).FirstOrDefaultAsync(x => x.Id == articleId);
-
-        if (article is null)
-        {
-            return BadRequest($"No article found with {articleId} id");
-        }
-
-        if (article.Contents is not null)
-        {
-            blogDbContext.Contents.RemoveRange(article.Contents);
-        }
-
-        System.IO.File.Delete($"Assets/{article.HeadPicPath}");
-
-        blogDbContext.Articles.Remove(article);
-
-        await blogDbContext.SaveChangesAsync();
+        await articleService.DeleteAsync(articleId);
 
         return Ok();
     }
 
     [HttpGet]
-    public async Task<IEnumerable<Article>> GetAll()
+    public async Task<ActionResult<IEnumerable<Article>>> GetAll()
     {
-        var articles = await blogDbContext.Articles.Include(x => x.Contents).ToListAsync();
-        return articles;
+        var articles = await articleService.GetAllAsync();
+
+        return Ok(articles);
     }
 
     [HttpPost]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create([FromForm] ArticleDto articleDto)
     {
-        if (articleDto.Title is null)
-        {
-            return BadRequest("title cannot be null");
-        }
-
-        if (articleDto.HeadPic is null)
-        {
-            return BadRequest("headPic cannot be null");
-        }
-
-        if (articleDto.Contents is null)
-        {
-            return BadRequest("contents cannot be null");
-        }
-
-        var fileExtension = new FileInfo(articleDto.HeadPic.FileName).Extension;
-
-        var filename = $"{Guid.NewGuid()}{fileExtension}";
-
-        var destinationAvatarPath = $"Assets/{filename}";
-
-        using var fileStream = System.IO.File.Create(destinationAvatarPath);
-        await articleDto.HeadPic.CopyToAsync(fileStream);
-
-        var article = new Article
-        {
-            Title = articleDto.Title,
-            HeadPicPath = filename,
-            Contents = articleDto.Contents
-        };
-
-        await blogDbContext.Articles.AddAsync(article);
-        await blogDbContext.SaveChangesAsync();
+        await articleService.CreateAsync(articleDto);
 
         return Ok();
     }

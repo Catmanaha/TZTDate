@@ -2,9 +2,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using TZTDate.BlogApi.Extensions;
+using TZTDate.BlogApi.Middlewares;
 using TZTDate.BlogApi.Models.Managers;
-using TZTDate.BlogApi.Services;
-using TZTDate.BlogApi.Services.Base;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,8 +52,8 @@ builder.Services.AddSwaggerGen(options =>
     );
 });
 
-builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.InitDbContext(builder.Configuration);
+builder.Services.Inject();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -73,6 +72,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = jwtManager.Issuer,
         };
     });
+
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
@@ -84,6 +84,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.MapControllers();
 
