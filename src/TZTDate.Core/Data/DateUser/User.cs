@@ -28,4 +28,6 @@ public class User : IdentityUser
     public int SearchingAgeStart { get; set; }
     public int SearchingAgeEnd { get; set; }
     public string? Interests { get; set; }
+
+    public IEnumerable<User>? LikedPersons { get; set; }
 }
