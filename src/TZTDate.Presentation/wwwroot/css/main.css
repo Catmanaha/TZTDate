@@ -10,18 +10,6 @@
     display: flex;
     flex-direction: row;
     height: 90vh;
-    word-wrap: break-word;
-}
-
-.side1 {
-    padding-left: 150px;
-    padding-right: 150px;
-    padding-top: 30px;
-    width: 65%;
-    display: flex;
-    flex-direction: column;
-    background-color: var(--slide1-background);
-    height: 90vh;
 }
 
 .side2 {
@@ -32,6 +20,18 @@
 .side2 img {
     height: 90vh;
     width: 100%;
+}
+
+.side1 {
+    display: flex;
+    padding-left: 150px;
+    padding-right: 150px;
+    padding-top: 30px;
+    width: 65%;
+    justify-content: center;
+    flex-direction: column;
+    background-color: var(--slide1-background);
+    height: 90vh;
 }
 
 .side1 h1 {
@@ -242,6 +242,50 @@
     width: 100%;
 }
 
+
+
+.black-register {
+    height: 40px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #000;
+    border: 1px solid #000;
+    border-radius: 30px;
+    font-weight: 100;
+    letter-spacing: .1rem;
+    color: #fff;
+    z-index: 1;
+    overflow: hidden;
+    transition: .5s;
+    font-size: 16px;
+    width: 350px;
+}
+
+.black-register:hover {
+    color: #000;
+}
+
+.black-register::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background: var(--slide1-background);
+    z-index: -1;
+    transition: .5s;
+}
+
+.black-register:active {
+    font-size: 18px;
+}
+
+.black-register:hover::before {
+    width: 100%;
+}
 
 #main-section3 {
     display: flex;

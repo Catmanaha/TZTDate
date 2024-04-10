@@ -1,5 +1,6 @@
 @{
     ViewData["Title"] = "Main";
+    bool isAuthenticated = base.User.Identity.IsAuthenticated;
 
     string email = default;
 }
@@ -8,25 +9,29 @@
     <div class="side1">
         <h1>We are for dating with confidence.</h1>
         <p>We help you to be yourself and enjoy dating.</p>
-        <form class="form">
-            <label>
-                Register by email
-                <br>
-                <input placeholder="Email" asp-for="@email" type="email" class="input">
-            </label>
-            <button type="submit" class="btn">Registration</button>
-        </form>
+        @if (!isAuthenticated)
+        {
+            @* <form class="form">
+                <label>
+                    Register by email
+                    <br>
+                    <input placeholder="Email" asp-for="@email" type="email" class="input">
+                </label>
+                <button type="submit" class="btn">Registration</button>
+            </form> *@
 
-        <div style="margin-top: 30px;">
-            <label>
-                Or
-                <br><br>
-                <a class="by-google" href="/User/LoginByGoogle"><i class='bx bxl-google'></i> Login by Google
-                    Account</a>
-            </label>
-        </div>
+            @* <div style="margin-top: 30px;">
+                <label>
+                    Or
+                    <br><br>
+                    <a class="by-google" href="/User/LoginByGoogle"><i class='bx bxl-google'></i> Login by Google
+                        Account</a>
+                </label>
+            </div> *@
+            <a class="black-register" href="/User/Register">Register</a>
 
-        <span class="span-login">Already have an account? <a href="/User/Login">Login</a></span>
+            <span class="span-login">Already have an account? <a href="/User/Login">Login</a></span>
+        }
     </div>
 
     <div class="side2">
@@ -43,7 +48,10 @@
             communicating with real people.<br><br>Our support and security tools will help you be<br>yourself and give
             you
             the determination to find<br>meaningful and worthwhile relationships.</p><br><br>
-        <a class="white-register" href="/User/Register">Register</a>
+        @if (!isAuthenticated)
+        {
+            <a class="white-register" href="/User/Register">Register</a>
+        }
     </div>
 </section>
 
@@ -52,7 +60,10 @@
         <h2>Shall we have a chat?</h2>
         <p>Don't you want to wait for mutual sympathy?<br><br>Go straight to the most interesting thing –<br>closer
             communication, where you can get to<br>know each other better.</p>
-        <a class="white-register" href="/User/Register">Register</a>
+        @if (!isAuthenticated)
+        {
+            <a class="white-register" href="/User/Register">Register</a>
+        }
     </div>
     <img src="https://badoo.com/_next/image?url=http%3A%2F%2Fl-image%3A8080%2Fen%2Fwant-to-chat-now.png&w=1920&q=100">
 </section>
@@ -65,7 +76,10 @@
         <h2>Get to know those who<br>share your goals.</h2>
         <p>Get what you want out of dating.<br>Without explanation. <br><br>Do you just want to chat? Great!<br>Are you
             looking for love? Great!<br><br>Intentions can always be changed.</p>
-        <a class="white-register" href="/User/Register">Register</a>
+        @if (!isAuthenticated)
+        {
+            <a class="white-register" href="/User/Register">Register</a>
+        }
     </div>
 </section>
 
