@@ -43,41 +43,6 @@ const navigateToFormStep = (stepNumber) => {
             );
         });
 
-    if (stepNumber == 2) {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-                fetch(
-                    `https://api.geoapify.com/v1/geocode/reverse?lat=${position.coords.latitude}&lon=${position.coords.longitude}&format=json&apiKey=da35841dcf8646d39be7dce92c560ed4`
-                )
-                    .then((response) => {
-                        console.log(response);
-                        return response.json();
-                    })
-                    .then((response) => {
-                        let allDetails = response.results[0];
-                        document.getElementById("country").value =
-                            allDetails.country;
-                        document.getElementById("city").value = allDetails.city;
-                        document.getElementById("postCode").value =
-                            allDetails.postcode;
-                        document.getElementById("district").value =
-                            allDetails.district;
-                        document.getElementById("street").value =
-                            allDetails.street;
-                        document.getElementById("longitude").value =
-                            allDetails.lon;
-                        document.getElementById("latitude").value =
-                            allDetails.lat;
-                    })
-                    .catch(() => {
-                        console.log("Something went wrong");
-                    });
-            });
-        } else {
-            x.innerHTML = "Geolocation is not supported by this browser.";
-        }
-    }
-
     document.querySelector("#step-" + stepNumber).classList.remove("d-none");
 
     const formStepCircle = document.querySelector(
@@ -145,103 +110,86 @@ document.addEventListener("DOMContentLoaded", function () {
     input2.addEventListener("input", handleInputChange);
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-    const sectionStep1 = document.getElementById("step-1");
-    const nextButton = document.getElementById("next1");
+var config = {
+    cUrl: "https://api.countrystatecity.in/v1/countries",
+    ckey: "NHhvOEcyWk50N2Vna3VFTE00bFp3MjFKR0ZEOUhkZlg4RTk1MlJlaA==",
+};
 
-    const inputs = sectionStep1.querySelectorAll("input[required], select[required]");
+var countrySelect = document.querySelector(".country"),
+    stateSelect = document.querySelector(".state"),
+    citySelect = document.querySelector(".city");
 
-    function checkInputsValidity() {
-        let isValid = true;
+function loadCountries() {
+    let apiEndPoint = config.cUrl;
 
-        inputs.forEach(input => {
-            if (!input.checkValidity()) {
-                isValid = false;
-            }
-        });
+    fetch(apiEndPoint, { headers: { "X-CSCAPI-KEY": config.ckey } })
+        .then((response) => response.json())
+        .then((data) => {
+            data.forEach((country) => {
+                const option = document.createElement("option");
+                option.setAttribute('data-iso', country.iso2);
+                option.value = country.name;
+                option.textContent = country.name;
+                countrySelect.appendChild(option);
+            });
+        })
+        .catch((error) => console.error("Error loading countries:", error));
 
-        return isValid;
-    }
+    stateSelect.disabled = true;
+    citySelect.disabled = true;
+    stateSelect.style.pointerEvents = "none";
+    citySelect.style.pointerEvents = "none";
+}
 
-    function handleInputChange() {
-        if (checkInputsValidity()) {
-            nextButton.removeAttribute("disabled");
-        } else {
-            nextButton.setAttribute("disabled", "disabled");
-        }
-    }
+function loadStates() {
+    stateSelect.disabled = false;
+    citySelect.disabled = true;
+    stateSelect.style.pointerEvents = "auto";
+    citySelect.style.pointerEvents = "none";
 
-    inputs.forEach(input => {
-        input.addEventListener("input", handleInputChange);
-    });
+    const selectedCountryCode = countrySelect.options[countrySelect.selectedIndex].getAttribute('data-iso');
+    stateSelect.innerHTML = '<option value="">Select State</option>'; 
 
-    handleInputChange();
-});
+    fetch(`${config.cUrl}/${selectedCountryCode}/states`, {
+        headers: { "X-CSCAPI-KEY": config.ckey },
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            data.forEach((state) => {
+                const option = document.createElement("option");
+                option.setAttribute('data-iso', state.iso2);
+                option.value = state.name;
+                option.textContent = state.name;
+                stateSelect.appendChild(option);
+            });
+        })
+        .catch((error) => console.error("Error loading states:", error));
+}
 
+function loadCities() {
+    citySelect.disabled = false;
+    citySelect.style.pointerEvents = "auto";
 
-document.addEventListener("DOMContentLoaded", function () {
-    const sectionStep1 = document.getElementById("step-2");
-    const nextButton = document.getElementById("next2");
+    const selectedCountryCode = countrySelect.options[countrySelect.selectedIndex].getAttribute('data-iso');
+    const selectedStateCode = stateSelect.options[stateSelect.selectedIndex].getAttribute('data-iso');
 
-    const inputs = sectionStep1.querySelectorAll("input[required], select[required]");
+    citySelect.innerHTML = '<option value="">Select City</option>';
 
-    function checkInputsValidity() {
-        let isValid = true;
+    fetch(
+        `${config.cUrl}/${selectedCountryCode}/states/${selectedStateCode}/cities`,
+        { headers: { "X-CSCAPI-KEY": config.ckey } }
+    )
+        .then((response) => response.json())
+        .then((data) => {
+            data.forEach((city) => {
+                const option = document.createElement("option");
+                option.setAttribute('data-iso', city.iso2);
+                option.value = city.name;
+                option.textContent = city.name;
+                citySelect.appendChild(option);
+            });
+        })
+        .catch((error) => console.error("Error loading cities:", error));
+}
 
-        inputs.forEach(input => {
-            if (!input.checkValidity()) {
-                isValid = false;
-            }
-        });
-
-        return isValid;
-    }
-
-    function handleInputChange() {
-        if (checkInputsValidity()) {
-            nextButton.removeAttribute("disabled");
-        } else {
-            nextButton.setAttribute("disabled", "disabled");
-        }
-    }
-
-    inputs.forEach(input => {
-        input.addEventListener("input", handleInputChange);
-    });
-
-    handleInputChange();
-});
-
-
-document.addEventListener("DOMContentLoaded", function () {
-    const sectionStep1 = document.getElementById("step-4");
-    const saveButton = document.getElementById("save");
-
-    const inputs = sectionStep1.querySelectorAll("input[required], select[required]");
-
-    function checkInputsValidity() {
-        let isValid = true;
-
-        inputs.forEach(input => {
-            if (!input.checkValidity()) {
-                isValid = false;
-            }
-        });
-
-        return isValid;
-    }
-
-    function handleInputChange() {
-        if (checkInputsValidity()) {
-            saveButton.removeAttribute("disabled");
-        } else {
-            saveButton.setAttribute("disabled", "disabled");
-        }
-    }
-
-    inputs.forEach(input => {
-        input.addEventListener("input", handleInputChange);
-    });
-
-    handleInputChange();
-});
+window.onload = loadCountries;

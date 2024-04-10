@@ -28,23 +28,8 @@ public class UserRegisterDto
     [Required(ErrorMessage = "City cannot be empty")]
     public string? City { get; set; }
 
-    [Required]
-    [Range(int.MinValue, int.MaxValue, ErrorMessage = "Postcode cannot be negative")]
-    public int PostCode { get; set; }
-
-    [Required(ErrorMessage = "Street cannot be empty")]
-    public string? Street { get; set; }
-
-    [Required(ErrorMessage = "District cannot be empty")]
-    public string? District { get; set; }
-
-    [Required]
-    [Range(double.MinValue, double.MaxValue, ErrorMessage = "Longitude cannot be negative")]
-    public double Longitude { get; set; }
-
-    [Required]
-    [Range(double.MinValue, double.MaxValue, ErrorMessage = "Latitude cannot be negative")]
-    public double Latitude { get; set; }
+    [Required(ErrorMessage = "State cannot be empty")]
+    public string? State { get; set; }
 
     [Required(ErrorMessage = "Description cannot be empty")]
     public string? Description { get; set; }
