@@ -1,8 +1,32 @@
-﻿@{
+﻿@model DateUserAndRecomendations
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center index">
-    <h1 class="display-4">Welcome to the TZT Date!</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section id="index1">
+    <h1>Welcome to TZT Date, <span>@Model.Me.UserName</span></h1>
+    @if (Model.Me.SearchingGender == Gender.Female)
+    {
+        <p>Top @Model.RecomendationUsers.Count() female recomendations for you!</p>
+    }
+    @if (Model.Me.SearchingGender == Gender.Male)
+    {
+        <p>Top @Model.RecomendationUsers.Count() male recomendations for you!</p>
+    }
+    <div>
+        @foreach (var user in @Model.RecomendationUsers)
+        {
+            <div>
+                @{
+                    string image = user.ProfilePicPaths[0];
+                }
+                <img
+                    src="~/Assets/@image">
+                <p>@user.UserName</p>
+                <i>@user.ZodiacSign</i>
+                <a href="/User/Details?id=@user.Id"><span class="material-symbols-outlined">info</span></a>
+            </div>
+        }
+    </div>
+</section>

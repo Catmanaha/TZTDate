@@ -37,7 +37,7 @@ header .navbar a {
 }
 
 header .navbar a:hover {
-    color: var(--main-color);
+    color: #ff4dc9;
 }
 
 header #menu-icon {

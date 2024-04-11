@@ -8,6 +8,7 @@ using TZTDate.Core.Data.DateUser;
 using TZTDate.Core.Data.FaceDetectionApi.Repositories;
 using TZTDate.Core.Data.DateUser.Enums;
 using TZTDate.Infrastructure.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TZTDate.Presentation.Controllers;
 
@@ -33,13 +34,15 @@ public class UserController : Controller
         this.faceDetectionRepository = faceDetectionRepository;
     }
 
+    [Authorize]
     public async Task<IActionResult> Logout()
     {
         await signInManager.SignOutAsync();
 
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction("Main", "Home");
     }
 
+    [HttpGet]
     public IActionResult Register()
     {
         return View();
@@ -66,7 +69,7 @@ public class UserController : Controller
             return View();
         }
 
-        return RedirectToAction("Login");
+        return RedirectToAction("Login", "User");
     }
 
     public IActionResult Login(string? ReturnUrl)
@@ -99,11 +102,10 @@ public class UserController : Controller
 
         if (userdto.ReturnUrl is null)
         {
-            return RedirectToAction("Profiles");
+            return RedirectToAction("Index", "Home");
         }
 
         return RedirectPermanent(userdto.ReturnUrl);
-
     }
 
     [HttpGet]
