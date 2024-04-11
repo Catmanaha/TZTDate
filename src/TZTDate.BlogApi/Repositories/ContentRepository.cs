@@ -19,4 +19,10 @@ public class ContentRepository : IContentRepository
 
         await blogDbContext.SaveChangesAsync();
     }
+
+    public async Task UpdateAsync(Content content)
+    {
+        blogDbContext.Contents.Update(content);
+        await blogDbContext.SaveChangesAsync();
+    }
 }

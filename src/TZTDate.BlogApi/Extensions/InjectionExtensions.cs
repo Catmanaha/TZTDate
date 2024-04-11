@@ -13,6 +13,7 @@ public static class InjectionExtensions
     {
         serviceCollection.AddScoped<ITokenService, TokenService>();
         serviceCollection.AddScoped<IArticleService, ArticleService>();
+        serviceCollection.AddScoped<IContentService, ContentService>();
 
         serviceCollection.AddScoped<IArticleRepository, ArticleRepository>();
         serviceCollection.AddScoped<IContentRepository, ContentRepository>();

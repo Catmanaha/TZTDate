@@ -1,9 +1,9 @@
 using TZTDate.BlogApi.Models;
 
-namespace TZTDate.BlogApi.Repositories.Base;
+namespace TZTDate.BlogApi.Services.Base;
 
-public interface IContentRepository
+public interface IContentService
 {
     public Task DeleteRangeAsync(IEnumerable<Content> contents);
     public Task UpdateAsync(Content content);
-}   
+}

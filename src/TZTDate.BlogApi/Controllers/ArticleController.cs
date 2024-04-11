@@ -43,9 +43,18 @@ public class ArticleController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Create([FromForm] ArticleDto articleDto)
+    public async Task<IActionResult> Create([FromForm] ArticleCreateDto articleDto)
     {
         await articleService.CreateAsync(articleDto);
+
+        return Ok();
+    }
+
+    [HttpPut]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Update([FromForm] ArticleUpdateDto articleDto)
+    {
+        await articleService.UpdateAsync(articleDto);
 
         return Ok();
     }

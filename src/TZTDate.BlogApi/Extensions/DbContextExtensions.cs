@@ -26,12 +26,5 @@ public static class DbContextExtensions
 
                 });
         });
-
-        serviceCollection.ConfigureApplicationCookie(o =>
-        {
-            o.AccessDeniedPath = "/User/AccessDenied";
-            o.LoginPath = "/User/Login";
-        });
-
     }
 }

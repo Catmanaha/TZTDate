@@ -16,9 +16,14 @@ public class ArticleService : IArticleService
         this.articleRepository = articleRepository;
     }
 
-    public async Task CreateAsync(ArticleDto articleDto)
+    public async Task CreateAsync(ArticleCreateDto articleDto)
     {
         var errors = new List<BadHttpRequestException>();
+
+        if (articleDto is null)
+        {
+            throw new BadHttpRequestException("Argument null", new NullReferenceException($"{nameof(articleDto)} cannot be null"));
+        }
 
         if (articleDto.Title is null)
         {
@@ -102,12 +107,57 @@ public class ArticleService : IArticleService
         return article;
     }
 
-    public async Task UpdateAsync(Article article)
+    public async Task UpdateAsync(ArticleUpdateDto articleDto)
     {
-        if (article is null)
+        var errors = new List<BadHttpRequestException>();
+
+        if (articleDto is null)
         {
-            throw new BadHttpRequestException("Argument null", new NullReferenceException($"{nameof(article)} cannot be null"));
+            throw new BadHttpRequestException("Argument null", new NullReferenceException($"{nameof(articleDto)} cannot be null"));
         }
+
+        if (articleDto.Id < 0)
+        {
+            throw new BadHttpRequestException($"{nameof(articleDto.Id)} cannot be negative");
+        }
+
+        if (articleDto.Title is null)
+        {
+            errors.Add(new BadHttpRequestException("Argument null", new NullReferenceException($"{nameof(articleDto.Title)} cannot be null")));
+        }
+
+        if (articleDto.HeadPic is null)
+        {
+            errors.Add(new BadHttpRequestException("Argument null", new NullReferenceException($"{nameof(articleDto.HeadPic)} cannot be null")));
+        }
+
+        if (articleDto.Contents is null)
+        {
+            errors.Add(new BadHttpRequestException("Argument null", new NullReferenceException($"{nameof(articleDto.Contents)} cannot be null")));
+        }
+
+        if (errors.Any())
+        {
+            throw new AggregateException(errors);
+        }
+
+        var fileExtension = new FileInfo(articleDto.HeadPic.FileName).Extension;
+
+        var filename = $"{Guid.NewGuid()}{fileExtension}";
+
+        var destinationAvatarPath = $"Assets/{filename}";
+
+        using var fileStream = File.Create(destinationAvatarPath);
+        await articleDto.HeadPic.CopyToAsync(fileStream);
+
+
+        var article = new Article
+        {
+            Id = articleDto.Id,
+            Contents = articleDto.Contents,
+            HeadPicPath = filename,
+            Title = articleDto.Title,
+        };
 
         await articleRepository.UpdateAsync(article);
     }

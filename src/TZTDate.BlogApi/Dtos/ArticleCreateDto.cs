@@ -2,7 +2,7 @@ using TZTDate.BlogApi.Models;
 
 namespace TZTDate.BlogApi.Dtos;
 
-public class ArticleDto
+public class ArticleCreateDto
 {
     public string? Title { get; set; }
     public IFormFile? HeadPic { get; set; }

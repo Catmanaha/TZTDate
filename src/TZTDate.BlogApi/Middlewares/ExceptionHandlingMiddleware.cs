@@ -11,12 +11,12 @@ public class ExceptionHandlingMiddleware : IMiddleware
         catch (BadHttpRequestException ex)
         {
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
-            await context.Response.WriteAsync($"Bad Request Error\n{ex.Message}\n{ex.InnerException?.Message}");
+            await context.Response.WriteAsync($"{ex.Message}\n{ex.InnerException?.Message}");
         }
         catch (Exception ex)
         {
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-            await context.Response.WriteAsync($"Internal Server Error\n{ex.Message}");
+            await context.Response.WriteAsync(ex.Message);
         }
     }
 }
