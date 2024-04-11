@@ -1,11 +1,14 @@
-@model User
+@inject UserManager<User> UserManager;
+@model User;
 
 @{
     ViewData["Title"] = $"{Model.UserName}'s Details";
+    var currentUser = await UserManager.GetUserAsync(User);
+    var zodiacCompability = currentUser?.CompatibilityByZodiacSign(Model);
 }
 
 <div class="details-img-div">
-    @foreach (var profilePicPath in @Model.ProfilePicPaths)
+    @foreach (var profilePicPath in @Model?.ProfilePicPaths)
     {
         <img src="~/Assets/@profilePicPath" alt="profile-pic"> 
     }
@@ -33,6 +36,17 @@
         <p>@Model.Description</p>
 
     </div>
+</div>
+
+<div>
+    <h1 class="custom-button">Zodiac sign compability</h1>
+    <h2 class="custom-button">@zodiacCompability?.Type</h2>
+    <div class="custom-button">@zodiacCompability?.Description</div>
+    <button class="custom-button">Compatibility calculator</button>
+</div>
+
+<div>
+    <button class="custom-button">Like</button>
 </div>
 
 <style>
@@ -105,5 +119,19 @@
 
     .details-divs b {
         font-size: 20px;
+    }
+
+    .custom-button {
+        padding: 10px 20px;
+        margin-top: 20px;
+        background-color: #346931;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .custom-button:hover {
+        background-color: #094206;
     }
 </style>
