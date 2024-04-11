@@ -1,8 +1,8 @@
-namespace TZTDate.Core.Data.DateUser.Enums;
+namespace TZTDate.Core.Data.DateUser.Zodiac.Enums;
 
 using System.Collections.Generic;
 
-public enum Zodiac
+public enum ZodiacDateType
 {
     Aries,
     Taurus,

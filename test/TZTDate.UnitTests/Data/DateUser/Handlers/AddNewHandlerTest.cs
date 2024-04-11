@@ -4,11 +4,11 @@ namespace TZTDate.UnitTests.Data.DateUser.Handlers;
 
 public class AddNewHandlerTest
 {
-    // [Fact]
-    // public async Task Handle_UserDtoNull_ThrowNullReferenceException()
-    // {
-    //     var handler = new AddNewHandler(null, null);
+    [Fact]
+    public async Task Handle_UserDtoNull_ThrowNullReferenceException()
+    {
+        var handler = new AddNewHandler(null, null);
 
-    //     await Assert.ThrowsAsync<NullReferenceException>(() => handler.Handle(null, new CancellationToken()));
-    // }
+        await Assert.ThrowsAsync<NullReferenceException>(() => handler.Handle(null, new CancellationToken()));
+    }
 }

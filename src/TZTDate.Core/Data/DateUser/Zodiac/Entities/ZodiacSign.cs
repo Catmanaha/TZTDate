@@ -1,46 +1,41 @@
 ﻿using Newtonsoft.Json;
-using TZTDate.Core.Data.DateUser.Enums;
+using TZTDate.Core.Data.DateUser.Zodiac.Enums;
+using TZTDate.Core.Data.DateUser.Zodiac.Entities;
 
-namespace TZTDate.Core.Data.DateUser.ZodiacEntities;
-
-public class RelationshipData
-{
-    public string? Type { get; set; }
-    public string? Description { get; set; }
-}
+namespace TZTDate.Core.Data.DateUser.Zodiac.Entities;
 
 public static class ZodiacSign
 {
-    public static Zodiac? GetZodiacSign(this User user)
+    public static ZodiacDateType? GetZodiacSign(this User user)
     {
         int day = user.BirthDateTime.Day;
         int month = user.BirthDateTime.Month;
         switch (month)
         {
             case 1:
-                return day <= 19 ? Zodiac.Capricorn : Zodiac.Aquarius;
+                return day <= 19 ? ZodiacDateType.Capricorn : ZodiacDateType.Aquarius;
             case 2:
-                return day <= 18 ? Zodiac.Aquarius : Zodiac.Pisces;
+                return day <= 18 ? ZodiacDateType.Aquarius : ZodiacDateType.Pisces;
             case 3:
-                return day <= 21 ? Zodiac.Pisces : Zodiac.Aries;
+                return day <= 21 ? ZodiacDateType.Pisces : ZodiacDateType.Aries;
             case 4:
-                return day <= 19 ? Zodiac.Aries : Zodiac.Taurus;
+                return day <= 19 ? ZodiacDateType.Aries : ZodiacDateType.Taurus;
             case 5:
-                return day <= 20 ? Zodiac.Taurus : Zodiac.Gemini;
+                return day <= 20 ? ZodiacDateType.Taurus : ZodiacDateType.Gemini;
             case 6:
-                return day <= 20 ? Zodiac.Gemini : Zodiac.Cancer;
+                return day <= 20 ? ZodiacDateType.Gemini : ZodiacDateType.Cancer;
             case 7:
-                return day <= 22 ? Zodiac.Cancer : Zodiac.Leo;
+                return day <= 22 ? ZodiacDateType.Cancer : ZodiacDateType.Leo;
             case 8:
-                return day <= 22 ? Zodiac.Leo : Zodiac.Virgo;
+                return day <= 22 ? ZodiacDateType.Leo : ZodiacDateType.Virgo;
             case 9:
-                return day <= 22 ? Zodiac.Virgo : Zodiac.Libra;
+                return day <= 22 ? ZodiacDateType.Virgo : ZodiacDateType.Libra;
             case 10:
-                return day <= 22 ? Zodiac.Libra : Zodiac.Scorpio;
+                return day <= 22 ? ZodiacDateType.Libra : ZodiacDateType.Scorpio;
             case 11:
-                return day <= 21 ? Zodiac.Scorpio : Zodiac.Sagittarius;
+                return day <= 21 ? ZodiacDateType.Scorpio : ZodiacDateType.Sagittarius;
             case 12:
-                return day <= 21 ? Zodiac.Sagittarius : Zodiac.Capricorn;
+                return day <= 21 ? ZodiacDateType.Sagittarius : ZodiacDateType.Capricorn;
             default:
                 return null;
         }
@@ -48,7 +43,7 @@ public static class ZodiacSign
 
     public static RelationshipData? CompatibilityByZodiacSign(this User currentUser, User userForCompare)
     {
-        string jsonFilePath = "../TZTDate.Core/Data/DateUser/ZodiacEntities/CompabilityZodiac.json";
+        string jsonFilePath = "../TZTDate.Core/Data/DateUser/Zodiac/Assets/CompabilityZodiac.json";
         string json = File.ReadAllText(jsonFilePath);
         var relationshipList = JsonConvert.DeserializeObject<List<RelationshipData>>(json);
         var zodiacSignDistance = currentUser.GetZodiacSign() - userForCompare.GetZodiacSign();
@@ -84,7 +79,7 @@ public static class ZodiacSign
             case 6:
             case -6:
                 return relationshipList?[6];
-            default: 
+            default:
                 return null;
         }
     }
