@@ -10,7 +10,7 @@
 <div class="details-img-div">
     @foreach (var profilePicPath in @Model?.ProfilePicPaths)
     {
-        <img src="~/Assets/@profilePicPath" alt="profile-pic"> 
+        <img src="~/Assets/@profilePicPath" alt="profile-pic">
     }
     @* <a href="/Chat/Chat?id=@Model.Id">Chat Now</a> *@
     <br>
@@ -30,23 +30,50 @@
     </div>
     <div class="looking-for">
         <label><b>I'm Looking For</b></label>
-        <p style="margin-top: 20px;"><strong>Searching For Ages Between: </strong>@Model.SearchingAgeStart and
-            @Model.SearchingAgeEnd</p>
+        <p style="margin-top: 20px;">
+            <strong>Searching For Ages Between: </strong>@Model.SearchingAgeStart and
+            @Model.SearchingAgeEnd
+        </p>
         <p><strong>Searching For: </strong> @Model.SearchingGender</p>
         <p>@Model.Description</p>
 
     </div>
 </div>
 
-<div>
-    <h1 class="custom-button">Zodiac sign compability</h1>
-    <h2 class="custom-button">@zodiacCompability?.Type</h2>
-    <div class="custom-button">@zodiacCompability?.Description</div>
-    <button class="custom-button">Compatibility calculator</button>
+<div class="zodiac-entities">
+    <h2>Zodiac sign compability</h2>
+    <h3><span class="zodiac-sign">@currentUser.GetZodiacSign()</span>   @zodiacCompability?.Type   <span class="zodiac-sign">@Model.GetZodiacSign()</span></h3>
+    <div>@zodiacCompability?.Description</div>
 </div>
 
-<div>
-    <button class="custom-button">Like</button>
+
+
+<div class="container-calc-like">
+    <div class="relationship-calc-entities" >
+        <h2 class="">Relationship calculator</h2>
+        <vc:RelationshipCalcComponent class="calc-result">
+            @await Component.InvokeAsync("RelationshipCalcComponent",
+            Model.UserName)
+        </vc:RelationshipCalcComponent>
+    </div>
+
+    <div>
+        <button type="button" class="like-button">Like</button>
+        <script>
+            const likeButton = document.querySelector('.like-button');
+            likeButton.addEventListener('click', () => {
+                const isLiked = likeButton.dataset.liked === 'true';
+                likeButton.dataset.liked = isLiked ? 'false' : 'true';
+                if (isLiked) {
+                    likeButton.classList.remove('liked');
+                    likeButton.textContent = 'Like';
+                } else {
+                    likeButton.classList.add('liked');
+                    likeButton.textContent = 'Unlike';
+                }
+            });
+        </script>
+    </div>
 </div>
 
 <style>
@@ -55,7 +82,9 @@
         flex-wrap: wrap;
         justify-content: space-between;
         padding: 20px;
+        user-select: none;
     }
+
     .details-img-div a {
         margin-bottom: 30px;
         margin-top: 18px;
@@ -65,11 +94,13 @@
         width: 400px;
         padding: 5px 15px;
         border-radius: 10px;
+        user-select: none;
     }
 
     .details-img-div a:hover {
         transition: 0.4s ease;
         background-color: #094206;
+        user-select: none;
     }
 
     .details-img-div img {
@@ -79,12 +110,14 @@
         object-fit: contain;
         border: 2px solid #ddd;
         border-radius: 5px;
+        user-select: none;
     }
 
     .details-divs {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+        user-select: none;
     }
 
     .interests {
@@ -95,6 +128,7 @@
         padding: 50px;
         text-align: center;
         width: 400px;
+        user-select: none;
     }
 
     .looking-for {
@@ -105,6 +139,7 @@
         padding: 50px;
         text-align: center;
         width: 400px;
+        user-select: none;
     }
 
     .about-me {
@@ -115,23 +150,100 @@
         padding: 50px;
         text-align: center;
         width: 400px;
+        user-select: none;
     }
 
     .details-divs b {
         font-size: 20px;
+        user-select: none;
     }
 
-    .custom-button {
-        padding: 10px 20px;
+    .zodiac-entities {
+        margin-left: 15%;
         margin-top: 20px;
-        background-color: #346931;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
+        margin-bottom: 20px;
+        background-color: #4CAF50; 
+        color: white; 
+        padding: 10px; 
+        border: none; 
+        text-align: center;
+        display: inline-block;
+        font-size: 16px; 
+        cursor: pointer; 
+        width: 100%; 
+        max-width: 70%;
+        user-select: none;
+        border-radius: 10px; 
     }
 
-    .custom-button:hover {
-        background-color: #094206;
+    
+
+    .zodiac-entities:hover {
+        background-color: #45a049;
+    }
+
+    .zodiac-entities h2, .zodiac-entities h3 {
+        margin: 0; 
+    }
+
+    .relationship-calc-entities {
+        margin-left: 35%;
+        margin-bottom: 20px;
+        background-color: #4CAF50; 
+        color: white; 
+        padding: 10px; 
+        border: none; 
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px; 
+        cursor: pointer; 
+        width: 100%; 
+        max-width: 30%;
+        pointer-events: none;
+        border-radius: 10px; 
+        user-select: none;
+    }
+
+    .calc-result {
+        font-size: xx-large;
+        color: yellow;
+    }
+
+    .like-button {
+          /* General button styles */
+        display: inline-block; /* Allow text to wrap around the button */
+        padding: 10px 20px; /* Add padding for content */
+        border: none; /* Remove default border */
+        border-radius: 50px; /* Create a rounded shape */
+        cursor: pointer; /* Indicate clickable action */
+        transition: background-color 0.3s ease; /* Smooth transition on hover */
+        margin: 50%;
+
+        /* Default (unliked) state */
+        background-color: #17e41b; /* Light gray background */
+        color: #333; /* Dark gray text */
+
+        /* Liked state */
+        &.liked {
+            background-color: #ff4d4d; /* Red background on like */
+            color: #fff; /* White text on like */
+        }
+
+        /* Hover effect */
+        &:hover {
+            background-color: #cfcfcf; /* Slightly darker background on hover */
+        }
+    }
+
+    .container-calc-like {
+        display: flex;
+    }
+
+    .zodiac-sign {
+        font-weight: 900;
+        text-shadow: 4px 4px 8px rgba(255, 0, 0, 0.7);
+        font-style: italic;
+        color: red;
     }
 </style>

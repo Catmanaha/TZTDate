@@ -4,5 +4,5 @@ namespace TZTDate.Core.Data.LoveCalculator.Repositories;
 
 public interface ILoveCalculatorRepository
 {
-    public Task<LoveCalculatorModel> GetLovePercentage(string fname, string sname);
+    public Task<LoveCalculatorModel> GetLovePercentage(string fname, string? sname = "");
 }

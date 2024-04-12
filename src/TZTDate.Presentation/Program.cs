@@ -6,6 +6,7 @@ using TZTDate.Core.Data.DateUser.Enums;
 using TZTDate.Infrastructure.Extensions;
 using TZTDate.Core.Data.DateApi.Managers;
 using TZTDate.Core.Data.FaceDetectionApi.Managers;
+using TZTDate.Presentation.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,8 @@ builder.Services.InitMediatR();
 builder.Services.InitSignalR();
 builder.Services.InitResponse();
 builder.Services.InitDbContext(builder.Configuration, Assembly.GetExecutingAssembly());
+
+builder.Services.AddScoped<RelationshipCalcComponent>();
 
 var app = builder.Build();
 
