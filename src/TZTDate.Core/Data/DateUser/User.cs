@@ -1,7 +1,7 @@
+namespace TZTDate.Core.Data.DateUser;
+
 using Microsoft.AspNetCore.Identity;
 using TZTDate.Core.Data.DateUser.Enums;
-
-namespace TZTDate.Core.Data.DateUser;
 
 public class User : IdentityUser
 {
@@ -66,4 +66,6 @@ public class User : IdentityUser
     public int SearchingAgeStart { get; set; }
     public int SearchingAgeEnd { get; set; }
     public string? Interests { get; set; }
+
+    //public IEnumerable<User>? LikedPersons { get; set; }
 }

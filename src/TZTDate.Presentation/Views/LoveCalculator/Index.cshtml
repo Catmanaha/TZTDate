@@ -8,16 +8,16 @@
 
 <h1>Love Calculator</h1>
 
-<form asp-action="Index" method="post">
+<form asp-action="Index" asp-controller="LoveCalculator" method="post">
     <div class="text-danger" asp-validation-summary="All"></div>
 
     <div class="form-group">
         <label asp-for="@fname">First Name</label>
-        <input asp-for="@fname" type="text" class="form-control">
+        <input asp-for="@fname" type="text" class="form-control" value=@Model.fname>
     </div>
     <div class="form-group">
         <label asp-for="@sname">Second Name</label>
-        <input asp-for="@sname" type="text" class="form-control">
+        <input asp-for="@sname" type="text" class="form-control" value=@Model.sname>
     </div>
     <br>
     <button type="submit" class="btn btn-primary">Check</button>
