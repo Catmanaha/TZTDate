@@ -31,8 +31,8 @@ public class HomeController : Controller
         users = users.Where(u => u.Age >= me.SearchingAgeStart).ToList();
         users = users.Where(u => u.Age <= me.SearchingAgeEnd).ToList();
         users = users.Where(u => u.Gender == me.SearchingGender).ToList();
-        users = users.Where(u => u.Address.Country == me.Address.Country);
-        users = users.Where(u => u.Address.City == me.Address.City);
+        users = users.Where(u => u.Address?.Country == me.Address?.Country);
+        users = users.Where(u => u.Address?.City == me.Address?.City);
         string[] interestsArray = me.Interests.Split(' ', StringSplitOptions.RemoveEmptyEntries);
         users = users.Where(u => u.Interests != null && u.Interests.Split(' ', StringSplitOptions.RemoveEmptyEntries).Intersect(interestsArray).Any()).ToList();
 

@@ -4,22 +4,30 @@
     string ReturnUrl = ViewData["ReturnUrl"] as string;
 }
 
-<h1>Login</h1>
+<img class="login-img"
+    src="https://media.istockphoto.com/id/1160835219/photo/wedding-rings-on-the-white-sand-in-the-background-the-newlyweds-and-the-ocean.jpg?s=612x612&w=0&k=20&c=PAwOeB3Kqu2mXPZJh5b7B_NmFsoJ57KZNh4qEIv8wGE=">
 
-<span class="text-danger">@ViewData["Error"]</span>
-
-<form asp-action="Login" method="post">
-    <div class="text-danger" asp-validation-summary="All"></div>
-
-    <input hidden asp-for="@ReturnUrl" type="text">
-    <div class="form-group">
-        <label asp-for="@email">Email</label>
-        <input asp-for="@email" type="email" class="form-control">
+<div class="login-div">
+    <div class="ring">
+        <i style="--clr:#00ff0a;"></i>
+        <i style="--clr:#ff0057;"></i>
+        <i style="--clr:#fffd44;"></i>
+        <form class="login" asp-action="Login" method="post">
+            <h2>Login</h2>
+            <span class="text-danger">@ViewData["Error"]</span>
+            <div class="text-danger" asp-validation-summary="All"></div>
+            <div class="inputBx">
+                <input asp-for="@email" type="email" class="form-control" placeholder="Email">
+            </div>
+            <div class="inputBx">
+                <input asp-for="@password" type="password" class="form-control" placeholder="Password">
+            </div>
+            <div class="inputBx">
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+            <div class="inputBx">
+                <span>Have not account? <a href="/User/Register">Register</a></span>
+            </div>
+        </form>
     </div>
-    <div class="form-group">
-        <label asp-for="@password">Password</label>
-        <input asp-for="@password" type="password" class="form-control">
-    </div>
-    <br>
-    <button type="submit" class="btn btn-primary">Login</button>
-</form>
+</div>

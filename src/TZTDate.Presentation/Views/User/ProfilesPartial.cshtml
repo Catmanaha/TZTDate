@@ -1,0 +1,11 @@
+@model IEnumerable<User>
+
+@foreach (var profile in Model)
+{
+    <div class="profile">
+        <div>
+            <a href="/User/Details?id=@profile.Id"><img src="~/Assets/@profile.ProfilePicPaths.FirstOrDefault()"></a>
+            <p>@profile.UserName, @profile.Age</p>
+        </div>
+    </div>
+}
