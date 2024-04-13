@@ -7,32 +7,32 @@
     string startAge = ViewData["SearchingStartAge"].ToString();
     string endAge = ViewData["SearchingEndAge"].ToString();
     string interests = default;
-    Gender searchGender = ViewData["SearchingGender"] == "Male" ? Gender.Male : Gender.Female;
-
+    Gender searchGender = ViewData["SearchingGender"].ToString() == "Male" ? Gender.Male : Gender.Female;
     bool isChecked = false;
 }
 
 <form class="search-form">
     <label class="search-input-label">
         Searching username
-        <input type="text" name="searchByName" placeholder="Username" asp-for="@searchByName">
+        <input class="searchByName" type="text" name="searchByName" placeholder="Username" asp-for="@searchByName">
     </label>
     <label class="search-input-label">
         Searching start age
-        <input type="number" name="startAge" placeholder="Start Age" asp-for="@startAge">
+        <input class="startAge" type="number" name="startAge" placeholder="Start Age" asp-for="@startAge">
     </label>
     <label class="search-input-label">
         Searching end age
-        <input type="number" name="endAge" placeholder="End Age" asp-for="@endAge">
+        <input class="endAge" type="number" name="endAge" placeholder="End Age" asp-for="@endAge">
     </label>
     <label class="search-input-label">
         Searching Gender
-        <select name="searchGender" asp-for="@searchGender" asp-items="Html.GetEnumSelectList<Gender>()"></select>
+        <select class="gender" name="searchGender" asp-for="@searchGender"
+            asp-items="Html.GetEnumSelectList<Gender>()">@searchGender</select>
     </label>
-    <input type="text" name="interests" id="interest" asp-for="@interests" hidden>
+    <input class="interests" type="text" name="interests" id="interests" asp-for="@interests">
     <div>
-        <h1>Searching Interests</h1
-        <label>Sport<input type="checkbox" name="interest" value="sport"></label>
+        <h1 style="font-size: 20px; margin-top: 20px;">Searching Interests</h1 <label>Sport<input type="checkbox"
+            name="interest" value="sport"></label>
         <label>Games<input type="checkbox" name="interest" value="games"></label>
         <label>Traveling<input type="checkbox" name="interest" value="traveling"></label>
         <label>Reading<input type="checkbox" name="interest" value="reading"></label>
@@ -56,13 +56,54 @@
         <label>Calligraphy<input type="checkbox" name="interest" value="calligraphy"></label>
     </div>
 
-    <button type="submit"><span class="material-symbols-outlined">search</span></button>
+    <button id="search" type="submit"><span class="material-symbols-outlined">search</span></button>
 </form>
 
+@* <div class="profiles-header">
+    <input name="searchByUsername" type="text" placeholder="Search by username">
+    <div>
+        <button class="search"><span class="material-symbols-outlined">search</span></button>
+        <p class="p-search">Search</p>
+    </div>
+    <div>
+        <button class="expand-content"><span class="material-symbols-outlined">expand_content</span></button>
+        <p class="p-show-more">Show more options</p>
+    </div>
+</div> *@
+@* 
+<form class="search-form">
+    <div class="div1">
+        <h2>Search for your matches</h2>
+        <button>Set Default</button>
+    </div>
+    <div class="div2">
+        <label>I am looking for a </label>
+        <select class="gender" name="searchGender" asp-for="@searchGender"
+            asp-items="Html.GetEnumSelectList<Gender>()">@searchGender</select>
+        <label>Ages</label>
+        <input class="startAge" type="number" name="startAge" placeholder="Start Age" asp-for="@startAge">
+        <span class="separator text-wrapper">—</span>
+        <input class="endAge" type="number" name="endAge" placeholder="End Age" asp-for="@endAge">
+    </div>
+</form> *@
+
 <script>
+    document.querySelector('.search').addEventListener("mouseover", function () {
+        document.querySelector('.profiles-header .p-search').style.display = 'block';
+    });
+    document.querySelector('.search').addEventListener("mouseout", function () {
+        document.querySelector('.profiles-header .p-search').style.display = 'none';
+    });
+    document.querySelector('.expand-content').addEventListener("mouseover", function () {
+        document.querySelector('.profiles-header .p-show-more').style.display = 'block';
+    });
+    document.querySelector('.expand-content').addEventListener("mouseout", function () {
+        document.querySelector('.profiles-header .p-show-more').style.display = 'none';
+    });
+
     var checkboxes = document.querySelectorAll('input[type="checkbox"][name="interest"]');
 
-    var interest = document.getElementById('interest');
+    var interest = document.getElementById('interests');
 
     checkboxes.forEach(function (checkbox) {
         checkbox.addEventListener('change', function () {
@@ -70,12 +111,13 @@
                 interest.value += checkbox.value + ' ';
             } else {
                 var valueToRemove = checkbox.value + ' ';
-                interest.value = interest.value.replace(valueToRemove, '');;
+                interest.value = interest.value.replace(valueToRemove, '');
             }
         });
     });
 
     window.onload = document.getElementById("interest").value = '';
+
 </script>
 
 @if (!Model.Any() || Model is null)
@@ -85,114 +127,52 @@
 else
 {
     <div class="profiles" id="profiles">
-        @foreach (var profile in Model)
-        {
-            <div class="profile">
-                <div>
-                    <a href="/User/Details?id=@profile.Id"><img src="~/Assets/@profile.ProfilePicPaths.FirstOrDefault()"></a>
-                    <p>@profile.UserName, @profile.Age</p>
-                </div>
-            </div>
-        }
+        @Html.Partial("ProfilesPartial", Model)
     </div>
 }
 
-<style>
-    h1 {
-        font-size: 20px;
-        margin-top: 20px
-    }
+@section scripts {
+    <script>
+        var isLoading = false;
+        var skip = 12;
 
-    .search-input-label {
-        padding: 10px;
-        background-color: #f1f1f1;
-        border-radius: 5px;
-    }
+        $(document).ready(function () {
+            $(window).scroll(function () {
+                if ($(window).scrollTop() + $(window).height() + 600 >= $(document).height() && !isLoading) {
+                    loadMoreUsers();
+                }
+            });
+        });
 
-    .search-form {
-        margin-bottom: 70px;
-    }
-
-    .search-form label {
-        margin: 10px 30px 10px 0;
-    }
-
-    .search-form input {
-        padding: 8px 15px;
-        border-radius: 4px;
-        color: #000;
-        border: 0.5px solid #000;
-    }
-
-    .search-form select {
-        padding: 8px 15px;
-        border-radius: 4px;
-        color: #000;
-        border: 0.5px solid #000;
-    }
-
-    input[type="checkbox"][name="interest"] {
-        width: 20px;
-        height: 20px;
-        margin: 10px 10px 10px 10px;
-        cursor: pointer;
-    }
-
-    .search-form button {
-        padding: 5px 0 0 0;
-        height: 40px;
-        width: 200px;
-        position: absolute;
-        margin-top: 10px;
-        border-radius: 3px;
-        color: #fff;
-        background-color: #003cff;
-        border: none;
-    }
-
-    .search-form button:hover {
-        background-color: #0034df;
-        transition: 0.4s ease;
-    }
-
-    .profiles {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 20px;
-    }
-
-    .profile {
-        display: flex;
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .profile div {
-        width: 250px;
-        height: auto;
-        border-radius: 10px;
-        background-color: #f2f2f2;
-    }
-
-    .profile img {
-        border-radius: 10px 10px 0px 0px;
-        width: 250px;
-        height: 200px;
-        border: 0.1px solid #000;
-    }
-
-    .profile img:hover {
-        opacity: 0.8;
-        transition: 0.2s ease;
-    }
-
-    .profile p {
-        padding: 15px 15px 0px 15px;
-        font-weight: bold;
-        font-size: 18px;
-    }
-
-    .profile span {
-        padding: 15px;
-    }
-</style>
+        function loadMoreUsers() {
+            let gender = "";
+            if (document.querySelector('.gender').value === '0') {
+                gender = '0';
+            } else {
+                gender = '1';
+            }
+            isLoading = true;
+            $.ajax({
+                url: "/User/LoadMoreProfiles",
+                data: {
+                    skip: skip,
+                    searchByName: document.querySelector('.searchByName').value,
+                    startAge: document.querySelector('.startAge').value,
+                    endAge: document.querySelector('.endAge').value,
+                    interests: document.querySelector('.interests').value,
+                    searchGender: gender
+                },
+                dataType: "html",
+                success: function (data) {
+                    $("#profiles").append(data);
+                    skip += 12;
+                    isLoading = false;
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.error("Failed to load more users:", errorThrown);
+                    isLoading = false;
+                }
+            });
+        }
+    </script>
+}
