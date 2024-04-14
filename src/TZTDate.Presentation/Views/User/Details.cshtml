@@ -6,6 +6,16 @@
     var currentUser = await UserManager.GetUserAsync(User);
     var zodiacCompability = currentUser?.CompatibilityByZodiacSign(Model);
     var likeButtonState = currentUser.FollowedId.Contains(Model.Id);
+    bool repricateMembership;
+    if(Model.FollowedId is not null && currentUser.FollowedId is not null)
+    {
+        repricateMembership = currentUser.FollowedId.Contains(Model.Id) && Model.FollowedId.Contains(currentUser.Id);
+    }
+    else
+    {
+        repricateMembership = false;
+    }
+    
 }
 <div class="details-img-div">
     @foreach (var profilePicPath in @Model?.ProfilePicPaths)
@@ -63,6 +73,12 @@
             <input type="hidden" name="userToActionId" value="@Model.Id" />
             <button id="like-button" type="submit" class="like-button @(likeButtonState ? "liked" : "")">
                 @(likeButtonState ? "Unlike" : "Like")
+            </button>
+        </form>
+        <form id="" asp-controller="" asp-action="" method="">
+            <input type="hidden" name="" value="" />
+            <button @(repricateMembership ? "" : "hidden") id="chat-button" type="submit" class="chat-button">
+                Chat
             </button>
         </form>
     </div>
@@ -232,40 +248,37 @@
         color: yellow;
     }
 
-    .like-button {
-        /* General button styles */
+    .chat-button {
         display: inline-block;
-        /* Allow text to wrap around the button */
         padding: 10px 20px;
-        /* Add padding for content */
         border: none;
-        /* Remove default border */
         border-radius: 50px;
-        /* Create a rounded shape */
         cursor: pointer;
-        /* Indicate clickable action */
         transition: background-color 0.3s ease;
-        /* Smooth transition on hover */
         margin: 50%;
-
-        /* Default (unliked) state */
         background-color: #17e41b;
-        /* Light gray background */
         color: #333;
-        /* Dark gray text */
-
-        /* Liked state */
-        &.liked {
-            background-color: #ff4d4d;
-            /* Red background on like */
-            color: #fff;
-            /* White text on like */
-        }
-
-        /* Hover effect */
         &:hover {
             background-color: #cfcfcf;
-            /* Slightly darker background on hover */
+        }
+    }
+
+    .like-button {
+        display: inline-block;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin: 50%;
+        background-color: #17e41b;
+        color: #333;
+        &.liked {
+            background-color: #ff4d4d;
+            color: #fff;
+        }
+        &:hover {
+            background-color: #cfcfcf;
         }
     }
 
