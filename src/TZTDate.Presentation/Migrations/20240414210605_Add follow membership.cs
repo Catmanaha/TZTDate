@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TZTDate.Presentation.Migrations
 {
     /// <inheritdoc />
-    public partial class Addfollowersmigration : Migration
+    public partial class Addfollowmembership : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -22,12 +22,6 @@ namespace TZTDate.Presentation.Migrations
                 table: "AspNetUsers",
                 type: "text[]",
                 nullable: true);
-
-            migrationBuilder.AddColumn<List<string>>(
-                name: "FriendsId",
-                table: "AspNetUsers",
-                type: "text[]",
-                nullable: true);
         }
 
         /// <inheritdoc />
@@ -39,10 +33,6 @@ namespace TZTDate.Presentation.Migrations
 
             migrationBuilder.DropColumn(
                 name: "FollowersId",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "FriendsId",
                 table: "AspNetUsers");
         }
     }

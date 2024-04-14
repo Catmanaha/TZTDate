@@ -1,5 +1,6 @@
 using MediatR;
 using System.Linq;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using TZTDate.Core.Data.DateUser;
 using TZTDate.Infrastructure.Data;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using TZTBank.Infrastructure.Data.DateUser.Commands;
 using TZTDate.Core.Data.FaceDetectionApi.Repositories;
 using TZTDate.Core.Data.DateUser.FollowMembersViewModel;
+using TZTDate.Infrastructure.Data.DateUser.Commands;
 
 namespace TZTDate.Presentation.Controllers;
 
@@ -216,19 +218,29 @@ public class UserController : Controller
     }
 
     [HttpGet]
-    [Route("/followers")]
-    public async Task<IActionResult> Followers()
+    public async Task<IActionResult> Members()
     {
         var currentUser = await userManager.GetUserAsync(User);
         var followers = context.Users.Where(user => currentUser.FollowersId.Contains(user.Id)).ToList();
         var followeds = context.Users.Where(user => currentUser.FollowedId.Contains(user.Id)).ToList();
-        var friends = context.Users.Where(user => currentUser.FriendsId.Contains(user.Id)).ToList();
         var followerMemberList = new FollowMembersViewModel
         {
             Followed = followeds,
-            Followers = followers,
-            Friends = friends
+            Followers = followers
         };
         return View(model: followerMemberList);
+    }
+
+    [HttpPost]
+    public async Task MembershipAction ([FromForm] string userToActionId)
+    {
+        var currentUserId = (await userManager.GetUserAsync(User))?.Id;
+        var followActionCommand = new FollowActionCommand { 
+#pragma warning disable CS8601 // Possible null reference assignment.
+            currentUserId = currentUserId ,
+#pragma warning restore CS8601 // Possible null reference assignment.
+            userToActionId = userToActionId
+        };
+        await sender.Send(followActionCommand);
     }
 }

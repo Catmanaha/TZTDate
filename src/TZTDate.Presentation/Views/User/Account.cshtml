@@ -77,11 +77,9 @@ ViewData["Title"] = "Account";
         </div>
         }
     </div>
-
 </div>
 
-<!-- <button class="followers-list-button">Followers</button> -->
-
+<a type="button" class="followers-list-button" asp-controller="User" asp-action="Members">Members</a>
 
 <script>
     const editButtons = document.querySelectorAll('.edit-button');
@@ -108,18 +106,6 @@ ViewData["Title"] = "Account";
     });
 </script>
 
-
-
-
-
-
-@* <div class="text-danger" asp-validation-summary="All"></div>
-<form enctype="multipart/form-data" asp-action="UploadAvatar" asp-controller="User" method="post" class="account-form">
-    <img src="~/Assets/@Model.ProfilePicPath" alt="profile img">
-    <input type="file" name="file" id="file">
-    <button>Save Changes</button>
-</form> *@
-
 <style>
     .account-container {
         display: flex;
@@ -131,12 +117,10 @@ ViewData["Title"] = "Account";
     .imageGrid {
         width: 40%;
         float: right;
-        /* Сдвигаем контейнер с изображениями вправо */
     }
 
     .person-info-grid {
         width: 55%;
-        /* Увеличили ширину контейнера с информацией, чтобы соблюсти 5% отступ */
     }
 
     .form-prop {
@@ -152,7 +136,6 @@ ViewData["Title"] = "Account";
         border-radius: 10px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         width: 95%;
-        /* Задаем тень */
     }
 
     label {
@@ -185,13 +168,10 @@ ViewData["Title"] = "Account";
 
     .button-container button {
         max-width: 100%;
-        /* Добавляем отступ между кнопками */
         padding: 8px 12px;
-        /* Размеры кнопок */
         border: none;
         border-radius: 5px;
         background-color: #4CAF50;
-        /* Цвет кнопок */
         color: white;
         cursor: pointer;
         border-radius: 10px;
@@ -200,15 +180,12 @@ ViewData["Title"] = "Account";
 
     .button-container button:hover {
         background-color: #45a049;
-
         &.clicked {
             margin-top: 0px;
             display: block;
             pointer-events: all;
             background-color: rgb(240, 50, 50);
         }
-
-        /* Цвет кнопок при наведении */
     }
 
     .save-button {
@@ -230,5 +207,25 @@ ViewData["Title"] = "Account";
             pointer-events: all;
             background-color: red;
         }
+    }
+
+    .followers-list-button {
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        background: linear-gradient(to right, #ff4b1f, #ff9068);
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .followers-list-button:hover {
+        background-color: #ff6347;
     }
 </style>

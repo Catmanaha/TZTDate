@@ -6,7 +6,7 @@
     var emptyList = new List<User>();
 }
 
-@if (!Model.Followers.Any() && !Model.Followed.Any() && !Model.Friends.Any())
+@if (!Model.Followers.Any() && !Model.Followed.Any())
 {
     <div class="empty-container">Empty</div>
 }
@@ -44,22 +44,6 @@ else
             </div>
         </div>
     }
-    @foreach (var member in Model.Friends ?? emptyList)
-    {
-        <div class="member-container">
-            <div class="member-image-container">
-                <img src="~/Assets/@member?.ProfilePicPaths?[0]" alt="profile-pic">
-            </div>
-            <div class="member-name-container">
-                <span>@member?.UserName</span>
-            </div>
-            <div class="button-container">
-                <button hidden class="like-button">Like</button>
-                <button class="unlike-button">Unlike</button>
-                <button class="chat-button">Chat</button>
-            </div>
-        </div>
-    }
 }
 
 <style>
@@ -76,7 +60,6 @@ else
         font-size: 18px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         z-index: 1000;
-        /* Убедитесь, что z-index выше, чем у футера */
     }
 
     footer {

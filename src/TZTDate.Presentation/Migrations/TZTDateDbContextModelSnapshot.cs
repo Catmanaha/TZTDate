@@ -214,9 +214,6 @@ namespace TZTDate.Presentation.Migrations
                     b.Property<List<string>>("FollowersId")
                         .HasColumnType("text[]");
 
-                    b.Property<List<string>>("FriendsId")
-                        .HasColumnType("text[]");
-
                     b.Property<int>("Gender")
                         .HasColumnType("integer");
 

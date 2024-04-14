@@ -30,5 +30,4 @@ public class User : IdentityUser
 
     public List<string>? FollowersId { get; set; }
     public List<string>? FollowedId { get; set; }
-    public List<string>? FriendsId { get; set; }
 }

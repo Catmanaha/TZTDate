@@ -13,8 +13,8 @@ using TZTDate.Infrastructure.Data;
 namespace TZTDate.Presentation.Migrations
 {
     [DbContext(typeof(TZTDateDbContext))]
-    [Migration("20240414122658_Add followers migration")]
-    partial class Addfollowersmigration
+    [Migration("20240414210605_Add follow membership")]
+    partial class Addfollowmembership
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -215,9 +215,6 @@ namespace TZTDate.Presentation.Migrations
                         .HasColumnType("text[]");
 
                     b.Property<List<string>>("FollowersId")
-                        .HasColumnType("text[]");
-
-                    b.Property<List<string>>("FriendsId")
                         .HasColumnType("text[]");
 
                     b.Property<int>("Gender")
