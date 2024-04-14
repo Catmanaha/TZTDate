@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TZTDate.Infrastructure.Data;
@@ -12,9 +13,11 @@ using TZTDate.Infrastructure.Data;
 namespace TZTDate.Presentation.Migrations
 {
     [DbContext(typeof(TZTDateDbContext))]
-    partial class TZTDateDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240414122658_Add followers migration")]
+    partial class Addfollowersmigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

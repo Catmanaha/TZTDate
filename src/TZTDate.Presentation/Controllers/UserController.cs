@@ -1,14 +1,16 @@
 using MediatR;
-using Microsoft.AspNetCore.Identity;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using TZTDate.Core.Data.DateUser;
+using TZTDate.Infrastructure.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TZTBank.Core.Data.DateUser.Dtos;
-using TZTBank.Infrastructure.Data.DateUser.Commands;
-using TZTDate.Core.Data.DateUser;
-using TZTDate.Core.Data.FaceDetectionApi.Repositories;
 using TZTDate.Core.Data.DateUser.Enums;
-using TZTDate.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
+using TZTBank.Infrastructure.Data.DateUser.Commands;
+using TZTDate.Core.Data.FaceDetectionApi.Repositories;
+using TZTDate.Core.Data.DateUser.FollowMembersViewModel;
 
 namespace TZTDate.Presentation.Controllers;
 
@@ -202,5 +204,31 @@ public class UserController : Controller
         var user = await context.Users.FirstOrDefaultAsync(user => user.Id == id);
 
         return View(user);
+    }
+
+    [HttpGet]
+    [Route("/id")]
+    public async Task<IActionResult> Id(string id)
+    {
+        var currentUser = await userManager.GetUserAsync(User);
+
+        return Content(currentUser.Id);
+    }
+
+    [HttpGet]
+    [Route("/followers")]
+    public async Task<IActionResult> Followers()
+    {
+        var currentUser = await userManager.GetUserAsync(User);
+        var followers = context.Users.Where(user => currentUser.FollowersId.Contains(user.Id)).ToList();
+        var followeds = context.Users.Where(user => currentUser.FollowedId.Contains(user.Id)).ToList();
+        var friends = context.Users.Where(user => currentUser.FriendsId.Contains(user.Id)).ToList();
+        var followerMemberList = new FollowMembersViewModel
+        {
+            Followed = followeds,
+            Followers = followers,
+            Friends = friends
+        };
+        return View(model: followerMemberList);
     }
 }

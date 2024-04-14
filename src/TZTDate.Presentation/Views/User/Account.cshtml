@@ -80,7 +80,7 @@ ViewData["Title"] = "Account";
 
 </div>
 
-<button class="followers-list-button">Followers</button>
+<!-- <button class="followers-list-button">Followers</button> -->
 
 
 <script>
@@ -99,7 +99,7 @@ ViewData["Title"] = "Account";
                 inputField.setAttribute('disabled', 'disabled');
             } else {
                 inputField.dataset.originalValue = inputField.value;
-                editButton.textContent = 'Reject';
+                editButton.textContent = 'Cancel';
                 editButton.classList.add('clicked');
                 saveButton.classList.add('visible');
                 inputField.removeAttribute('disabled');
@@ -159,7 +159,7 @@ ViewData["Title"] = "Account";
         display: block;
         font-weight: bold;
         margin-bottom: 5px;
-        margin-left: 5px;
+        margin-left: 10px;
     }
 
     input[type="text"] {
@@ -184,7 +184,7 @@ ViewData["Title"] = "Account";
     }
 
     .button-container button {
-        width: 80%;
+        max-width: 100%;
         /* Добавляем отступ между кнопками */
         padding: 8px 12px;
         /* Размеры кнопок */
