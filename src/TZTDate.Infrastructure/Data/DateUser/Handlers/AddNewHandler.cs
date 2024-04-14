@@ -31,7 +31,6 @@ public class AddNewHandler : IRequestHandler<AddNewCommand>
         if ((await userManager.FindByEmailAsync(request.UserRegisterDto.Email)) is not null)
         {
             throw new NullReferenceException($"{request.UserRegisterDto.Email} already exists");
-
         }
 
         var address = new Address
