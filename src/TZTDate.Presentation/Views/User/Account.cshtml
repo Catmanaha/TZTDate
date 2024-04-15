@@ -1,82 +1,232 @@
 @model User
 
 @{
-    ViewData["Title"] = "Account";
+ViewData["Title"] = "Account";
 }
 
-<div>
-    <div class="form-group">
-        <label asp-for="@Model.UserName">Username</label>
-        <input disabled asp-for="@Model.UserName" type="text" class="form-control">
-    </div>
-    <div class="form-group">
-        <label asp-for="@Model.Email">Email</label>
-        <input disabled asp-for="@Model.Email" type="text" class="form-control">
-    </div>
-    <div class="form-group">
-        <label asp-for="@Model.Age">Age</label>
-        <input disabled asp-for="@Model.Age" type="text" class="form-control">
-    </div>
-</div>
+<div class="account-container">
 
-<div>
-    <div class="form-group">
-        <label asp-for="@Model.Address.Country">Country</label>
-        <input disabled asp-for="@Model.Address.Country" type="text" class="form-control">
+    <div class="person-info-grid">
+        <div class="form-prop">
+            <div class="form-group">
+                <label asp-for="@Model.UserName">Username</label>
+                <input disabled asp-for="@Model.UserName" type="text" class="form-control">
+            </div>
+            <div class="button-container">
+                <button class="edit-button">Edit</button>
+                <button class="save-button">Save</button>
+            </div>
+        </div>
+        <div class="form-prop">
+            <div class="form-group">
+                <label asp-for="@Model.Email">Email</label>
+                <input disabled asp-for="@Model.Email" type="text" class="form-control">
+            </div>
+            <div class="button-container">
+                <button class="edit-button">Edit</button>
+                <button class="save-button">Save</button>
+            </div>
+        </div>
+        <div class="form-prop">
+            <div class="form-group">
+                <label asp-for="@Model.Age">Age</label>
+                <input disabled asp-for="@Model.Age" type="text" class="form-control">
+            </div>
+            <div class="button-container">
+                <button class="edit-button">Edit</button>
+                <button class="save-button">Save</button>
+            </div>
+        </div>
+        <div class="form-prop">
+            <div class="form-group">
+                <label asp-for="@Model.Address.Country">Country</label>
+                <input disabled asp-for="@Model.Address.Country" type="text" class="form-control">
+            </div>
+            <div class="button-container">
+                <button class="edit-button">Edit</button>
+                <button class="save-button">Save</button>
+            </div>
+        </div>
+        <div class="form-prop">
+            <div class="form-group">
+                <label asp-for="@Model.Address.City">City</label>
+                <input disabled asp-for="@Model.Address.City" type="text" class="form-control">
+            </div>
+            <div class="button-container">
+                <button class="edit-button">Edit</button>
+                <button class="save-button">Save</button>
+            </div>
+        </div>
+        <div class="form-prop">
+            <div class="form-group">
+                <label asp-for="@Model.Address.State">Street</label>
+                <input disabled asp-for="@Model.Address.State" type="text" class="form-control">
+            </div>
+            <div class="button-container">
+                <button class="edit-button">Edit</button>
+                <button class="save-button">Save</button>
+            </div>
+        </div>
     </div>
-    <div class="form-group">
-        <label asp-for="@Model.Address.City">City</label>
-        <input disabled asp-for="@Model.Address.City" type="text" class="form-control">
-    </div>
-    <div class="form-group">
-        <label asp-for="@Model.Address.State">Street</label>
-        <input disabled asp-for="@Model.Address.State" type="text" class="form-control">
-    </div>
-</div>
 
-<div class="imageGrid">
-    @foreach (var path in Model.ProfilePicPaths)
-    {
+    <div class="imageGrid">
+        @foreach (var path in Model.ProfilePicPaths)
+        {
         <div class="imageWrapper">
             <img src="~/Assets/@path">
         </div>
-    }
+        }
+    </div>
 </div>
 
+<a type="button" class="followers-list-button" asp-controller="User" asp-action="Followers">Followers</a>
+<a type="button" class="followers-list-button" asp-controller="User" asp-action="Followed">Followed</a>
 
-
-
-@* <div class="text-danger" asp-validation-summary="All"></div>
-<form enctype="multipart/form-data" asp-action="UploadAvatar" asp-controller="User" method="post"
-class="account-form">
-<img src="~/Assets/@Model.ProfilePicPath" alt="profile img">
-<input type="file" name="file" id="file">
-<button>Save Changes</button>
-</form> *@
+<script>
+    const editButtons = document.querySelectorAll('.edit-button');
+    editButtons.forEach(editButton => {
+        editButton.addEventListener('click', () => {
+            const isEdit = editButton.dataset.clicked === 'true';
+            const saveButton = editButton.nextElementSibling;
+            const inputField = editButton.parentElement.previousElementSibling.querySelector('input');
+            editButton.dataset.clicked = isEdit ? 'false' : 'true';
+            if (isEdit) {
+                inputField.value = inputField.dataset.originalValue;
+                editButton.textContent = 'Edit';
+                editButton.classList.remove('clicked');
+                saveButton.classList.remove('visible');
+                inputField.setAttribute('disabled', 'disabled');
+            } else {
+                inputField.dataset.originalValue = inputField.value;
+                editButton.textContent = 'Cancel';
+                editButton.classList.add('clicked');
+                saveButton.classList.add('visible');
+                inputField.removeAttribute('disabled');
+            }
+        });
+    });
+</script>
 
 <style>
-    .account-form {
+    .account-container {
         display: flex;
-        flex-direction: column;
-        width: 300px;
-        gap: 30px;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 20px;
     }
 
-    .account-form img {
-        width: 300px;
-        height: 300px;
+    .imageGrid {
+        width: 40%;
+        float: right;
+    }
+
+    .person-info-grid {
+        width: 55%;
+    }
+
+    .form-prop {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+        background: linear-gradient(to bottom right, #ff7e5f, #feb47b);
         border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        width: 95%;
     }
 
-    .account-form button {
+    label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+        margin-left: 10px;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+        background-color: #f9f9f9;
+        color: #333;
+    }
+
+    input[type="text"]:disabled {
+        background-color: #ddd;
+        color: #777;
+    }
+
+    .button-container {
+        width: 10%;
+        margin-left: 10px;
+        align-items: center;
+    }
+
+    .button-container button {
+        max-width: 100%;
+        padding: 8px 12px;
         border: none;
+        border-radius: 5px;
+        background-color: #4CAF50;
+        color: white;
+        cursor: pointer;
         border-radius: 10px;
-        color: #fff;
-        background-color: green;
-        padding: 12px 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     }
 
-    .account-form button:hover {
-        background-color: darkgreen;
+    .button-container button:hover {
+        background-color: #45a049;
+        &.clicked {
+            margin-top: 0px;
+            display: block;
+            pointer-events: all;
+            background-color: rgb(240, 50, 50);
+        }
+    }
+
+    .save-button {
+        display: none;
+        pointer-events: none;
+
+        &.visible {
+            display: block;
+            pointer-events: all;
+        }
+    }
+
+    .edit-button {
+        margin-top: 25%;
+
+        &.clicked {
+            margin-top: 0px;
+            display: block;
+            pointer-events: all;
+            background-color: red;
+        }
+    }
+
+    .followers-list-button {
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        background: linear-gradient(to right, #ff4b1f, #ff9068);
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .followers-list-button:hover {
+        background-color: #ff6347;
     }
 </style>

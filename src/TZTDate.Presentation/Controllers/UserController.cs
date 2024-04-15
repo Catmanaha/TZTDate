@@ -1,14 +1,18 @@
 using MediatR;
-using Microsoft.AspNetCore.Identity;
+using System.Linq;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
+using TZTDate.Core.Data.DateUser;
+using TZTDate.Infrastructure.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TZTBank.Core.Data.DateUser.Dtos;
-using TZTBank.Infrastructure.Data.DateUser.Commands;
-using TZTDate.Core.Data.DateUser;
-using TZTDate.Core.Data.FaceDetectionApi.Repositories;
 using TZTDate.Core.Data.DateUser.Enums;
-using TZTDate.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
+using TZTBank.Infrastructure.Data.DateUser.Commands;
+using TZTDate.Core.Data.FaceDetectionApi.Repositories;
+using TZTDate.Core.Data.DateUser.FollowMembersViewModel;
+using TZTDate.Infrastructure.Data.DateUser.Commands;
 using TZTDate.Core.Data.SearchData;
 using TZTDate.Infrastructure.Data.SearchData.Services;
 
@@ -206,5 +210,43 @@ public class UserController : Controller
         users = users.GetRange(skip, users.Count() - skip < pageItemsCount ? users.Count() - skip : pageItemsCount);
 
         return PartialView("ProfilesPartial", users);
+    }
+
+    [HttpGet]
+    [Route("/id")]
+    public async Task<IActionResult> Id(string id)
+    {
+        var currentUser = await userManager.GetUserAsync(User);
+
+        return Content(currentUser.Id);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Followers()
+    {
+        var currentUser = await userManager.GetUserAsync(User);
+        var followers = context.Users.Where(user => currentUser.FollowersId.Contains(user.Id)).ToList();
+        return View(model: followers ?? new List<User>());
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Followed()
+    {
+        var currentUser = await userManager.GetUserAsync(User);
+        var followeds = context.Users.Where(user => currentUser.FollowedId.Contains(user.Id)).ToList();
+        return View(model: followeds ?? new List<User>());
+    }
+
+    [HttpPost]
+    public async Task MembershipAction ([FromForm] string userToActionId)
+    {
+        var currentUserId = (await userManager.GetUserAsync(User))?.Id;
+        var followActionCommand = new FollowActionCommand { 
+#pragma warning disable CS8601 // Possible null reference assignment.
+            currentUserId = currentUserId ,
+#pragma warning restore CS8601 // Possible null reference assignment.
+            userToActionId = userToActionId
+        };
+        await sender.Send(followActionCommand);
     }
 }

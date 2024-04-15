@@ -1,0 +1,150 @@
+@inject UserManager<User> UserManager;
+@model List<User>;
+@{
+    var currentUser = await UserManager.GetUserAsync(User);
+    ViewData["Title"] = $"{currentUser?.UserName}'s members";
+    var emptyList = new List<User>();
+    if(currentUser.FollowedId is null) 
+    { 
+        currentUser.FollowedId = new List<string>();
+    }
+}
+
+@if (!Model.Any())
+{
+    <div class="empty-container">Empty</div>
+}
+else
+{
+    @foreach (var member in Model)
+    {
+        <div class="member-container">
+            <div class="member-image-container">
+                <img src="~/Assets/@member?.ProfilePicPaths?[0]" alt="profile-pic">
+            </div>
+            <div class="member-name-container">
+                <span>@member?.UserName</span>
+            </div>
+            <div class="button-container">
+                <form class="membership-form" asp-controller="User" asp-action="MembershipAction" method="post">
+                    <input type="hidden" name="userToActionId" value="@member.Id" />
+                    <button type="submit" class="like-button @(currentUser.FollowedId.Contains(member.Id) ? "liked" : "")">
+                        @(currentUser.FollowedId.Contains(member.Id) ? "Unlike" : "Like")
+                    </button>
+                </form>
+                <form class="" asp-controller="" asp-action="" method="">
+                    <input type="hidden" name="" value="" />
+                    <button @(
+                        ((member.FollowedId is not null && currentUser.FollowedId is not null) 
+                            ? (currentUser.FollowedId.Contains(member.Id) && member.FollowedId.Contains(currentUser.Id)) 
+                            : false)
+                                    ? "" 
+                                    : "hidden")
+                    type="submit" class="chat-button">
+                        Chat
+                    </button>
+                </form>
+            </div>
+        </div>
+    }
+}
+
+<script>
+    document.querySelectorAll('.like-button').forEach(likeButton => {
+    likeButton.addEventListener('click', async (event) => {
+        event.preventDefault();
+
+        const isLiked = likeButton.classList.contains('liked');
+        likeButton.dataset.liked = isLiked ? 'false' : 'true';
+
+        if (isLiked) {
+            likeButton.classList.remove('liked');
+            likeButton.textContent = 'Like';
+        } 
+        else {
+            likeButton.classList.add('liked');
+            likeButton.textContent = 'Unlike';
+        }
+
+        const form = likeButton.closest('.button-container').querySelector('.membership-form');
+        const formData = new FormData(form);
+        const response = await fetch(form.action, {
+            method: form.method,
+            body: formData
+        });
+
+            return false;
+        });
+    });
+</script>
+
+<style>
+    .empty-container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #f8f9fa;
+        border: 2px solid #ced4da;
+        border-radius: 5px;
+        padding: 20px;
+        text-align: center;
+        font-size: 18px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+    }
+
+    .member-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .member-image-container img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+    }
+
+    .member-name-container span {
+        font-weight: bold;
+    }
+
+    .button-container {
+        margin-left: auto;
+        display: flex; 
+        align-items: center;
+        gap: 10px; 
+    }
+
+    .chat-button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        background-color: #17e41b;
+        color: #333;
+        &:hover { background-color: #cfcfcf; }
+    }
+
+    .like-button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        background-color: #17e41b;
+        color: #333;
+        &.liked {
+            background-color: #ff4d4d;
+            color: #fff;
+        }
+        &:hover {
+            background-color: #cfcfcf;
+        }
+    }
+</style>

@@ -5,6 +5,25 @@
     ViewData["Title"] = $"{Model.UserName}'s Details";
     var currentUser = await UserManager.GetUserAsync(User);
     var zodiacCompability = currentUser?.CompatibilityByZodiacSign(Model);
+    bool repricateMembership;
+    bool likeButtonState;
+    if(currentUser.FollowedId is not null)
+    {
+        likeButtonState = currentUser.FollowedId.Contains(Model.Id);
+    }
+    else
+    {
+        likeButtonState = false;
+    }
+    if(Model.FollowedId is not null && currentUser.FollowedId is not null)
+    {
+        repricateMembership = currentUser.FollowedId.Contains(Model.Id) && Model.FollowedId.Contains(currentUser.Id);
+    }
+    else
+    {
+        repricateMembership = false;
+    }
+    
 }
 
 <div class="details-img-div">
@@ -42,39 +61,66 @@
 
 <div class="zodiac-entities">
     <h2>Zodiac sign compability</h2>
-    <h3><span class="zodiac-sign">@currentUser.GetZodiacSign()</span>   @zodiacCompability?.Type   <span class="zodiac-sign">@Model.GetZodiacSign()</span></h3>
+    <h3><span class="zodiac-sign">@currentUser.GetZodiacSign()</span> @zodiacCompability?.Type <span
+            class="zodiac-sign">@Model.GetZodiacSign()</span></h3>
     <div>@zodiacCompability?.Description</div>
 </div>
 
 
 
 <div class="container-calc-like">
-    <div class="relationship-calc-entities" >
+    <div class="relationship-calc-entities">
         <h2 class="">Relationship calculator</h2>
         <vc:RelationshipCalcComponent class="calc-result">
             @await Component.InvokeAsync("RelationshipCalcComponent",
-            Model.UserName)
+                     Model.UserName)
         </vc:RelationshipCalcComponent>
     </div>
 
     <div>
-        <button type="button" class="like-button">Like</button>
-        <script>
-            const likeButton = document.querySelector('.like-button');
-            likeButton.addEventListener('click', () => {
-                const isLiked = likeButton.dataset.liked === 'true';
-                likeButton.dataset.liked = isLiked ? 'false' : 'true';
-                if (isLiked) {
-                    likeButton.classList.remove('liked');
-                    likeButton.textContent = 'Like';
-                } else {
-                    likeButton.classList.add('liked');
-                    likeButton.textContent = 'Unlike';
-                }
-            });
-        </script>
+        <form id="membership-form" asp-controller="User" asp-action="MembershipAction" method="post">
+            <input type="hidden" name="userToActionId" value="@Model.Id" />
+            <button id="like-button" type="submit" class="like-button @(likeButtonState ? "liked" : "")">
+                @(likeButtonState ? "Unlike" : "Like")
+            </button>
+        </form>
+        <form id="" asp-controller="" asp-action="" method="">
+            <input type="hidden" name="" value="" />
+            <button @(repricateMembership ? "" : "hidden") id="chat-button" type="submit" class="chat-button">
+                Chat
+            </button>
+        </form>
     </div>
 </div>
+
+<script>
+    const likeButton = document.getElementById('like-button');
+    likeButton.addEventListener('click', async (event) => {
+        event.preventDefault();
+
+        likeButton.dataset.liked = likeButton.classList.contains('liked') ? 'true' : 'false';
+        
+        const isLiked = likeButton.dataset.liked === 'true';
+        likeButton.dataset.liked = isLiked ? 'false' : 'true';
+        
+        if (isLiked) {
+            likeButton.classList.remove('liked');
+            likeButton.textContent = 'Like';
+        } else {
+            likeButton.classList.add('liked');
+            likeButton.textContent = 'Unlike';
+        }
+        
+        const form = document.getElementById('membership-form');
+        const formData = new FormData(form);
+        const response = await fetch(form.action, {
+            method: form.method,
+            body: formData
+        });
+        
+        return false;
+    });
+</script>
 
 <style>
     .details-img-div {
@@ -162,46 +208,47 @@
         margin-left: 15%;
         margin-top: 20px;
         margin-bottom: 20px;
-        background-color: #4CAF50; 
-        color: white; 
-        padding: 10px; 
-        border: none; 
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px;
+        border: none;
         text-align: center;
         display: inline-block;
-        font-size: 16px; 
-        cursor: pointer; 
-        width: 100%; 
+        font-size: 16px;
+        cursor: pointer;
+        width: 100%;
         max-width: 70%;
         user-select: none;
-        border-radius: 10px; 
+        border-radius: 10px;
     }
 
-    
+
 
     .zodiac-entities:hover {
         background-color: #45a049;
     }
 
-    .zodiac-entities h2, .zodiac-entities h3 {
-        margin: 0; 
+    .zodiac-entities h2,
+    .zodiac-entities h3 {
+        margin: 0;
     }
 
     .relationship-calc-entities {
         margin-left: 35%;
         margin-bottom: 20px;
-        background-color: #4CAF50; 
-        color: white; 
-        padding: 10px; 
-        border: none; 
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px;
+        border: none;
         text-align: center;
         text-decoration: none;
         display: inline-block;
-        font-size: 16px; 
-        cursor: pointer; 
-        width: 100%; 
+        font-size: 16px;
+        cursor: pointer;
+        width: 100%;
         max-width: 30%;
         pointer-events: none;
-        border-radius: 10px; 
+        border-radius: 10px;
         user-select: none;
     }
 
@@ -210,29 +257,37 @@
         color: yellow;
     }
 
-    .like-button {
-          /* General button styles */
-        display: inline-block; /* Allow text to wrap around the button */
-        padding: 10px 20px; /* Add padding for content */
-        border: none; /* Remove default border */
-        border-radius: 50px; /* Create a rounded shape */
-        cursor: pointer; /* Indicate clickable action */
-        transition: background-color 0.3s ease; /* Smooth transition on hover */
+    .chat-button {
+        display: inline-block;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
         margin: 50%;
-
-        /* Default (unliked) state */
-        background-color: #17e41b; /* Light gray background */
-        color: #333; /* Dark gray text */
-
-        /* Liked state */
-        &.liked {
-            background-color: #ff4d4d; /* Red background on like */
-            color: #fff; /* White text on like */
-        }
-
-        /* Hover effect */
+        background-color: #17e41b;
+        color: #333;
         &:hover {
-            background-color: #cfcfcf; /* Slightly darker background on hover */
+            background-color: #cfcfcf;
+        }
+    }
+
+    .like-button {
+        display: inline-block;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin: 50%;
+        background-color: #17e41b;
+        color: #333;
+        &.liked {
+            background-color: #ff4d4d;
+            color: #fff;
+        }
+        &:hover {
+            background-color: #cfcfcf;
         }
     }
 
