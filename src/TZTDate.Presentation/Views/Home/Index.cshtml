@@ -24,6 +24,7 @@
                 <img
                     src="~/Assets/@image">
                 <p>@user.UserName</p>
+                <i>@user.GetZodiacSign()</i>
                 <a href="/User/Details?id=@user.Id"><span class="material-symbols-outlined">info</span></a>
             </div>
         }
