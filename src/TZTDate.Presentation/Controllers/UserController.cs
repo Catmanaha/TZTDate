@@ -218,17 +218,19 @@ public class UserController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Members()
+    public async Task<IActionResult> Followers()
     {
         var currentUser = await userManager.GetUserAsync(User);
         var followers = context.Users.Where(user => currentUser.FollowersId.Contains(user.Id)).ToList();
+        return View(model: followers ?? new List<User>());
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Followed()
+    {
+        var currentUser = await userManager.GetUserAsync(User);
         var followeds = context.Users.Where(user => currentUser.FollowedId.Contains(user.Id)).ToList();
-        var followerMemberList = new FollowMembersViewModel
-        {
-            Followed = followeds,
-            Followers = followers
-        };
-        return View(model: followerMemberList);
+        return View(model: followeds ?? new List<User>());
     }
 
     [HttpPost]

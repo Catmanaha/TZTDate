@@ -5,8 +5,16 @@
     ViewData["Title"] = $"{Model.UserName}'s Details";
     var currentUser = await UserManager.GetUserAsync(User);
     var zodiacCompability = currentUser?.CompatibilityByZodiacSign(Model);
-    var likeButtonState = currentUser.FollowedId.Contains(Model.Id);
     bool repricateMembership;
+    bool likeButtonState;
+    if(currentUser.FollowedId is not null)
+    {
+        likeButtonState = currentUser.FollowedId.Contains(Model.Id);
+    }
+    else
+    {
+        likeButtonState = false;
+    }
     if(Model.FollowedId is not null && currentUser.FollowedId is not null)
     {
         repricateMembership = currentUser.FollowedId.Contains(Model.Id) && Model.FollowedId.Contains(currentUser.Id);
@@ -17,6 +25,7 @@
     }
     
 }
+
 <div class="details-img-div">
     @foreach (var profilePicPath in @Model?.ProfilePicPaths)
     {
