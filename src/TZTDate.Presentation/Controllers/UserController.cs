@@ -13,11 +13,14 @@ using TZTBank.Infrastructure.Data.DateUser.Commands;
 using TZTDate.Core.Data.FaceDetectionApi.Repositories;
 using TZTDate.Core.Data.DateUser.FollowMembersViewModel;
 using TZTDate.Infrastructure.Data.DateUser.Commands;
+using TZTDate.Core.Data.SearchData;
+using TZTDate.Infrastructure.Data.SearchData.Services;
 
 namespace TZTDate.Presentation.Controllers;
 
 public class UserController : Controller
 {
+    private const int pageItemsCount = 12;
     private readonly ISender sender;
     private readonly SignInManager<User> signInManager;
     private readonly UserManager<User> userManager;
@@ -148,9 +151,6 @@ public class UserController : Controller
         // using var fileStream = System.IO.File.Create(destinationAvatarPath);
         // await file.CopyToAsync(fileStream);
 
-
-
-
         // User path = await context.Users.FirstOrDefaultAsync(e => e.Id == user.Id);
         // path.ProfilePicPath = filename;
         // await context.SaveChangesAsync();
@@ -159,53 +159,57 @@ public class UserController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Profiles(string? searchByName, int? startAge, int? endAge, string? interests, Gender? searchGender)
-    {
-        var me = await userManager.GetUserAsync(User);
-
-        var users = await context.Users.ToListAsync();
-
-        users = users.Where(u => u.Id != me.Id).ToList(); // so that the user does not see himself
-
-        if (!string.IsNullOrEmpty(searchByName))
-        {
-            users = users.Where(u => u.UserName.ToLower().Contains(searchByName.ToLower())).ToList();
-        }
-
-        if (startAge.HasValue && startAge != 0)
-        {
-            users = users.Where(u => u.Age >= startAge).ToList();
-        }
-
-        if (endAge.HasValue && endAge != 0)
-        {
-            users = users.Where(u => u.Age <= endAge).ToList();
-        }
-
-        if (searchGender is not null)
-        {
-            users = users.Where(u => u.Gender == searchGender).ToList();
-        }
-
-        if (interests is not null)
-        {
-            string[] interestsArray = interests.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            users = users.Where(u => u.Interests != null && u.Interests.Split(' ', StringSplitOptions.RemoveEmptyEntries).Intersect(interestsArray).Any()).ToList();
-        }
-
-        ViewData["SearchingStartAge"] = me.SearchingAgeStart;
-        ViewData["SearchingEndAge"] = me.SearchingAgeEnd;
-        ViewData["SearchingGender"] = me.SearchingGender;
-
-        return View(users);
-    }
-
-    [HttpGet]
     public async Task<IActionResult> Details(string id)
     {
         var user = await context.Users.FirstOrDefaultAsync(user => user.Id == id);
 
         return View(user);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Profiles(string? searchByName, int? startAge, int? endAge, string? interests, Gender? searchGender)
+    {
+        User me = await userManager.GetUserAsync(User);
+
+        var users = await context.Users.ToListAsync();
+
+        SearchData searchData = new SearchData() {
+            Me = me,
+            Users = users,
+            SearchingGender = searchGender,
+            SearchingStartAge = startAge,
+            SearchingEndAge = endAge,
+            SearchingInterests = interests,
+            SearchingUsername = searchByName
+        };
+
+        users = SearchDataService.ProfilesFilter(searchData);
+
+        ViewData["SearchingStartAge"] = me.SearchingAgeStart;
+        ViewData["SearchingEndAge"] = me.SearchingAgeEnd;
+        ViewData["SearchingGender"] = me.SearchingGender.ToString();
+
+        return View(users.GetRange(0, users.Count() < pageItemsCount ? users.Count() : pageItemsCount));
+    }
+
+    public async Task<IActionResult> LoadMoreProfiles(int skip, string? searchByName, int? startAge, int? endAge, string? interests, string? searchGender)
+    {
+        var me = await userManager.GetUserAsync(User);
+        var users = await context.Users.ToListAsync();
+
+        users = SearchDataService.MoreProfilesFilter(new SearchData() {
+            Me = me,
+            Users = users,
+            SearchingGender = searchGender == "0" ? Gender.Male : Gender.Female,
+            SearchingStartAge = startAge,
+            SearchingEndAge = endAge,
+            SearchingInterests = interests,
+            SearchingUsername = searchByName
+        });
+
+        users = users.GetRange(skip, users.Count() - skip < pageItemsCount ? users.Count() - skip : pageItemsCount);
+
+        return PartialView("ProfilesPartial", users);
     }
 
     [HttpGet]

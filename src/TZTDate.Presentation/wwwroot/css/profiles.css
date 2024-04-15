@@ -1,0 +1,121 @@
+.profiles {
+    padding: 0 30px;
+    justify-content: center;
+    gap: 50px;
+    display: flex;
+    flex-wrap: wrap;
+    background-color: #e8e8e8;
+}
+
+.profile {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.profile div {
+    width: 250px;
+    height: auto;
+    border-radius: 10px;
+    background-color: #f2f2f2;
+}
+
+.profile img {
+    border-radius: 10px 10px 0px 0px;
+    width: 250px;
+    height: 200px;
+    border: 0.1px solid #000;
+}
+
+.profile img:hover {
+    opacity: 0.8;
+    transition: 0.2s ease;
+}
+
+.profile p {
+    padding: 15px 15px 0px 15px;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.profile span {
+    padding: 15px;
+}
+
+/* .profiles-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0 30px;
+    background-color: #ffe6ff;
+    text-align: center;
+    height: 100px;
+    justify-content: center;
+    gap: 10px;
+}
+
+.profiles-header button,
+.profiles-header input {
+    display: flex;
+    align-items: center;
+    padding-left: 40px;
+    padding-right: 40px;
+    height: 50px;
+    border: none;
+    border-radius: 10px;
+}
+
+.profiles-header .search {
+    color: #fff;
+    background-color: #ff70f5;
+    box-shadow: 0 0 5px #f8a8ff;
+}
+
+.profiles-header .search:hover {
+    background-color: #ff4ff3;
+    box-shadow: 0 0 15px #f47eff;
+    transition: 0.3s;
+}
+
+.profiles-header .expand-content {
+    color: #fff;
+    background-color: #0c7f40c1;
+    box-shadow: 0 0 5px #06a04be9;
+}
+
+.profiles-header .expand-content:hover {
+    background-color: #069345c1;
+    box-shadow: 0 0 15px #06c25be9;
+    transition: 0.3s;
+}
+
+.profiles-header p {
+    display: none;
+    position: absolute; 
+    width: 104px;
+    color: #606060;
+    border-radius: 10px;
+} */
+
+.p-show-more {
+    margin-left: -15px;
+    width: 140px !important;
+}
+
+.div1 {
+    display: flex;
+    flex-wrap: row;
+    justify-content: space-between;
+}
+
+.div1 button {
+    border: none;
+    background-color: transparent;
+    color: #3a8eb3;
+    font-size: 20px;
+}
+
+.div1 button:hover  {
+    color: #f25fff;
+    transition: .2s;
+}
