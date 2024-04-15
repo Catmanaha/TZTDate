@@ -1,15 +1,15 @@
 using System.Reflection;
-using MediatR;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using TZTBank.Infrastructure.Data.BankUser.Handlers;
-using TZTBank.Infrastructure.Data.DateUser.Commands;
-using TZTDate.Core.Data.DateUser;
 using TZTDate.WebApi.Options;
 using TZTDate.Infrastructure.Data.DependencyInjections;
 using TZTDate.Infrastructure.Extensions;
+using TZTDate.WebApi.Middlewares;
+using TZTDate.WebApi.Filters;
+using Microsoft.AspNetCore.Mvc;
+using TZTDate.Core.Data.FaceDetectionApi.Managers;
+using TZTDate.Core.Data.DateApi.Managers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,7 +29,14 @@ builder.Services.InitSignalR();
 builder.Services.InitDbContext(builder.Configuration, Assembly.GetExecutingAssembly());
 builder.Services.Inject();
 
-builder.Services.AddScoped<IRequestHandler<LoginCommand>, LoginHandler>();
+builder.Services.AddTransient<ExceptionHandlingMiddleware>();
+builder.Services.AddScoped<ValidationFilterAttribute>();
+
+builder.Services.Configure<ApiManager>(builder.Configuration.GetSection("ApiManager"));
+builder.Services.Configure<FaceDetectionApiManager>(builder.Configuration.GetSection("FaceDetectionApiManager"));
+
+builder.Services.Configure<ApiBehaviorOptions>(options
+    => options.SuppressModelStateInvalidFilter = true);
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -42,7 +49,8 @@ builder.Services.AddSwaggerGen(options =>
 
     options.AddSecurityDefinition(
         name: scheme,
-        new OpenApiSecurityScheme() {
+        new OpenApiSecurityScheme()
+        {
             Description = "Enter here jwt token with Bearer",
             In = ParameterLocation.Header,
             Name = "Authorization",
@@ -82,15 +90,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuers = jwtOptions.Issuers,
         };
     });
+
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
+
+app.UseHttpsRedirection();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
