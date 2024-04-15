@@ -17,9 +17,10 @@ public class AuthController : ControllerBase
     private readonly JwtOptions jwtOptions;
     private readonly ISender sender;
 
-    public AuthController(ISender sender, IOptionsSnapshot<JwtOptions> JwtOptions)
+    public AuthController(ISender sender, IOptionsSnapshot<JwtOptions> jwtOptions)
     {
         this.sender = sender;
+        this.jwtOptions = jwtOptions.Value;
     }
 
     [HttpPost]
@@ -46,13 +47,8 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<string> Login(UserLoginDto loginDto)
+    public async Task<ActionResult> Login(UserLoginDto loginDto)
     {
-        if (ModelState.IsValid == false)
-        {
-            return null;
-        }
-
         try
         {
             await sender.Send(new LoginCommand()
@@ -61,7 +57,8 @@ public class AuthController : ControllerBase
             });
 
             var claims = new List<Claim>() {
-                new(ClaimTypes.Name, loginDto.Email),
+                new(ClaimTypes.Email, loginDto.Email),
+                new(ClaimTypes.Role, "User")
             };
 
             var securityKey = new SymmetricSecurityKey(this.jwtOptions.KeyInBytes);
@@ -78,12 +75,11 @@ public class AuthController : ControllerBase
             var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
             var jwt = jwtSecurityTokenHandler.WriteToken(securityToken);
 
-            return jwt;
+            return Ok(jwt);
         }
         catch (Exception ex)
         {
-            ModelState.AddModelError("Error", ex.Message);
-            return null;
+            return BadRequest(ex.Message);
         }
     }
 }

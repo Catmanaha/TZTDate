@@ -1,9 +1,15 @@
 using System.Reflection;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using TZTBank.Infrastructure.Data.BankUser.Handlers;
+using TZTBank.Infrastructure.Data.DateUser.Commands;
+using TZTDate.Core.Data.DateUser;
 using TZTDate.WebApi.Options;
+using TZTDate.Infrastructure.Data.DependencyInjections;
+using TZTDate.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +22,15 @@ builder.Services.Configure<JwtOptions>(jwtOptionsSection);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.InitMediatR();
+builder.Services.InitResponse();
+builder.Services.InitSignalR();
+builder.Services.InitDbContext(builder.Configuration, Assembly.GetExecutingAssembly());
+builder.Services.Inject();
+
+builder.Services.AddScoped<IRequestHandler<LoginCommand>, LoginHandler>();
+
 builder.Services.AddSwaggerGen(options =>
 {
     const string scheme = "Bearer";
@@ -68,10 +83,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 builder.Services.AddAuthorization();
-builder.Services.AddMediatR(configurations =>
-                {
-                    configurations.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-                });
 
 var app = builder.Build();
 
