@@ -30,7 +30,7 @@ public class UserController : ControllerBase
                           UserManager<User> userManager,
                           TZTDateDbContext context,
                           IFaceDetectionRepository faceDetectionRepository
-    )
+                         )
     {
         this.sender = sender;
         this.signInManager = signInManager;
@@ -154,7 +154,7 @@ public class UserController : ControllerBase
         users = SearchDataService.ProfilesFilter(searchData);
         return users.GetRange(0, users.Count() < pageItemsCount ? users.Count() : pageItemsCount);
     }
-    
+
     [Authorize]
     public async Task<List<User>> LoadMoreProfiles(int skip, string? searchByName, int? startAge, int? endAge, string? interests, string? searchGender)
     {
