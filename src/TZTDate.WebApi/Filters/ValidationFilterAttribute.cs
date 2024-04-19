@@ -7,16 +7,16 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace TZTDate.WebApi.Filters
 {
-    public class ValidationFilterAttribute : IActionFilter
-    {
-        public void OnActionExecuted(ActionExecutedContext context) { }
+public class ValidationFilterAttribute : IActionFilter
+{
+    public void OnActionExecuted(ActionExecutedContext context) { }
 
-        public void OnActionExecuting(ActionExecutingContext context)
+    public void OnActionExecuting(ActionExecutingContext context)
+    {
+        if (context.ModelState.IsValid == false)
         {
-            if (context.ModelState.IsValid == false)
-            {
-                context.Result = new UnprocessableEntityObjectResult(context.ModelState);
-            }
+            context.Result = new UnprocessableEntityObjectResult(context.ModelState);
         }
     }
+}
 }

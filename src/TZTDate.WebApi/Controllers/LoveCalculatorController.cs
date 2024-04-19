@@ -7,25 +7,25 @@ using TZTDate.WebApi.Filters;
 
 namespace TZTDate.WebApi.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]/[action]")]
-    [Authorize]
-    [ServiceFilter(typeof(ValidationFilterAttribute))]
-    public class LoveCalculatorController : ControllerBase
+[ApiController]
+[Route("api/[controller]/[action]")]
+[Authorize]
+[ServiceFilter(typeof(ValidationFilterAttribute))]
+public class LoveCalculatorController : ControllerBase
+{
+    private readonly ILoveCalculatorRepository loveCalculatorRepository;
+
+    public LoveCalculatorController(ILoveCalculatorRepository loveCalculatorRepository)
     {
-        private readonly ILoveCalculatorRepository loveCalculatorRepository;
-
-        public LoveCalculatorController(ILoveCalculatorRepository loveCalculatorRepository)
-        {
-            this.loveCalculatorRepository = loveCalculatorRepository;
-        }
-
-        [HttpPost]
-        public async Task<LoveCalculatorModel> Index(LoveCalculatorDto loveCalculatorDto)
-        {
-            var result = await loveCalculatorRepository.GetLovePercentage(loveCalculatorDto.fname, loveCalculatorDto.sname);
-
-            return result;
-        }
+        this.loveCalculatorRepository = loveCalculatorRepository;
     }
+
+    [HttpPost]
+    public async Task<LoveCalculatorModel> Index(LoveCalculatorDto loveCalculatorDto)
+    {
+        var result = await loveCalculatorRepository.GetLovePercentage(loveCalculatorDto.fname, loveCalculatorDto.sname);
+
+        return result;
+    }
+}
 }

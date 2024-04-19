@@ -54,9 +54,9 @@ public class AuthController : ControllerBase
     private string CreateToken(UserLoginDto loginDto)
     {
         var claims = new List<Claim>() {
-                new(ClaimTypes.Email, loginDto.Email),
+            new(ClaimTypes.Email, loginDto.Email),
                 new(ClaimTypes.Role, "User")
-            };
+        };
 
         var securityKey = new SymmetricSecurityKey(this.jwtOptions.KeyInBytes);
         var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);

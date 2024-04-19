@@ -14,7 +14,7 @@ using TZTDate.Core.Data.DateApi.Managers;
 var builder = WebApplication.CreateBuilder(args);
 
 var jwtOptionsSection = builder.Configuration
-    .GetSection("JwtOptions");
+                        .GetSection("JwtOptions");
 
 var jwtOptions = jwtOptionsSection.Get<JwtOptions>() ?? throw new Exception("Couldn't create jwt options object");
 
@@ -36,7 +36,7 @@ builder.Services.Configure<ApiManager>(builder.Configuration.GetSection("ApiMana
 builder.Services.Configure<FaceDetectionApiManager>(builder.Configuration.GetSection("FaceDetectionApiManager"));
 
 builder.Services.Configure<ApiBehaviorOptions>(options
-    => options.SuppressModelStateInvalidFilter = true);
+        => options.SuppressModelStateInvalidFilter = true);
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -50,26 +50,26 @@ builder.Services.AddSwaggerGen(options =>
     options.AddSecurityDefinition(
         name: scheme,
         new OpenApiSecurityScheme()
-        {
-            Description = "Enter here jwt token with Bearer",
-            In = ParameterLocation.Header,
-            Name = "Authorization",
-            Type = SecuritySchemeType.Http,
-            Scheme = scheme
-        });
+    {
+        Description = "Enter here jwt token with Bearer",
+        In = ParameterLocation.Header,
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = scheme
+    });
 
     options.AddSecurityRequirement(
-        new OpenApiSecurityRequirement() {
-            {
-                new OpenApiSecurityScheme() {
-                    Reference = new OpenApiReference() {
-                        Id = scheme,
-                        Type = ReferenceType.SecurityScheme
-                    }
-                } ,
-                new string[] {}
-            }
+    new OpenApiSecurityRequirement() {
+        {
+            new OpenApiSecurityScheme() {
+                Reference = new OpenApiReference() {
+                    Id = scheme,
+                    Type = ReferenceType.SecurityScheme
+                }
+            },
+            new string[] {}
         }
+    }
     );
 });
 
@@ -77,22 +77,22 @@ builder.Services.AddAuthentication(o => {
     o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-    .AddJwtBearer(options =>
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters()
     {
-        options.TokenValidationParameters = new TokenValidationParameters()
-        {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(jwtOptions.KeyInBytes),
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(jwtOptions.KeyInBytes),
 
-            ValidateLifetime = true,
+        ValidateLifetime = true,
 
-            ValidateAudience = true,
-            ValidAudience = jwtOptions.Audience,
+        ValidateAudience = true,
+        ValidAudience = jwtOptions.Audience,
 
-            ValidateIssuer = true,
-            ValidIssuers = jwtOptions.Issuers,
-        };
-    });
+        ValidateIssuer = true,
+        ValidIssuers = jwtOptions.Issuers,
+    };
+});
 
 builder.Services.AddAuthorization();
 
