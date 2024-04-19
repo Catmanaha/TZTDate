@@ -15,64 +15,50 @@ namespace TZTDate.WebApi.Controllers;
 [ApiController]
 [Route("api/[controller]/[action]")]
 [ServiceFilter(typeof(ValidationFilterAttribute))]
-public class AuthController : ControllerBase
-{
-    private readonly JwtOptions jwtOptions;
-    private readonly ISender sender;
+public class AuthController : ControllerBase {
+  private readonly JwtOptions jwtOptions;
+  private readonly ISender sender;
 
-    public AuthController(ISender sender, IOptionsSnapshot<JwtOptions> jwtOptions)
-    {
-        this.sender = sender;
-        this.jwtOptions = jwtOptions.Value;
-    }
+  public AuthController(ISender sender,
+                        IOptionsSnapshot<JwtOptions> jwtOptions) {
+    this.sender = sender;
+    this.jwtOptions = jwtOptions.Value;
+  }
 
-    [HttpPost]
-    public async Task<ActionResult> Register(UserRegisterDto userDto)
-    {
-        await sender.Send(new AddNewCommand()
-        {
-            UserRegisterDto = userDto
-        });
+  [HttpPost]
+  public async Task<ActionResult> Register(UserRegisterDto userDto) {
+    await sender.Send(new AddNewCommand() { UserRegisterDto = userDto });
 
-        return Ok();
-    }
+    return Ok();
+  }
 
-    [HttpPost]
-    public async Task<ActionResult> Login(UserLoginDto loginDto)
-    {
+  [HttpPost]
+  public async Task<ActionResult> Login(UserLoginDto loginDto) {
 
-        await sender.Send(new LoginCommand()
-        {
-            userLoginDto = loginDto
-        });
+    await sender.Send(new LoginCommand() { userLoginDto = loginDto });
 
-        var jwt = CreateToken(loginDto);
+    var jwt = CreateToken(loginDto);
 
-        return Ok(jwt);
-    }
+    return Ok(jwt);
+  }
 
-    private string CreateToken(UserLoginDto loginDto)
-    {
-        var claims = new List<Claim>() {
-                new(ClaimTypes.Email, loginDto.Email),
-                new(ClaimTypes.Role, "User")
-            };
+  private string CreateToken(UserLoginDto loginDto) {
+    var claims = new List<Claim>() { new(ClaimTypes.Email, loginDto.Email),
+                                     new(ClaimTypes.Role, "User") };
 
-        var securityKey = new SymmetricSecurityKey(this.jwtOptions.KeyInBytes);
-        var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+    var securityKey = new SymmetricSecurityKey(this.jwtOptions.KeyInBytes);
+    var signingCredentials =
+        new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-        var securityToken = new JwtSecurityToken(
-            issuer: this.jwtOptions.Issuers.First(),
-            audience: this.jwtOptions.Audience,
-            claims,
-            expires: DateTime.Now.AddMinutes(this.jwtOptions.LifetimeInMinutes),
-            signingCredentials: signingCredentials
-        );
+    var securityToken = new JwtSecurityToken(
+        issuer: this.jwtOptions.Issuers.First(),
+        audience: this.jwtOptions.Audience, claims,
+        expires: DateTime.Now.AddMinutes(this.jwtOptions.LifetimeInMinutes),
+        signingCredentials: signingCredentials);
 
-        var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-        var jwt = jwtSecurityTokenHandler.WriteToken(securityToken);
+    var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+    var jwt = jwtSecurityTokenHandler.WriteToken(securityToken);
 
-        return jwt;
-    }
-
+    return jwt;
+  }
 }
