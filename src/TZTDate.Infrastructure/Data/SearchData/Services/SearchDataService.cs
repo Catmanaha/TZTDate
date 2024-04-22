@@ -28,7 +28,7 @@ public static class SearchDataService
         {
             if (!string.IsNullOrEmpty(searchByName))
             {
-                users = users.Where(u => u.UserName.ToLower().Contains(searchByName.ToLower())).ToList();
+                users = users.Where(u => u.Username.ToLower().Contains(searchByName.ToLower())).ToList();
             }
 
             if (startAge.HasValue && startAge != 0)
@@ -70,7 +70,7 @@ public static class SearchDataService
 
         if (!string.IsNullOrEmpty(searchByName))
         {
-            users = users.Where(u => u.UserName.ToLower().Contains(searchByName.ToLower())).ToList();
+            users = users.Where(u => u.Username.ToLower().Contains(searchByName.ToLower())).ToList();
         }
 
         if (startAge.HasValue && startAge != 0)

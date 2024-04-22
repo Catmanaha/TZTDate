@@ -1,22 +1,22 @@
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 using TZTBank.Infrastructure.Data.DateUser.Commands;
-using TZTDate.Core.Data.DateUser;
+using TZTDate.Infrastructure.Data.DateUser.Commands;
+using TZTDate.Infrastructure.Services.Base;
 
 namespace TZTBank.Infrastructure.Data.BankUser.Handlers;
 
-public class LoginHandler : IRequestHandler<LoginCommand>
+public class LoginHandler : IRequestHandler<LoginCommand, string>
 {
-    private readonly UserManager<User> userManager;
-    private readonly SignInManager<User> signInManager;
+    private readonly ITokenService tokenService;
+    private readonly ISender sender;
 
-    public LoginHandler(UserManager<User> userManager, SignInManager<User> signInManager)
+    public LoginHandler(ITokenService tokenService, ISender sender)
     {
-        this.userManager = userManager;
-        this.signInManager = signInManager;
+        this.sender = sender;
+        this.tokenService = tokenService;
     }
 
-    public async Task Handle(LoginCommand request, CancellationToken cancellationToken)
+    public async Task<string> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         if (request.userLoginDto is null)
         {
@@ -33,19 +33,27 @@ public class LoginHandler : IRequestHandler<LoginCommand>
             throw new NullReferenceException($"{nameof(request.userLoginDto.Password)} cannot be empty");
         }
 
-        var user = await userManager.FindByEmailAsync(request.userLoginDto.Email);
+        var user = await sender.Send(new FindByEmailCommand
+        {
+            Email = request.userLoginDto.Email
+        });
 
         if (user is null)
         {
             throw new NullReferenceException("User email not found");
         }
 
-        var result = await signInManager.PasswordSignInAsync(user, request.userLoginDto.Password, true, true);
-
-        if (result.Succeeded == false)
+        if (!BCrypt.Net.BCrypt.Verify(request.userLoginDto.Password, user.PasswordHash))
         {
-            throw new ArgumentNullException("Incorrect Credentials");
+            throw new ArgumentException("Wrong password");
         }
+
+        if (request.userLoginDto.Email.ToLower().Contains("admin"))
+        {
+            return tokenService.CreateTokenAdmin(user);
+        }
+
+        return tokenService.CreateToken(user);
 
     }
 }

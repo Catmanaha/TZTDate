@@ -1,10 +1,8 @@
 using System.Reflection;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TZTDate.Infrastructure.Data;
-using TZTDate.Core.Data.DateUser;
 
 namespace TZTDate.Infrastructure.Extensions;
 
@@ -27,18 +25,8 @@ public static class DbContextExtensions
             options.UseNpgsql(connectionString, o =>
                 {
                     o.MigrationsAssembly(assembly.FullName);
-                    
+
                 });
         });
-
-        serviceCollection.AddIdentity<User, IdentityRole>()
-                         .AddEntityFrameworkStores<TZTDateDbContext>();
-
-        serviceCollection.ConfigureApplicationCookie(o =>
-        {
-            o.AccessDeniedPath = "/User/AccessDenied";
-            o.LoginPath = "/User/Login";
-        });
-
     }
 }

@@ -1,10 +1,13 @@
-namespace TZTDate.Core.Data.DateUser;
-
-using Microsoft.AspNetCore.Identity;
 using TZTDate.Core.Data.DateUser.Enums;
 
-public class User : IdentityUser
+namespace TZTDate.Core.Data.DateUser;
+
+public class User
 {
+    public int Id { get; set; }
+    public string? Username { get; set; }
+    public string? Email { get; set; }
+    public string? PasswordHash { get; set; }
     public DateTime BirthDateTime { get; set; }
 
     public int Age
@@ -28,6 +31,6 @@ public class User : IdentityUser
     public int SearchingAgeEnd { get; set; }
     public string? Interests { get; set; }
 
-    public List<string>? FollowersId { get; set; }
-    public List<string>? FollowedId { get; set; }
+    public List<UserFollow>? Followers { get; set; }
+    public List<UserFollow>? Followed { get; set; }
 }

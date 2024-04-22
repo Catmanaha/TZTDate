@@ -2,10 +2,10 @@
 @model List<User>;
 @{
     var currentUser = await UserManager.GetUserAsync(User);
-    ViewData["Title"] = $"{currentUser?.UserName}'s members";
+    ViewData["Title"] = $"{currentUser?.Username}'s members";
     if (currentUser.FollowersId is null)
     {
-        currentUser.FollowersId = new List<string>();
+        currentUser.FollowersId = new List<int>();
     }
 }
 
@@ -22,7 +22,7 @@ else
                 <img src="~/Assets/@member?.ProfilePicPaths?[0]" alt="profile-pic">
             </div>
             <div class="member-name-container">
-                <span>@member?.UserName</span>
+                <span>@member?.Username</span>
             </div>
             <div class="button-container">
                 <form class="membership-form" asp-controller="User" asp-action="MembershipAction" method="post">

@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace TZTDate.WebApi.Options;
+namespace TZTDate.Core.Data.Options;
 
 public class JwtOptions
 {
