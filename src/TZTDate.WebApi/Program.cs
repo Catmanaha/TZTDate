@@ -2,7 +2,6 @@ using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using TZTDate.WebApi.Options;
 using TZTDate.Infrastructure.Data.DependencyInjections;
 using TZTDate.Infrastructure.Extensions;
 using TZTDate.WebApi.Middlewares;
@@ -10,6 +9,11 @@ using TZTDate.WebApi.Filters;
 using Microsoft.AspNetCore.Mvc;
 using TZTDate.Core.Data.FaceDetectionApi.Managers;
 using TZTDate.Core.Data.DateApi.Managers;
+using TZTDate.Core.Data.Options;
+using TZTDate.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using TZTDate.Core.Data.DateUser;
+using TZTDate.Core.Data.DateUser.Enums;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +23,7 @@ var jwtOptions = jwtOptionsSection.Get<JwtOptions>() ??
                  throw new Exception("Couldn't create jwt options object");
 
 builder.Services.Configure<JwtOptions>(jwtOptionsSection);
+builder.Services.Configure<BlobOptions>(builder.Configuration.GetSection("BlobOptions"));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -41,15 +46,19 @@ builder.Services.Configure<FaceDetectionApiManager>(
 builder.Services.Configure<ApiBehaviorOptions>(
     options => options.SuppressModelStateInvalidFilter = true);
 
-builder.Services.AddSwaggerGen(options => {
+builder.Services.AddSwaggerGen(options =>
+{
   const string scheme = "Bearer";
   options.SwaggerDoc(
       "v1", new OpenApiInfo { Title = "My Identity Service", Version = "v1" });
 
-  options.AddSecurityDefinition(name: scheme, new OpenApiSecurityScheme() {
+  options.AddSecurityDefinition(name: scheme, new OpenApiSecurityScheme()
+  {
     Description = "Enter here jwt token with Bearer",
-    In = ParameterLocation.Header, Name = "Authorization",
-    Type = SecuritySchemeType.Http, Scheme = scheme
+    In = ParameterLocation.Header,
+    Name = "Authorization",
+    Type = SecuritySchemeType.Http,
+    Scheme = scheme
   });
 
   options.AddSecurityRequirement(new OpenApiSecurityRequirement() {
@@ -63,12 +72,11 @@ builder.Services.AddSwaggerGen(options => {
 });
 
 builder.Services
-    .AddAuthentication(o => {
-      o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-      o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options => {
-      options.TokenValidationParameters = new TokenValidationParameters() {
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+      options.TokenValidationParameters = new TokenValidationParameters()
+      {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(jwtOptions.KeyInBytes),
 
@@ -85,6 +93,30 @@ builder.Services
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+  var context = scope.ServiceProvider.GetRequiredService<TZTDateDbContext>();
+  await context.Database.MigrateAsync();
+  await context.Database.EnsureCreatedAsync();
+
+  var userRoleExists = await context.Roles.AnyAsync(r => r.Name == "User");
+  var adminRoleExists = await context.Roles.AnyAsync(r => r.Name == "Admin");
+
+  if (!userRoleExists)
+  {
+    var userRole = new Role { Name = UserRoles.User.ToString() };
+    await context.Roles.AddAsync(userRole);
+  }
+
+  if (!adminRoleExists)
+  {
+    var adminRole = new Role { Name = UserRoles.Admin.ToString() };
+    await context.Roles.AddAsync(adminRole);
+  }
+
+  await context.SaveChangesAsync();
+}
 
 app.UseSwagger();
 app.UseSwaggerUI();

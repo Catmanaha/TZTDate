@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace TZTDate.WebApi.Options;
+namespace TZTDate.Core.Data.Options;
 
 public class JwtOptions
 {
@@ -9,4 +9,5 @@ public class JwtOptions
     public string Audience { get; set; }
     public int LifetimeInMinutes { get; set; }
     public IEnumerable<string> Issuers { get; set; }
+    public int RefreshTokenLifetimeInHours { get; set; }
 }
