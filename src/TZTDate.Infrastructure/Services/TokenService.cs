@@ -126,7 +126,8 @@ public class TokenService : ITokenService
             ExpiryDate = DateTime.UtcNow.AddHours(jwtOptions.RefreshTokenLifetimeInHours),
             CreatedDate = DateTime.UtcNow,
             CreatedByIp = createdByIp,
-            Revoked = false
+            Revoked = false,
+            RevokedByIp = string.Empty,
         };
 
         await this.context.RefreshTokens.AddAsync(refreshToken);
