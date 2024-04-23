@@ -3,7 +3,9 @@ using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using TZTDate.Core.Data.DateLogEntry.Models;
 using TZTDate.Core.Data.DateUser;
+using TZTDate.Core.Data.DateUser.Responses;
 using TZTDate.Core.Data.Options;
 using TZTDate.Infrastructure.Data;
 using TZTDate.Infrastructure.Services.Base;
@@ -41,7 +43,7 @@ public class TokenService : ITokenService
         return jwt;
     }
 
-    public async Task<bool> ValidateToken(string accessToken)
+    public async Task<bool> ValidateAccessToken(string accessToken)
     {
         var handler = new JwtSecurityTokenHandler();
 
@@ -63,12 +65,99 @@ public class TokenService : ITokenService
         return validationResult.IsValid;
     }
 
+    public async Task<RefreshTokenValidationResponse> ValidateRefreshToken(Guid token, int userId)
+    {
+        var refreshToken = await this.context.RefreshTokens.FirstOrDefaultAsync(rt => rt.Token == token);
+
+        if (refreshToken == null)
+        {
+            return new RefreshTokenValidationResponse
+            {
+                IsValid = false,
+                Message = "Token does not exist"
+            };
+        }
+
+        if (refreshToken.UserId != userId)
+        {
+            return new RefreshTokenValidationResponse
+            {
+                Message = "Token does not belong to this user"
+            };
+        }
+
+        if (refreshToken.Revoked)
+        {
+            return new RefreshTokenValidationResponse
+            {
+                Message = "Token has been revoked"
+            };
+        }
+
+        if (refreshToken.ExpiryDate < DateTime.UtcNow)
+        {
+            return new RefreshTokenValidationResponse
+            {
+                IsValid = false,
+                Message = "Token has expired"
+            };
+        }
+
+        return new RefreshTokenValidationResponse
+        {
+            IsValid = true
+        };
+    }
+
     public JwtSecurityToken ReadToken(string accessToken)
     {
         var handler = new JwtSecurityTokenHandler();
         var securityToken = handler.ReadJwtToken(accessToken);
 
         return securityToken;
+    }
+
+    public async Task<RefreshToken> CreateRefreshToken(int userId, string createdByIp)
+    {
+        var refreshToken = new RefreshToken
+        {
+            UserId = userId,
+            Token = Guid.NewGuid(),
+            ExpiryDate = DateTime.UtcNow.AddHours(jwtOptions.RefreshTokenLifetimeInHours),
+            CreatedDate = DateTime.UtcNow,
+            CreatedByIp = createdByIp,
+            Revoked = false
+        };
+
+        await this.context.RefreshTokens.AddAsync(refreshToken);
+        await this.context.SaveChangesAsync();
+
+        return refreshToken;
+    }
+
+    public async Task RevokeRefreshToken(Guid token, string revokedByIp)
+    {
+        var refreshToken = await this.context.RefreshTokens.FirstOrDefaultAsync(rt => rt.Token == token);
+
+        if (refreshToken == null)
+        {
+            throw new Exception("Invalid token.");
+        }
+
+        refreshToken.Revoked = true;
+        refreshToken.RevokedByIp = revokedByIp;
+
+        await this.context.SaveChangesAsync();
+
+        var logEntry = new LogEntry
+        {
+            EventDate = DateTime.UtcNow,
+            EventIp = revokedByIp,
+            EventUserId = refreshToken.UserId,
+            EventType = "RefreshTokenRevoked"
+        };
+        await this.context.LogEntries.AddAsync(logEntry);
+        await this.context.SaveChangesAsync();
     }
 
     public async Task<RefreshToken> UpdateRefreshTokenLifeTime(Guid token, int userId)

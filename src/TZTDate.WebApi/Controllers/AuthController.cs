@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using TZTBank.Core.Data.DateUser.Dtos;
 using TZTBank.Infrastructure.Data.DateUser.Commands;
 using TZTDate.Core.Data.DateUser.Dtos;
+using TZTDate.Infrastructure.Data.DateToken.Commands;
 using TZTDate.Infrastructure.Data.DateUser.Commands;
 using TZTDate.Infrastructure.Services.Base;
 using TZTDate.WebApi.Filters;
@@ -35,60 +36,25 @@ public class AuthController : ControllerBase
   [HttpPost]
   public async Task<ActionResult> Login(UserLoginDto loginDto)
   {
-    var jwt = await sender.Send(new LoginCommand() { userLoginDto = loginDto });
+    var result = await sender.Send(new LoginCommand() { userLoginDto = loginDto });
 
-    return Ok(jwt);
+    return Ok(result);
   }
 
   [HttpPut]
   public async Task<IActionResult> UpdateTokenAsync(UpdateTokenDto updateTokenDto)
   {
-    var validateToken = await tokenService.ValidateToken(updateTokenDto.AccessToken);
+    var result = await sender.Send(new UpdateTokenCommand { UpdateTokenDto = updateTokenDto });
 
-    if (validateToken == false)
+    if (result == null || !result.Success)
     {
-      return base.BadRequest("Token is invalid!");
+      return BadRequest(result?.ErrorMessage ?? "Failed to update token.");
     }
 
-    var securityToken = tokenService.ReadToken(updateTokenDto.AccessToken);
-    var idClaim = securityToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-
-    if (idClaim == null)
+    return Ok(new
     {
-      return base.BadRequest("JWT Token must contain 'id' claim!");
-    }
-
-    int id = int.Parse(idClaim.Value);
-    var user = await sender.Send(new FindByIdCommand
-    {
-      Id = id
-    });
-
-    if (user == null)
-    {
-      return base.NotFound($"Couldn't update the token. User with id '{id}' doesn't exist!");
-    }
-
-    var roles = await sender.Send(new GetUserRolesCommand
-    {
-      UserId = user.Id
-    });
-
-    var claims = roles
-        .Select(role => new Claim(ClaimTypes.Role, role.Name))
-        .Append(new Claim(ClaimTypes.Name, user.Username))
-        .Append(new Claim(ClaimTypes.Email, user.Email))
-        .Append(new Claim(ClaimTypes.NameIdentifier, id.ToString()));
-
-    var newJwt = tokenService.CreateToken(claims);
-
-    var updatedRefreshToken = await tokenService.UpdateRefreshTokenLifeTime(updateTokenDto.RefreshToken, id);
-
-    return base.Ok(new
-    {
-      accessToken = newJwt,
-      refreshToken = updatedRefreshToken.Token
+      accessToken = result.AccessToken,
+      refreshToken = result.RefreshToken
     });
   }
-
 }

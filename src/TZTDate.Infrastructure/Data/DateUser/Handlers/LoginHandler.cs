@@ -2,13 +2,14 @@ using System.Security.Claims;
 using MediatR;
 using TZTBank.Infrastructure.Data.DateUser.Commands;
 using TZTDate.Core.Data.DateUser;
+using TZTDate.Core.Data.DateUser.Responses;
 using TZTDate.Infrastructure.Data;
 using TZTDate.Infrastructure.Data.DateUser.Commands;
 using TZTDate.Infrastructure.Services.Base;
 
 namespace TZTBank.Infrastructure.Data.BankUser.Handlers;
 
-public class LoginHandler : IRequestHandler<LoginCommand, string>
+public class LoginHandler : IRequestHandler<LoginCommand, LoginResponse>
 {
     private readonly ITokenService tokenService;
     private readonly ISender sender;
@@ -21,21 +22,21 @@ public class LoginHandler : IRequestHandler<LoginCommand, string>
         this.tokenService = tokenService;
     }
 
-    public async Task<string> Handle(LoginCommand request, CancellationToken cancellationToken)
+    public async Task<LoginResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         if (request.userLoginDto is null)
         {
-            throw new NullReferenceException($"{nameof(request.userLoginDto)} cannot be null");
+            throw new ArgumentNullException($"{nameof(request.userLoginDto)} cannot be null");
         }
 
         if (string.IsNullOrEmpty(request.userLoginDto.Email))
         {
-            throw new NullReferenceException($"{nameof(request.userLoginDto.Email)} cannot be empty");
+            throw new ArgumentNullException($"{nameof(request.userLoginDto.Email)} cannot be empty");
         }
 
         if (string.IsNullOrEmpty(request.userLoginDto.Password))
         {
-            throw new NullReferenceException($"{nameof(request.userLoginDto.Password)} cannot be empty");
+            throw new ArgumentNullException($"{nameof(request.userLoginDto.Password)} cannot be empty");
         }
 
         var user = await sender.Send(new FindByEmailCommand
@@ -45,7 +46,7 @@ public class LoginHandler : IRequestHandler<LoginCommand, string>
 
         if (user is null)
         {
-            throw new NullReferenceException("User email not found");
+            throw new ArgumentNullException("User email not found");
         }
 
         if (!BCrypt.Net.BCrypt.Verify(request.userLoginDto.Password, user.PasswordHash))
@@ -79,6 +80,9 @@ public class LoginHandler : IRequestHandler<LoginCommand, string>
         await this.context.RefreshTokens.AddAsync(refreshToken);
         await this.context.SaveChangesAsync();
 
-        return tokenService.CreateToken(claims);
+        return new LoginResponse{
+            AccessToken = tokenService.CreateToken(claims),
+            RefreshToken = refreshToken.Token
+        };
     }
 }

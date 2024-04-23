@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TZTDate.Core.Data.DateLogEntry.Models;
 using TZTDate.Core.Data.DateUser;
 
 namespace TZTDate.Infrastructure.Data;
@@ -6,6 +7,7 @@ namespace TZTDate.Infrastructure.Data;
 public class TZTDateDbContext : DbContext
 {
     public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<LogEntry> LogEntries { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<UserRole> UserRoles { get; set; }
     public DbSet<Role> Roles { get; set; }

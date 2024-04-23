@@ -27,7 +27,7 @@ public class AddNewHandler : IRequestHandler<AddNewCommand>
     {
         if (request.UserRegisterDto is null)
         {
-            throw new NullReferenceException($"{nameof(request.UserRegisterDto)} cannot be null");
+            throw new ArgumentNullException($"{nameof(request.UserRegisterDto)} cannot be null");
         }
 
         var result = await sender.Send(new FindByEmailCommand
@@ -37,7 +37,7 @@ public class AddNewHandler : IRequestHandler<AddNewCommand>
 
         if (result is not null)
         {
-            throw new NullReferenceException($"{request.UserRegisterDto.Email} already exists");
+            throw new ArgumentNullException($"{request.UserRegisterDto.Email} already exists");
         }
 
         var address = new Address
