@@ -1,5 +1,7 @@
+using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage.Sas;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using TZTDate.Core.Data.Options;
@@ -11,11 +13,13 @@ public class AzureBlobService : IAzureBlobService
 {
     BlobServiceClient blobServiceClient;
     BlobContainerClient blobContainerClient;
+    BlobOptions blobOptions;
 
     public AzureBlobService(IOptionsSnapshot<BlobOptions> optionsSnapshot)
     {
         blobServiceClient = new BlobServiceClient(optionsSnapshot.Value.ConnectionString);
         blobContainerClient = blobServiceClient.GetBlobContainerClient(optionsSnapshot.Value.ContainerName);
+        blobOptions = optionsSnapshot.Value;
     }
 
     public async Task<List<BlobContentInfo>> UploadFiles(List<IFormFile> files)
@@ -69,8 +73,31 @@ public class AzureBlobService : IAzureBlobService
         await blobContainerClient.DeleteBlobAsync(blobName);
     }
 
-    public BlobClient GetBlobItemAsync(string blobName)
+    public BlobClient GetBlobItem(string blobName)
     {
         return blobContainerClient.GetBlobClient(blobName);
+    }
+
+    public string GetBlobItemSAS(string path)
+    {
+        var blobSasBuilder = new BlobSasBuilder
+        {
+            BlobContainerName = blobOptions.ContainerName,
+            BlobName = path,
+            Resource = "b",
+            StartsOn = DateTimeOffset.UtcNow,
+            ExpiresOn = DateTimeOffset.UtcNow.AddHours(1),
+        };
+
+        blobSasBuilder.SetPermissions(BlobSasPermissions.Read);
+
+        var sasToken = blobSasBuilder.ToSasQueryParameters(new StorageSharedKeyCredential(blobOptions.StorageAccountName, blobOptions.StorageKey)).ToString();
+        var blobItem = this.GetBlobItem(path);
+        var blobUriWithSas = new UriBuilder(blobItem.Uri)
+        {
+            Query = sasToken
+        };
+
+        return blobUriWithSas.ToString();
     }
 }

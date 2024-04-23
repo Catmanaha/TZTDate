@@ -1,5 +1,8 @@
+using System.Security.Claims;
 using MediatR;
 using TZTBank.Infrastructure.Data.DateUser.Commands;
+using TZTDate.Core.Data.DateUser;
+using TZTDate.Infrastructure.Data;
 using TZTDate.Infrastructure.Data.DateUser.Commands;
 using TZTDate.Infrastructure.Services.Base;
 
@@ -9,9 +12,11 @@ public class LoginHandler : IRequestHandler<LoginCommand, string>
 {
     private readonly ITokenService tokenService;
     private readonly ISender sender;
+    private readonly TZTDateDbContext context;
 
-    public LoginHandler(ITokenService tokenService, ISender sender)
+    public LoginHandler(ITokenService tokenService, ISender sender, TZTDateDbContext context)
     {
+        this.context = context;
         this.sender = sender;
         this.tokenService = tokenService;
     }
@@ -48,12 +53,32 @@ public class LoginHandler : IRequestHandler<LoginCommand, string>
             throw new ArgumentException("Wrong password");
         }
 
-        if (request.userLoginDto.Email.ToLower().Contains("admin"))
+        var roles = await sender.Send(new GetUserRolesCommand
         {
-            return tokenService.CreateTokenAdmin(user);
+            UserId = user.Id
+        });
+
+        var claims = new List<Claim>() {
+            new Claim(ClaimTypes.Name, user.Username),
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Email, user.Email)
+        };
+
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role.Name));
         }
 
-        return tokenService.CreateToken(user);
 
+        var refreshToken = new RefreshToken()
+        {
+            Token = Guid.NewGuid(),
+            UserId = user.Id
+        };
+
+        await this.context.RefreshTokens.AddAsync(refreshToken);
+        await this.context.SaveChangesAsync();
+
+        return tokenService.CreateToken(claims);
     }
 }

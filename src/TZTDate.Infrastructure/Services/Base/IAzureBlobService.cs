@@ -10,5 +10,6 @@ public interface IAzureBlobService
     public Task Uploadfile(IFormFile file, string fileName = null);
     public Task<List<BlobItem>> GetBlob();
     public Task DeleteBlob(string blobName);
-    public BlobClient GetBlobItemAsync(string blobName);
+    public BlobClient GetBlobItem(string blobName);
+    public string GetBlobItemSAS(string path);
 }

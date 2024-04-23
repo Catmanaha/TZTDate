@@ -1,0 +1,8 @@
+namespace TZTDate.Core.Data.DateUser;
+
+public class RefreshToken
+{
+    public int Id { get; set; }
+    public int UserId { get; set; }
+    public Guid Token { get; set; }
+}

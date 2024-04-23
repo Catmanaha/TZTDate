@@ -1,14 +1,12 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Identity;
 using TZTBank.Infrastructure.Data.DateUser.Commands;
-using TZTDate.Core.Data.DateUser.Enums;
 using TZTDate.Core.Data.DateUser;
 using System.Reflection;
 using Microsoft.AspNetCore.Http;
 using TZTDate.Infrastructure.Data.DateUser.Commands;
 using Microsoft.EntityFrameworkCore;
-using TZTDate.Infrastructure.Services;
 using TZTDate.Infrastructure.Services.Base;
+using TZTDate.Core.Data.DateUser.Enums;
 
 namespace TZTDate.Infrastructure.Data.DateUser.Handlers;
 
@@ -92,10 +90,21 @@ public class AddNewHandler : IRequestHandler<AddNewCommand>
             SearchingAgeStart = request.UserRegisterDto.SearchingAgeStart,
             SearchingAgeEnd = request.UserRegisterDto.SearchingAgeEnd,
             Interests = request.UserRegisterDto.Interests,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.UserRegisterDto.Password)
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.UserRegisterDto.Password),
         };
 
         await tZTDateDbContext.Users.AddAsync(user);
+        await tZTDateDbContext.SaveChangesAsync();
+
+        var role = await tZTDateDbContext.Roles.FirstOrDefaultAsync(r => r.Name == UserRoles.User.ToString());
+        if (role == null)
+        {
+            throw new ArgumentException($"Role does not exist with {UserRoles.User} name");
+        }
+
+        var userRole = new UserRole { User = user, Role = role };
+        await tZTDateDbContext.UserRoles.AddAsync(userRole);
+
         await tZTDateDbContext.SaveChangesAsync();
     }
 }

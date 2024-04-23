@@ -1,74 +1,94 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using TZTDate.Core.Data.DateUser;
-using TZTDate.Core.Data.DateUser.Enums;
 using TZTDate.Core.Data.Options;
+using TZTDate.Infrastructure.Data;
 using TZTDate.Infrastructure.Services.Base;
 
-namespace TZTDate.Infrastructure.Services
+namespace TZTDate.Infrastructure.Services;
+
+public class TokenService : ITokenService
 {
-    public class TokenService : ITokenService
+    private readonly JwtOptions jwtOptions;
+    private readonly TZTDateDbContext context;
+
+    public TokenService(IOptionsSnapshot<JwtOptions> optionsSnapshot, TZTDateDbContext context)
     {
-        private readonly JwtOptions jwtOptions;
+        this.context = context;
+        this.jwtOptions = optionsSnapshot.Value;
 
-        public TokenService(IOptionsSnapshot<JwtOptions> optionsSnapshot)
+    }
+
+    public string CreateToken(IEnumerable<Claim> claims)
+    {
+        var securityKey = new SymmetricSecurityKey(this.jwtOptions.KeyInBytes);
+        var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.Aes128CbcHmacSha256);
+
+        var securityToken = new JwtSecurityToken(
+            issuer: this.jwtOptions.Issuers.First(),
+            audience: this.jwtOptions.Audience,
+            claims,
+            expires: DateTime.Now.AddMinutes(this.jwtOptions.LifetimeInMinutes),
+            signingCredentials: signingCredentials
+        );
+
+        var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+        var jwt = jwtSecurityTokenHandler.WriteToken(securityToken);
+
+        return jwt;
+    }
+
+    public async Task<bool> ValidateToken(string accessToken)
+    {
+        var handler = new JwtSecurityTokenHandler();
+
+        var validationResult = await handler.ValidateTokenAsync(
+            accessToken,
+            new TokenValidationParameters()
+            {
+                ValidateLifetime = false,
+                IssuerSigningKey = new SymmetricSecurityKey(this.jwtOptions.KeyInBytes),
+
+                ValidateAudience = true,
+                ValidAudience = this.jwtOptions.Audience,
+
+                ValidateIssuer = true,
+                ValidIssuers = this.jwtOptions.Issuers,
+            }
+        );
+
+        return validationResult.IsValid;
+    }
+
+    public JwtSecurityToken ReadToken(string accessToken)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var securityToken = handler.ReadJwtToken(accessToken);
+
+        return securityToken;
+    }
+
+    public async Task<RefreshToken> UpdateRefreshTokenLifeTime(Guid token, int userId)
+    {
+        var refreshTokenToChange = this.context.RefreshTokens.FirstOrDefault(refreshToken => refreshToken.Token == token && refreshToken.UserId == userId);
+
+        if (refreshTokenToChange == null)
         {
-            this.jwtOptions = optionsSnapshot.Value;
+            var refreshTokensToDelete = await this.context.RefreshTokens.Where(rf => rf.UserId == userId)
+                .ToListAsync();
 
+            this.context.RefreshTokens.RemoveRange(refreshTokensToDelete);
+            await this.context.SaveChangesAsync();
+
+            throw new ArgumentException($"Refresh token '{token}' doesn't exist for userid '{userId}'");
         }
 
-        public string CreateToken(User user)
-        {
-            var claims = new List<Claim>() {
-            new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Role, UserRoles.User.ToString()),
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email)
-        };
+        refreshTokenToChange.Token = Guid.NewGuid();
+        await this.context.SaveChangesAsync();
 
-            var securityKey = new SymmetricSecurityKey(this.jwtOptions.KeyInBytes);
-            var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.Aes128CbcHmacSha256);
-
-            var securityToken = new JwtSecurityToken(
-                issuer: this.jwtOptions.Issuers.First(),
-                audience: this.jwtOptions.Audience,
-                claims,
-                expires: DateTime.Now.AddMinutes(this.jwtOptions.LifetimeInMinutes),
-                signingCredentials: signingCredentials
-            );
-
-            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-            var jwt = jwtSecurityTokenHandler.WriteToken(securityToken);
-
-            return jwt;
-        }
-
-        public string CreateTokenAdmin(User user)
-        {
-            var claims = new List<Claim>() {
-            new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Role, UserRoles.Admin.ToString()),
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email)
-        };
-
-            var securityKey = new SymmetricSecurityKey(this.jwtOptions.KeyInBytes);
-            var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.Aes128CbcHmacSha256);
-
-            var securityToken = new JwtSecurityToken(
-                issuer: this.jwtOptions.Issuers.First(),
-                audience: this.jwtOptions.Audience,
-                claims,
-                expires: DateTime.Now.AddMinutes(this.jwtOptions.LifetimeInMinutes),
-                signingCredentials: signingCredentials
-            );
-
-            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-            var jwt = jwtSecurityTokenHandler.WriteToken(securityToken);
-
-            return jwt;
-        }
+        return refreshTokenToChange;
     }
 }

@@ -10,6 +10,10 @@ using Microsoft.AspNetCore.Mvc;
 using TZTDate.Core.Data.FaceDetectionApi.Managers;
 using TZTDate.Core.Data.DateApi.Managers;
 using TZTDate.Core.Data.Options;
+using TZTDate.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using TZTDate.Core.Data.DateUser;
+using TZTDate.Core.Data.DateUser.Enums;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -89,6 +93,30 @@ builder.Services
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+  var context = scope.ServiceProvider.GetRequiredService<TZTDateDbContext>();
+  await context.Database.MigrateAsync();
+  await context.Database.EnsureCreatedAsync();
+
+  var userRoleExists = await context.Roles.AnyAsync(r => r.Name == "User");
+  var adminRoleExists = await context.Roles.AnyAsync(r => r.Name == "Admin");
+
+  if (!userRoleExists)
+  {
+    var userRole = new Role { Name = UserRoles.User.ToString() };
+    await context.Roles.AddAsync(userRole);
+  }
+
+  if (!adminRoleExists)
+  {
+    var adminRole = new Role { Name = UserRoles.Admin.ToString() };
+    await context.Roles.AddAsync(adminRole);
+  }
+
+  await context.SaveChangesAsync();
+}
 
 app.UseSwagger();
 app.UseSwaggerUI();

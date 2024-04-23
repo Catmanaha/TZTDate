@@ -14,7 +14,6 @@ using TZTDate.Core.Data.SearchData;
 using TZTDate.Infrastructure.Data;
 using TZTDate.Infrastructure.Data.DateUser.Commands;
 using TZTDate.Infrastructure.Data.SearchData.Services;
-using TZTDate.Infrastructure.Services;
 using TZTDate.Infrastructure.Services.Base;
 using TZTDate.WebApi.Filters;
 
@@ -29,21 +28,15 @@ namespace TZTDate.WebApi.Controllers
         private const int pageItemsCount = 12;
         private readonly ISender sender;
         private readonly TZTDateDbContext context;
-        private readonly IFaceDetectionRepository faceDetectionRepository;
         private readonly IAzureBlobService azureBlobService;
-        private readonly BlobOptions blobOptions;
 
         public UserController(ISender sender,
                               TZTDateDbContext context,
-                              IFaceDetectionRepository faceDetectionRepository,
-                              IAzureBlobService azureBlobService,
-                              IOptionsSnapshot<BlobOptions> optionsSnapshotBlob)
+                              IAzureBlobService azureBlobService)
         {
             this.sender = sender;
             this.context = context;
-            this.faceDetectionRepository = faceDetectionRepository;
             this.azureBlobService = azureBlobService;
-            this.blobOptions = optionsSnapshotBlob.Value;
         }
 
         [HttpGet]
@@ -57,25 +50,9 @@ namespace TZTDate.WebApi.Controllers
 
             foreach (var path in user.ProfilePicPaths)
             {
-                var blobSasBuilder = new BlobSasBuilder
-                {
-                    BlobContainerName = blobOptions.ContainerName,
-                    BlobName = path,
-                    Resource = "b",
-                    StartsOn = DateTimeOffset.UtcNow,
-                    ExpiresOn = DateTimeOffset.UtcNow.AddHours(1),
-                };
+                var securePath = azureBlobService.GetBlobItemSAS(path);
 
-                blobSasBuilder.SetPermissions(BlobSasPermissions.Read);
-
-                var sasToken = blobSasBuilder.ToSasQueryParameters(new StorageSharedKeyCredential(blobOptions.StorageAccountName, blobOptions.StorageKey)).ToString();
-
-                var blobUriWithSas = new UriBuilder(azureBlobService.GetBlobItemAsync(path).Uri)
-                {
-                    Query = sasToken
-                };
-
-                ImageUris.Add(blobUriWithSas.ToString());
+                ImageUris.Add(securePath);
             }
 
             return Ok(new AccountDto
@@ -90,7 +67,17 @@ namespace TZTDate.WebApi.Controllers
         {
             var user = await context.Users.FirstOrDefaultAsync(user => user.Id == id);
 
-            return Ok(user);
+            var ImageUris = new List<string>();
+
+            foreach (var path in user.ProfilePicPaths)
+            {
+                var securePath = azureBlobService.GetBlobItemSAS(path);
+
+                ImageUris.Add(securePath);
+            }
+
+
+            return Ok(new { User = user, ImageUris });
         }
 
         [HttpGet]
