@@ -11,4 +11,6 @@ public class UserLoginDto
 
     [Required(ErrorMessage = "Password cannot be empty")]
     public string? Password { get; set; }
+    [Required(ErrorMessage = "IpAddress cannot be empty")]
+    public string? IpAddress { get; set; }
 }

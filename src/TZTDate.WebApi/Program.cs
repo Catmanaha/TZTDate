@@ -92,6 +92,16 @@ builder.Services
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddCors(options => {
+    options.AddPolicy("BlazorWasmPolicy", corsBuilder => {
+        corsBuilder
+            .WithOrigins("http://localhost:5251")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -118,9 +128,11 @@ using (var scope = app.Services.CreateScope())
   await context.SaveChangesAsync();
 }
 
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.UseCors("BlazorWasmPolicy");
 app.UseHttpsRedirection();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();

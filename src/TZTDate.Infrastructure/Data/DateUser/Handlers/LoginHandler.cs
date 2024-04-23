@@ -70,15 +70,7 @@ public class LoginHandler : IRequestHandler<LoginCommand, LoginResponse>
             claims.Add(new Claim(ClaimTypes.Role, role.Name));
         }
 
-
-        var refreshToken = new RefreshToken()
-        {
-            Token = Guid.NewGuid(),
-            UserId = user.Id
-        };
-
-        await this.context.RefreshTokens.AddAsync(refreshToken);
-        await this.context.SaveChangesAsync();
+        var refreshToken = await tokenService.CreateRefreshToken(user.Id, request.userLoginDto.IpAddress);
 
         return new LoginResponse{
             AccessToken = tokenService.CreateToken(claims),
