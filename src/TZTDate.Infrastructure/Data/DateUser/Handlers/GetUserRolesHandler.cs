@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TZTDate.Core.Data.DateUser;
+using TZTDate.Core.Exceptions;
 using TZTDate.Infrastructure.Data.DateUser.Commands;
 
 namespace TZTDate.Infrastructure.Data.DateUser.Handlers;
@@ -23,7 +24,7 @@ public class GetUserRolesHandler : IRequestHandler<GetUserRolesCommand, IEnumera
 
         if (user == null)
         {
-            throw new NullReferenceException("User not found");
+            throw new EntityNotFoundException("User not found");
         }
 
         var roles = user.UserRoles.Select(ur => ur.Role).ToList();

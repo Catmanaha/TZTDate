@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TZTDate.Core.Data.DateLogEntry.Models;
+using TZTDate.Core.Data.DateToken.Models;
 using TZTDate.Core.Data.DateUser;
 
 namespace TZTDate.Infrastructure.Data;

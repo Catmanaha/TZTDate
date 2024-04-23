@@ -11,11 +11,11 @@ namespace TZTDate.Infrastructure.Services;
 
 public class AzureBlobService : IAzureBlobService
 {
-    BlobServiceClient blobServiceClient;
-    BlobContainerClient blobContainerClient;
-    BlobOptions blobOptions;
+    private readonly BlobServiceClient blobServiceClient;
+    private readonly BlobContainerClient blobContainerClient;
+    private readonly BlobOption blobOptions;
 
-    public AzureBlobService(IOptionsSnapshot<BlobOptions> optionsSnapshot)
+    public AzureBlobService(IOptionsSnapshot<BlobOption> optionsSnapshot)
     {
         blobServiceClient = new BlobServiceClient(optionsSnapshot.Value.ConnectionString);
         blobContainerClient = blobServiceClient.GetBlobContainerClient(optionsSnapshot.Value.ContainerName);

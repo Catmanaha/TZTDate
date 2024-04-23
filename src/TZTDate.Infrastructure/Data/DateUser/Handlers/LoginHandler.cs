@@ -1,25 +1,20 @@
 using System.Security.Claims;
 using MediatR;
 using TZTBank.Infrastructure.Data.DateUser.Commands;
-using TZTDate.Core.Data.DateUser;
 using TZTDate.Core.Data.DateUser.Responses;
-using TZTDate.Infrastructure.Data;
+using TZTDate.Core.Exceptions;
+using TZTDate.Infrastructure.Data.DateToken.Commands;
 using TZTDate.Infrastructure.Data.DateUser.Commands;
-using TZTDate.Infrastructure.Services.Base;
 
 namespace TZTBank.Infrastructure.Data.BankUser.Handlers;
 
 public class LoginHandler : IRequestHandler<LoginCommand, LoginResponse>
 {
-    private readonly ITokenService tokenService;
     private readonly ISender sender;
-    private readonly TZTDateDbContext context;
 
-    public LoginHandler(ITokenService tokenService, ISender sender, TZTDateDbContext context)
+    public LoginHandler(ISender sender)
     {
-        this.context = context;
         this.sender = sender;
-        this.tokenService = tokenService;
     }
 
     public async Task<LoginResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
@@ -46,7 +41,7 @@ public class LoginHandler : IRequestHandler<LoginCommand, LoginResponse>
 
         if (user is null)
         {
-            throw new ArgumentNullException("User email not found");
+            throw new EntityNotFoundException("User email not found");
         }
 
         if (!BCrypt.Net.BCrypt.Verify(request.userLoginDto.Password, user.PasswordHash))
@@ -70,10 +65,18 @@ public class LoginHandler : IRequestHandler<LoginCommand, LoginResponse>
             claims.Add(new Claim(ClaimTypes.Role, role.Name));
         }
 
-        var refreshToken = await tokenService.CreateRefreshToken(user.Id, request.userLoginDto.IpAddress);
+        var refreshToken = await sender.Send(new CreateRefreshTokenCommand
+        {
+            UserId = user.Id,
+            CreatedByIp = request.userLoginDto.IpAddress
+        });
 
-        return new LoginResponse{
-            AccessToken = tokenService.CreateToken(claims),
+        return new LoginResponse
+        {
+            AccessToken = await sender.Send(new CreateTokenCommand
+            {
+                Claims = claims
+            }),
             RefreshToken = refreshToken.Token
         };
     }

@@ -1,34 +1,27 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using MediatR;
+using TZTDate.Core.Data.DateToken.Responses;
 using TZTDate.Infrastructure.Data.DateToken.Commands;
-using TZTDate.Infrastructure.Data.DateToken.Responses;
 using TZTDate.Infrastructure.Data.DateUser.Commands;
-using TZTDate.Infrastructure.Services.Base;
 
 namespace TZTDate.Infrastructure.Data.DateToken.Handlers;
 
 public class UpdateTokenHandler : IRequestHandler<UpdateTokenCommand, UpdateTokenResponse>
 {
-    private readonly ITokenService tokenService;
     private readonly ISender sender;
 
-    public UpdateTokenHandler(ITokenService tokenService, ISender sender)
+    public UpdateTokenHandler(ISender sender)
     {
-        this.tokenService = tokenService;
         this.sender = sender;
     }
 
     public async Task<UpdateTokenResponse> Handle(UpdateTokenCommand request, CancellationToken cancellationToken)
     {
-        // The body of your UpdateTokenAsync method goes here.
-        // Replace references to updateTokenDto with request.UpdateTokenDto.
-        // Return an UpdateTokenResult instead of an IActionResult.
+        var securityToken = await sender.Send(new ReadTokenCommand
+        {
+            AccessToken = request.UpdateTokenDto.AccessToken
+        });
 
-        var securityToken = tokenService.ReadToken(request.UpdateTokenDto.AccessToken);
         var idClaim = securityToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
 
         if (idClaim == null)
@@ -55,7 +48,11 @@ public class UpdateTokenHandler : IRequestHandler<UpdateTokenCommand, UpdateToke
             };
         }
 
-        var validateRefreshToken = await tokenService.ValidateRefreshToken(request.UpdateTokenDto.RefreshToken, id);
+        var validateRefreshToken = await sender.Send(new ValidateRefreshTokenCommand
+        {
+            Token = request.UpdateTokenDto.RefreshToken,
+            UserId = id
+        });
 
         if (validateRefreshToken.IsValid == false)
         {
@@ -77,10 +74,22 @@ public class UpdateTokenHandler : IRequestHandler<UpdateTokenCommand, UpdateToke
             .Append(new Claim(ClaimTypes.Email, user.Email))
             .Append(new Claim(ClaimTypes.NameIdentifier, id.ToString()));
 
-        var newJwt = tokenService.CreateToken(claims);
+        var newJwt = await sender.Send(new CreateTokenCommand
+        {
+            Claims = claims
+        });
 
-        var updatedRefreshToken = await tokenService.UpdateRefreshTokenLifeTime(request.UpdateTokenDto.RefreshToken, id);
-        await tokenService.RevokeRefreshToken(request.UpdateTokenDto.RefreshToken, "System");
+        var updatedRefreshToken = await sender.Send(new UpdateRefreshTokenLifeTimeCommand
+        {
+            Token = request.UpdateTokenDto.RefreshToken,
+            UserId = id
+        });
+
+        await sender.Send(new RevokeRefreshTokenCommand
+        {
+            Token = request.UpdateTokenDto.RefreshToken,
+            RevokedByIp = "System"
+        });
 
         return new UpdateTokenResponse
         {

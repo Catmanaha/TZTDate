@@ -1,4 +1,5 @@
 using System.Text;
+using TZTDate.Core.Exceptions;
 
 namespace TZTDate.WebApi.Middlewares;
 
@@ -15,6 +16,11 @@ public class ExceptionHandlingMiddleware : IMiddleware
       context.Response.StatusCode = StatusCodes.Status400BadRequest;
       await context.Response.WriteAsync(
           $"{ex.Message}\n{ex.InnerException?.Message}");
+    }
+    catch (EntityNotFoundException ex)
+    {
+      context.Response.StatusCode = StatusCodes.Status404NotFound;
+      await context.Response.WriteAsync(ex.Message);
     }
     catch (Exception ex)
     {
