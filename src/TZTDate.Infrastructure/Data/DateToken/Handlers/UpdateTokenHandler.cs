@@ -85,6 +85,14 @@ public class UpdateTokenHandler : IRequestHandler<UpdateTokenCommand, UpdateToke
             UserId = id
         });
 
+        var newRefreshToken = await sender.Send(new CreateRefreshTokenCommand
+        {
+            UserId = id,
+            CreatedByIp = request.UpdateTokenDto.IpAddress
+        });
+
+        updatedRefreshToken.ReplacedByTokenId = newRefreshToken.Id;
+
         await sender.Send(new RevokeRefreshTokenCommand
         {
             Token = request.UpdateTokenDto.RefreshToken,
@@ -94,7 +102,7 @@ public class UpdateTokenHandler : IRequestHandler<UpdateTokenCommand, UpdateToke
         return new UpdateTokenResponse
         {
             AccessToken = newJwt,
-            RefreshToken = updatedRefreshToken.Token,
+            RefreshToken = newRefreshToken.Token,
             Success = true
         };
     }

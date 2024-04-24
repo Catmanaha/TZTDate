@@ -42,16 +42,9 @@ public class AzureBlobService : IAzureBlobService
         return azureResponse;
     }
 
-    public async Task Uploadfile(IFormFile file, string fileName = null)
+    public async Task UploadFile(Stream file, string fileName = null)
     {
-        string fileNameResult = fileName is null ? file.FileName : fileName;
-        using (var memoryStream = new MemoryStream())
-        {
-            file.CopyTo(memoryStream);
-            memoryStream.Position = 0;
-
-            await blobContainerClient.UploadBlobAsync(fileNameResult, memoryStream);
-        }
+        await blobContainerClient.UploadBlobAsync(fileName, file);
     }
 
     public async Task<List<BlobItem>> GetBlob()

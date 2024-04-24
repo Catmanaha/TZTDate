@@ -48,10 +48,10 @@ public class UserRegisterDto
     [Required(ErrorMessage = "Interests cannot be empty")]
     public string? Interests { get; set; }
 
-    public IFormFile? Image1 { get; set; }
-    public IFormFile? Image2 { get; set; }
-    public IFormFile? Image3 { get; set; }
-    public IFormFile? Image4 { get; set; }
-    public IFormFile? Image5 { get; set; }
-    public IFormFile? Image6 { get; set; }
+    public byte[]? Image1 { get; set; }
+    public byte[]? Image2 { get; set; }
+    public byte[]? Image3 { get; set; }
+    public byte[]? Image4 { get; set; }
+    public byte[]? Image5 { get; set; }
+    public byte[]? Image6 { get; set; }
 }

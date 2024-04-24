@@ -21,7 +21,7 @@ public class AuthController : ControllerBase
   }
 
   [HttpPost]
-  public async Task<ActionResult> Register([FromForm] UserRegisterDto userDto)
+  public async Task<ActionResult> Register([FromForm]UserRegisterDto userDto)
   {
     await sender.Send(new AddNewCommand() { UserRegisterDto = userDto });
 

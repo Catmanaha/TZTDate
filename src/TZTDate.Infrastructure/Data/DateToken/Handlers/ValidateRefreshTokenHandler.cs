@@ -16,6 +16,7 @@ public class ValidateRefreshTokenHandler : IRequestHandler<ValidateRefreshTokenC
 
     public async Task<RefreshTokenValidationResponse> Handle(ValidateRefreshTokenCommand request, CancellationToken cancellationToken)
     {
+        System.Console.WriteLine(request.Token);
         var refreshToken = await this.context.RefreshTokens.FirstOrDefaultAsync(rt => rt.Token == request.Token);
 
         if (refreshToken == null)

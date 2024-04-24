@@ -58,13 +58,11 @@ public class AddNewHandler : IRequestHandler<AddNewCommand>
         {
             if (property.Name.Contains("Image"))
             {
-                if (property.GetValue(request.UserRegisterDto) is IFormFile formFile)
+                if (property.GetValue(request.UserRegisterDto) is byte[] formFile)
                 {
-                    var fileExtension = new FileInfo(formFile.FileName).Extension;
-
-                    var filename = $"{Guid.NewGuid()}{fileExtension}";
-
-                    await azureBlobService.Uploadfile(formFile, filename);
+                    var filename = Guid.NewGuid().ToString();
+                    using var memoryStream = new MemoryStream(formFile, writable: false);
+                    await azureBlobService.UploadFile(memoryStream, filename);  
 
                     imagePaths.Add(filename);
                 }
