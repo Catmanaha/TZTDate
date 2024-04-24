@@ -2,13 +2,17 @@ namespace TZTDate.Presentation.Controllers;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using TZTDate.Core.Data.DateUser;
+using TZTDate.Infrastructure.Data.ChatHub;
 
 public class ForumController : Controller
 {
     private readonly UserManager<User> userManager;
-    public ForumController(UserManager<User> userManager)
+    public IHubContext<ChatHub> hubContext;
+    public ForumController(UserManager<User> userManager, IHubContext<ChatHub> hubContext )
     {
+        this.hubContext = hubContext;
         this.userManager = userManager;
 
     }

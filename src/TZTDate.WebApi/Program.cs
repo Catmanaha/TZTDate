@@ -10,6 +10,7 @@ using TZTDate.Core.Data.DateUser;
 using TZTDate.WebApi.Options;
 using TZTDate.Infrastructure.Data.DependencyInjections;
 using TZTDate.Infrastructure.Extensions;
+using TZTDate.Infrastructure.Data.ChatHub;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -92,6 +93,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.MapHub<ChatHub>("/chat");
 app.UseAuthentication();
 app.UseAuthorization();
 
