@@ -32,8 +32,8 @@ else
                         @(currentUser.FollowedId.Contains(member.Id) ? "Unlike" : "Like")
                     </button>
                 </form>
-                <form class="" asp-controller="" asp-action="" method="">
-                    <input type="hidden" name="" value="" />
+                <form class="" asp-controller="Chat" asp-action="PrivateChat" method="post">
+                    <input type="hidden" name="companionId" value="@member.Id" />
                     <button @(
                         ((member.FollowedId is not null && currentUser.FollowedId is not null) 
                             ? (currentUser.FollowedId.Contains(member.Id) && member.FollowedId.Contains(currentUser.Id)) 

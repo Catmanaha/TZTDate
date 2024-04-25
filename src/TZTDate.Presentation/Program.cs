@@ -1,3 +1,4 @@
+using TZTDate.Infrastructure.Data.DependencyInjections;
 using TZTDate.Infrastructure.Data.Hubs;
 using System.Reflection;
 using System.Security.Claims;
@@ -6,6 +7,7 @@ using TZTDate.Infrastructure.Extensions;
 using TZTDate.Core.Data.DateApi.Managers;
 using TZTDate.Core.Data.FaceDetectionApi.Managers;
 using TZTDate.Presentation.Components;
+using TZTDate.Infrastructure.Data.ChatHub;
 
 var builder = WebApplication.CreateBuilder(args);
 

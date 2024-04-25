@@ -1,5 +1,6 @@
 using System.Reflection;
 using TZTDate.Infrastructure.Extensions;
+using TZTDate.Infrastructure.Data.ChatHub;
 using TZTDate.WebApi.Middlewares;
 using TZTDate.WebApi.Filters;
 using Microsoft.AspNetCore.Mvc;
@@ -69,6 +70,7 @@ using (var scope = app.Services.CreateScope())
   await context.SaveChangesAsync();
 }
 
+app.MapHub<ChatHub>("/chat");
 app.UseSwagger();
 app.UseSwaggerUI();
 

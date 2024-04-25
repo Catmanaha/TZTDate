@@ -1,3 +1,7 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using TZTDate.Core.Data.DateChat.Entities;
 using Microsoft.EntityFrameworkCore;
 using TZTDate.Core.Data.DateLogEntry.Models;
 using TZTDate.Core.Data.DateToken.Models;
@@ -7,6 +11,8 @@ namespace TZTDate.Infrastructure.Data;
 
 public class TZTDateDbContext : DbContext
 {
+    public DbSet<Message> Message { get; set; }
+    public DbSet<PrivateChat> PrivateChats { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<LogEntry> LogEntries { get; set; }
     public DbSet<User> Users { get; set; }

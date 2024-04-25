@@ -1,0 +1,62 @@
+@model CompanionsViewModel
+@{
+    ViewData["Title"] = "Chat";
+}
+
+<div class="container">
+
+    <div class="row" hidden>
+        <div class="col-3">Connection Id</div>
+        <div class="col-6"><span id="connectionId" /></div>
+    </div>
+
+    <div class="row">&nbsp;</div>
+
+    <div class="row">
+        <div class="col-2">User</div>
+        <div class="col-4"><input type="text" id="userInput" value="@Model.CurrentUser.UserName" disabled/></div>
+    </div>
+
+    <div class="row">&nbsp;</div>
+
+    <div class="row">
+        <div class="col-2">Message</div>
+        <div class="col-4"><input type="text" id="messageInput" /></div>
+    </div>
+
+    <div class="row">&nbsp;</div>
+
+    <div class="row" hidden>
+        <div class="col-2">Group</div>
+        <div class="col-4"><input type="text" id="groupName" value="@Model.PrivateChat.PrivateChatHashName"/></div>
+    </div>
+
+    <div class="row">&nbsp;</div>
+
+    <div class="row">
+        <div class="col-6">
+            <input type="button" id="sendToUser" value="Send Message"  />&nbsp;&nbsp;
+        </div>
+    </div>
+
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <hr />
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-6">
+        <ul id="messagesList">
+            @foreach(var message in Model.PrivateChat.Messages ?? new List<Message>())
+            {
+                <li>@message.Owner says @message.Content</li>
+            }
+        </ul>
+    </div>
+</div>
+
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/chat.js"></script>

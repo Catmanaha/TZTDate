@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TZTDate.Infrastructure\TZTDate.Infrastructure.csproj" />
+    
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.16">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>

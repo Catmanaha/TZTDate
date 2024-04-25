@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TZTDate.Infrastructure.Data;
@@ -12,9 +13,11 @@ using TZTDate.Infrastructure.Data;
 namespace TZTDate.Presentation.Migrations
 {
     [DbContext(typeof(TZTDateDbContext))]
-    partial class TZTDateDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240424013755_Add ChatHash")]
+    partial class AddChatHash
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -155,49 +158,6 @@ namespace TZTDate.Presentation.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("TZTDate.Core.Data.DateChat.Entities.Message", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Owner")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("PrivateChatId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PrivateChatId");
-
-                    b.ToTable("Message");
-                });
-
-            modelBuilder.Entity("TZTDate.Core.Data.DateChat.Entities.PrivateChat", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("PrivateChatHashName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PrivateChats");
-                });
-
             modelBuilder.Entity("TZTDate.Core.Data.DateUser.Address", b =>
                 {
                     b.Property<int>("Id")
@@ -218,6 +178,23 @@ namespace TZTDate.Presentation.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Addresses");
+                });
+
+            modelBuilder.Entity("TZTDate.Core.Data.DateUser.Chat.PrivateChat", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("PrivateChatHashName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PrivateChats");
                 });
 
             modelBuilder.Entity("TZTDate.Core.Data.DateUser.User", b =>
@@ -373,15 +350,6 @@ namespace TZTDate.Presentation.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TZTDate.Core.Data.DateChat.Entities.Message", b =>
-                {
-                    b.HasOne("TZTDate.Core.Data.DateChat.Entities.PrivateChat", null)
-                        .WithMany("Messages")
-                        .HasForeignKey("PrivateChatId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("TZTDate.Core.Data.DateUser.User", b =>
                 {
                     b.HasOne("TZTDate.Core.Data.DateUser.Address", "Address")
@@ -389,11 +357,6 @@ namespace TZTDate.Presentation.Migrations
                         .HasForeignKey("AddressId");
 
                     b.Navigation("Address");
-                });
-
-            modelBuilder.Entity("TZTDate.Core.Data.DateChat.Entities.PrivateChat", b =>
-                {
-                    b.Navigation("Messages");
                 });
 #pragma warning restore 612, 618
         }

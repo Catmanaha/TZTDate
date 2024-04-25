@@ -2,7 +2,8 @@
 @model List<User>;
 @{
     var currentUser = await UserManager.GetUserAsync(User);
-    ViewData["Title"] = $"{currentUser?.Username}'s members";
+    ViewData["Title"] = $"{currentUser?.UserName}'s members";
+    var emptyList = new List<User>();
     if (currentUser.FollowersId is null)
     {
         currentUser.FollowersId = new List<int>();
@@ -91,7 +92,7 @@ else
         font-size: 18px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         z-index: 1000;
-    };
+    }
 
     .member-container {
         display: flex;
@@ -100,24 +101,24 @@ else
         padding: 10px;
         border: 1px solid #ccc;
         border-radius: 5px;
-    };
+    }
 
     .member-image-container img {
         width: 50px;
         height: 50px;
         border-radius: 50%;
-    };
+    }
 
     .member-name-container span {
         font-weight: bold;
-    };
+    }
 
     .button-container {
         margin-left: auto;
         display: flex;
         align-items: center;
         gap: 10px;
-    };
+    }
 
     .chat-button {
         padding: 10px 20px;
@@ -127,10 +128,13 @@ else
         transition: background-color 0.3s ease;
         background-color: #17e41b;
         color: #333;
-        &:hover {
-            background-color: #cfcfcf;
-        };
-    };
+        &:hover
+
+    {
+        background-color: #cfcfcf;
+    }
+
+    }
 
     .like-button {
         padding: 10px 20px;
@@ -140,12 +144,16 @@ else
         transition: background-color 0.3s ease;
         background-color: #17e41b;
         color: #333;
-        &.liked {
-            background-color: #ff4d4d;
-            color: #fff;
-        };
-        &:hover {
-            background-color: #cfcfcf;
-        };
+        &.liked
+
+    {
+        background-color: #ff4d4d;
+        color: #fff;
+    }
+
+    &:hover {
+        background-color: #cfcfcf;
+    }
+
     }
 </style>
