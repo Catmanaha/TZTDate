@@ -1,51 +1,83 @@
+using System.Security.Claims;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 using TZTBank.Infrastructure.Data.DateUser.Commands;
-using TZTDate.Core.Data.DateUser;
+using TZTDate.Core.Data.DateUser.Responses;
+using TZTDate.Core.Exceptions;
+using TZTDate.Infrastructure.Data.DateToken.Commands;
+using TZTDate.Infrastructure.Data.DateUser.Commands;
 
 namespace TZTBank.Infrastructure.Data.BankUser.Handlers;
 
-public class LoginHandler : IRequestHandler<LoginCommand>
+public class LoginHandler : IRequestHandler<LoginCommand, LoginResponse>
 {
-    private readonly UserManager<User> userManager;
-    private readonly SignInManager<User> signInManager;
+    private readonly ISender sender;
 
-    public LoginHandler(UserManager<User> userManager, SignInManager<User> signInManager)
+    public LoginHandler(ISender sender)
     {
-        this.userManager = userManager;
-        this.signInManager = signInManager;
+        this.sender = sender;
     }
 
-    public async Task Handle(LoginCommand request, CancellationToken cancellationToken)
+    public async Task<LoginResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         if (request.userLoginDto is null)
         {
-            throw new NullReferenceException($"{nameof(request.userLoginDto)} cannot be null");
+            throw new ArgumentNullException($"{nameof(request.userLoginDto)} cannot be null");
         }
 
         if (string.IsNullOrEmpty(request.userLoginDto.Email))
         {
-            throw new NullReferenceException($"{nameof(request.userLoginDto.Email)} cannot be empty");
+            throw new ArgumentNullException($"{nameof(request.userLoginDto.Email)} cannot be empty");
         }
 
         if (string.IsNullOrEmpty(request.userLoginDto.Password))
         {
-            throw new NullReferenceException($"{nameof(request.userLoginDto.Password)} cannot be empty");
+            throw new ArgumentNullException($"{nameof(request.userLoginDto.Password)} cannot be empty");
         }
 
-        var user = await userManager.FindByEmailAsync(request.userLoginDto.Email);
+        var user = await sender.Send(new FindByEmailCommand
+        {
+            Email = request.userLoginDto.Email
+        });
 
         if (user is null)
         {
-            throw new NullReferenceException("User email not found");
+            throw new EntityNotFoundException("User email not found");
         }
 
-        var result = await signInManager.PasswordSignInAsync(user, request.userLoginDto.Password, true, true);
-
-        if (result.Succeeded == false)
+        if (!BCrypt.Net.BCrypt.Verify(request.userLoginDto.Password, user.PasswordHash))
         {
-            throw new ArgumentNullException("Incorrect Credentials");
+            throw new ArgumentException("Wrong password");
         }
 
+        var roles = await sender.Send(new GetUserRolesCommand
+        {
+            UserId = user.Id
+        });
+
+        var claims = new List<Claim>() {
+            new Claim(ClaimTypes.Name, user.Username),
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Email, user.Email)
+        };
+
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role.Name));
+        }
+
+        var refreshToken = await sender.Send(new CreateRefreshTokenCommand
+        {
+            UserId = user.Id,
+            CreatedByIp = request.userLoginDto.IpAddress
+        });
+
+        return new LoginResponse
+        {
+            AccessToken = await sender.Send(new CreateTokenCommand
+            {
+                Claims = claims
+            }),
+            RefreshToken = refreshToken.Token
+        };
     }
 }

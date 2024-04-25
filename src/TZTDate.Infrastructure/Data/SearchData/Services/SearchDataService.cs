@@ -1,5 +1,4 @@
 using TZTDate.Core.Data.DateUser;
-using TZTDate.Core.Data.DateUser.Enums;
 
 namespace TZTDate.Infrastructure.Data.SearchData.Services;
 
@@ -7,93 +6,90 @@ public static class SearchDataService
 {
     public static List<User> ProfilesFilter(Core.Data.SearchData.SearchData searchData)
     {
-        var users = searchData.Users;
+        var users = searchData.Users.AsEnumerable();
         var me = searchData.Me;
-        var searchByName = searchData.SearchingUsername;
-        var startAge = searchData.SearchingStartAge;
-        var endAge = searchData.SearchingEndAge;
-        var interests = searchData.SearchingInterests;
-        var searchGender = searchData.SearchingGender;
 
-        users = users.Where(u => u.Id != me?.Id).ToList();
-
-        if (searchByName is null && startAge is null && endAge is null && interests is null && searchGender is null)
+        if (me == null)
         {
-            users = users.Where(u => u.Age >= me?.SearchingAgeStart).ToList();
-            users = users.Where(u => u.Age <= me?.SearchingAgeEnd).ToList();
-            users = users.Where(u => u.Gender == me?.SearchingGender).ToList();
+            throw new ArgumentNullException(nameof(me));
         }
 
+        users = users.Where(u => u.Id != me.Id);
+
+        if (searchData.SearchingUsername is null && searchData.SearchingStartAge is null && searchData.SearchingEndAge is null && searchData.SearchingInterests is null && searchData.SearchingGender is null)
+        {
+            users = users.Where(u => u.Age >= me.SearchingAgeStart && u.Age <= me.SearchingAgeEnd && u.Gender == me.SearchingGender);
+        }
         else
         {
-            if (!string.IsNullOrEmpty(searchByName))
+            if (!string.IsNullOrEmpty(searchData.SearchingUsername))
             {
-                users = users.Where(u => u.UserName.ToLower().Contains(searchByName.ToLower())).ToList();
+                users = users.Where(u => u.Username.Contains(searchData.SearchingUsername));
             }
 
-            if (startAge.HasValue && startAge != 0)
+            if (searchData.SearchingStartAge.HasValue && searchData.SearchingStartAge != 0)
             {
-                users = users.Where(u => u.Age >= startAge).ToList();
+                users = users.Where(u => u.Age >= searchData.SearchingStartAge);
             }
 
-            if (endAge.HasValue && endAge != 0)
+            if (searchData.SearchingEndAge.HasValue && searchData.SearchingEndAge != 0)
             {
-                users = users.Where(u => u.Age <= endAge).ToList();
+                users = users.Where(u => u.Age <= searchData.SearchingEndAge);
             }
 
-            if (searchGender is not null)
+            if (searchData.SearchingGender is not null)
             {
-                users = users.Where(u => u.Gender == searchGender).ToList();
+                users = users.Where(u => u.Gender == searchData.SearchingGender);
             }
 
-            if (interests is not null)
+            if (searchData.SearchingInterests is not null)
             {
-                string[] interestsArray = interests.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                users = users.Where(u => u.Interests != null && u.Interests.Split(' ', StringSplitOptions.RemoveEmptyEntries).Intersect(interestsArray).Any()).ToList();
+                string[] interestsArray = searchData.SearchingInterests.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                users = users.Where(u => u.Interests != null && u.Interests.Split(' ', StringSplitOptions.RemoveEmptyEntries).Intersect(interestsArray).Any());
             }
         }
 
         return users.ToList();
     }
 
-    public static List<User> MoreProfilesFilter(Core.Data.SearchData.SearchData searchData)
+    public static IQueryable<User> MoreProfilesFilter(Core.Data.SearchData.SearchData searchData)
     {
         var users = searchData.Users;
         var me = searchData.Me;
-        var searchByName = searchData.SearchingUsername;
-        var startAge = searchData.SearchingStartAge;
-        var endAge = searchData.SearchingEndAge;
-        var interests = searchData.SearchingInterests;
-        var searchGender = searchData.SearchingGender;
 
-        users = users.Where(u => u.Id != me.Id).ToList();
-
-        if (!string.IsNullOrEmpty(searchByName))
+        if (me == null)
         {
-            users = users.Where(u => u.UserName.ToLower().Contains(searchByName.ToLower())).ToList();
+            throw new ArgumentNullException(nameof(me));
         }
 
-        if (startAge.HasValue && startAge != 0)
+        users = users.Where(u => u.Id != me.Id).AsQueryable();
+
+        if (!string.IsNullOrEmpty(searchData.SearchingUsername))
         {
-            users = users.Where(u => u.Age >= startAge).ToList();
+            users = users.Where(u => u.Username.Equals(searchData.SearchingUsername, StringComparison.OrdinalIgnoreCase)).AsQueryable();
         }
 
-        if (endAge.HasValue && endAge != 0)
+        if (searchData.SearchingStartAge.HasValue && searchData.SearchingStartAge != 0)
         {
-            users = users.Where(u => u.Age <= endAge).ToList();
+            users = users.Where(u => u.Age >= searchData.SearchingStartAge).AsQueryable();
         }
 
-        if (searchGender is not null)
+        if (searchData.SearchingEndAge.HasValue && searchData.SearchingEndAge != 0)
         {
-            users = users.Where(u => u.Gender == searchGender).ToList();
+            users = users.Where(u => u.Age <= searchData.SearchingEndAge).AsQueryable();
         }
 
-        if (!string.IsNullOrWhiteSpace(interests))
+        if (searchData.SearchingGender is not null)
         {
-            string[] interestsArray = interests.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            users = users.Where(u => u.Interests != null && u.Interests.Split(' ', StringSplitOptions.RemoveEmptyEntries).Intersect(interestsArray).Any()).ToList();
+            users = users.Where(u => u.Gender == searchData.SearchingGender).AsQueryable();
         }
 
-        return users.ToList();
+        if (!string.IsNullOrWhiteSpace(searchData.SearchingInterests))
+        {
+            string[] interestsArray = searchData.SearchingInterests.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            users = users.Where(u => u.Interests != null && u.Interests.Split(' ', StringSplitOptions.RemoveEmptyEntries).Intersect(interestsArray).Any()).AsQueryable();
+        }
+
+        return users.AsQueryable();
     }
 }

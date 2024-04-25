@@ -5,7 +5,7 @@
 }
 
 <section id="index1">
-    <h1>Welcome to TZT Date, <span>@Model.Me.UserName</span></h1>
+    <h1>Welcome to TZT Date, <span>@Model.Me.Username</span></h1>
     @if (Model.Me.SearchingGender == Gender.Female)
     {
         <p>Top @Model.RecomendationUsers.Count() female recomendations for you!</p>
@@ -23,7 +23,7 @@
                 }
                 <img
                     src="~/Assets/@image">
-                <p>@user.UserName</p>
+                <p>@user.Username</p>
                 <i>@user.GetZodiacSign()</i>
                 <a href="/User/Details?id=@user.Id"><span class="material-symbols-outlined">info</span></a>
             </div>

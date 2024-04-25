@@ -1,4 +1,4 @@
-@model User
+@model AccountDto
 
 @{
 ViewData["Title"] = "Account";
@@ -9,8 +9,8 @@ ViewData["Title"] = "Account";
     <div class="person-info-grid">
         <div class="form-prop">
             <div class="form-group">
-                <label asp-for="@Model.UserName">Username</label>
-                <input disabled asp-for="@Model.UserName" type="text" class="form-control">
+                <label asp-for="@Model.User.Username">Username</label>
+                <input disabled asp-for="@Model.User.Username" type="text" class="form-control">
             </div>
             <div class="button-container">
                 <button class="edit-button">Edit</button>
@@ -20,7 +20,7 @@ ViewData["Title"] = "Account";
         <div class="form-prop">
             <div class="form-group">
                 <label asp-for="@Model.Email">Email</label>
-                <input disabled asp-for="@Model.Email" type="text" class="form-control">
+                <input disabled asp-for="@Model.User.Email" type="text" class="form-control">
             </div>
             <div class="button-container">
                 <button class="edit-button">Edit</button>
@@ -29,8 +29,8 @@ ViewData["Title"] = "Account";
         </div>
         <div class="form-prop">
             <div class="form-group">
-                <label asp-for="@Model.Age">Age</label>
-                <input disabled asp-for="@Model.Age" type="text" class="form-control">
+                <label asp-for="@Model.User.Age">Age</label>
+                <input disabled asp-for="@Model.User.Age" type="text" class="form-control">
             </div>
             <div class="button-container">
                 <button class="edit-button">Edit</button>
@@ -39,8 +39,8 @@ ViewData["Title"] = "Account";
         </div>
         <div class="form-prop">
             <div class="form-group">
-                <label asp-for="@Model.Address.Country">Country</label>
-                <input disabled asp-for="@Model.Address.Country" type="text" class="form-control">
+                <label asp-for="@Model.User.Address.Country">Country</label>
+                <input disabled asp-for="@Model.User.Address.Country" type="text" class="form-control">
             </div>
             <div class="button-container">
                 <button class="edit-button">Edit</button>
@@ -49,8 +49,8 @@ ViewData["Title"] = "Account";
         </div>
         <div class="form-prop">
             <div class="form-group">
-                <label asp-for="@Model.Address.City">City</label>
-                <input disabled asp-for="@Model.Address.City" type="text" class="form-control">
+                <label asp-for="@Model.User.Address.City">City</label>
+                <input disabled asp-for="@Model.User.Address.City" type="text" class="form-control">
             </div>
             <div class="button-container">
                 <button class="edit-button">Edit</button>
@@ -59,8 +59,8 @@ ViewData["Title"] = "Account";
         </div>
         <div class="form-prop">
             <div class="form-group">
-                <label asp-for="@Model.Address.State">Street</label>
-                <input disabled asp-for="@Model.Address.State" type="text" class="form-control">
+                <label asp-for="@Model.User.Address.State">Street</label>
+                <input disabled asp-for="@Model.User.Address.State" type="text" class="form-control">
             </div>
             <div class="button-container">
                 <button class="edit-button">Edit</button>
@@ -70,10 +70,10 @@ ViewData["Title"] = "Account";
     </div>
 
     <div class="imageGrid">
-        @foreach (var path in Model.ProfilePicPaths)
+        @foreach (var path in Model.ImageUris)
         {
         <div class="imageWrapper">
-            <img src="~/Assets/@path">
+            <img src="@path">
         </div>
         }
     </div>

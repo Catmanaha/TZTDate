@@ -18,7 +18,7 @@ public class ForumController : Controller
     }
     public async Task<IActionResult> Index()
     {
-        var userName = (await userManager.GetUserAsync(User)).UserName;
+        var userName = (await userManager.GetUserAsync(User)).Username;
         return View(model: userName);
     }
 

@@ -1,9 +1,9 @@
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using TZTDate.Core.Data.FaceDetectionApi.Managers;
 using TZTDate.Core.Data.FaceDetectionApi.Models;
 using TZTDate.Core.Data.FaceDetectionApi.Repositories;
+using TZTDate.Core.Data.Options;
 
 namespace TZTDate.Infrastructure.Data.FaceDetectionApi.Repositories;
 
@@ -13,7 +13,7 @@ public class FaceDetectionRepository : IFaceDetectionRepository
     private readonly string? apiKey;
     private readonly string? apiSecret;
 
-    public FaceDetectionRepository(IOptions<FaceDetectionApiManager> options, HttpClient client)
+    public FaceDetectionRepository(IOptions<FaceDetectionApiOption> options, HttpClient client)
     {
         this.client = client;
         client.BaseAddress = new Uri(options.Value.BaseUrl);

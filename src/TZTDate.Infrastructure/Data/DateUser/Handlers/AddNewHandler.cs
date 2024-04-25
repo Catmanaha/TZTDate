@@ -1,36 +1,43 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Identity;
 using TZTBank.Infrastructure.Data.DateUser.Commands;
-using TZTDate.Core.Data.DateUser.Enums;
 using TZTDate.Core.Data.DateUser;
 using System.Reflection;
 using Microsoft.AspNetCore.Http;
+using TZTDate.Infrastructure.Data.DateUser.Commands;
+using Microsoft.EntityFrameworkCore;
+using TZTDate.Infrastructure.Services.Base;
+using TZTDate.Core.Data.DateUser.Enums;
 
 namespace TZTDate.Infrastructure.Data.DateUser.Handlers;
 
 public class AddNewHandler : IRequestHandler<AddNewCommand>
 {
-    private readonly UserManager<User> userManager;
-    private readonly RoleManager<IdentityRole> roleManager;
     private readonly TZTDateDbContext tZTDateDbContext;
+    private readonly ISender sender;
+    private readonly IAzureBlobService azureBlobService;
 
-    public AddNewHandler(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, TZTDateDbContext tZTDateDbContext)
+    public AddNewHandler(TZTDateDbContext tZTDateDbContext, ISender sender, IAzureBlobService azureBlobService)
     {
-        this.userManager = userManager;
-        this.roleManager = roleManager;
+        this.azureBlobService = azureBlobService;
         this.tZTDateDbContext = tZTDateDbContext;
+        this.sender = sender;
     }
 
     public async Task Handle(AddNewCommand request, CancellationToken cancellationToken)
     {
         if (request.UserRegisterDto is null)
         {
-            throw new NullReferenceException($"{nameof(request.UserRegisterDto)} cannot be null");
+            throw new ArgumentNullException($"{nameof(request.UserRegisterDto)} cannot be null");
         }
 
-        if ((await userManager.FindByEmailAsync(request.UserRegisterDto.Email)) is not null)
+        var result = await sender.Send(new FindByEmailCommand
         {
-            throw new NullReferenceException($"{request.UserRegisterDto.Email} already exists");
+            Email = request.UserRegisterDto.Email
+        });
+
+        if (result is not null)
+        {
+            throw new ArgumentNullException($"{request.UserRegisterDto.Email} already exists");
         }
 
         var address = new Address
@@ -49,27 +56,34 @@ public class AddNewHandler : IRequestHandler<AddNewCommand>
 
         foreach (PropertyInfo property in properties)
         {
-            if (property.Name.Contains("Image"))
+            if (property.Name.Contains("Image") && !property.Name.Contains("Name"))
             {
-                if (property.GetValue(request.UserRegisterDto) is IFormFile formFile)
+                var filename = string.Empty;
+                foreach (var property2 in properties)
                 {
-                    var fileExtension = new FileInfo(formFile.FileName).Extension;
-
-                    var filename = $"{Guid.NewGuid()}{fileExtension}";
-
-                    var destinationAvatarPath = $"wwwroot/Assets/{filename}";
-
-                    using var fileStream = File.Create(destinationAvatarPath);
-                    await formFile.CopyToAsync(fileStream);
-
-                    imagePaths.Add(filename);
+                    if (property2.Name == property.Name + "Name")
+                    {
+                        filename = property2.GetValue(request.UserRegisterDto).ToString();
+                        break;
+                    }
                 }
+                byte[] fileBytes = Convert.FromBase64String(property.GetValue(request.UserRegisterDto).ToString());
+                using var memoryStream = new MemoryStream(fileBytes);
+                await azureBlobService.UploadFile(memoryStream, filename);
+
+                imagePaths.Add(filename);
+
             }
+        }
+
+        if (await tZTDateDbContext.Users.FirstOrDefaultAsync(x => x.Username == request.UserRegisterDto.Username) is not null)
+        {
+            throw new ArgumentException("Username already taken");
         }
 
         var user = new User
         {
-            UserName = request.UserRegisterDto.Username,
+            Username = request.UserRegisterDto.Username,
             Email = request.UserRegisterDto.Email,
             BirthDateTime = request.UserRegisterDto.BirthDateTime,
             CreatedAt = DateTime.Now,
@@ -81,34 +95,21 @@ public class AddNewHandler : IRequestHandler<AddNewCommand>
             SearchingAgeStart = request.UserRegisterDto.SearchingAgeStart,
             SearchingAgeEnd = request.UserRegisterDto.SearchingAgeEnd,
             Interests = request.UserRegisterDto.Interests,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.UserRegisterDto.Password),
         };
 
-        var result = await userManager.CreateAsync(user, request.UserRegisterDto.Password);
+        await tZTDateDbContext.Users.AddAsync(user);
+        await tZTDateDbContext.SaveChangesAsync();
 
-        if (!result.Succeeded)
+        var role = await tZTDateDbContext.Roles.FirstOrDefaultAsync(r => r.Name == UserRoles.User.ToString());
+        if (role == null)
         {
-
-            var errors = new List<Exception>();
-
-            foreach (var error in result.Errors)
-            {
-                errors.Add(new ArgumentException(error.Description, error.Code));
-            }
-
-            if (errors.Any())
-            {
-                throw new AggregateException(errors);
-            }
-
-
-            var userRole = new IdentityRole
-            {
-                Name = UserRoles.User.ToString()
-            };
-
-            await roleManager.CreateAsync(userRole);
-            await userManager.AddToRoleAsync(user, UserRoles.User.ToString());
-
+            throw new ArgumentException($"Role does not exist with {UserRoles.User} name");
         }
+
+        var userRole = new UserRole { User = user, Role = role };
+        await tZTDateDbContext.UserRoles.AddAsync(userRole);
+
+        await tZTDateDbContext.SaveChangesAsync();
     }
 }

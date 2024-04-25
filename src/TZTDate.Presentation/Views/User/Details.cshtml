@@ -2,7 +2,7 @@
 @model User;
 
 @{
-    ViewData["Title"] = $"{Model.UserName}'s Details";
+    ViewData["Title"] = $"{Model.Username}'s Details";
     var currentUser = await UserManager.GetUserAsync(User);
     var zodiacCompability = currentUser?.CompatibilityByZodiacSign(Model);
     bool repricateMembership;
@@ -43,7 +43,7 @@
     <div class="about-me">
         <label><b>About Me</b></label>
         <p style="margin-top: 20px;"><strong>Live in: </strong> @Model.Address</p>
-        <p><strong>Name: </strong> @Model.UserName</p>
+        <p><strong>Name: </strong> @Model.Username</p>
         <p><strong>Email: </strong> @Model.Email</p>
         <p><strong>Gender: </strong> @Model.Gender</p>
     </div>
@@ -73,7 +73,7 @@
         <h2 class="">Relationship calculator</h2>
         <vc:RelationshipCalcComponent class="calc-result">
             @await Component.InvokeAsync("RelationshipCalcComponent",
-                     Model.UserName)
+                     Model.Username)
         </vc:RelationshipCalcComponent>
     </div>
 

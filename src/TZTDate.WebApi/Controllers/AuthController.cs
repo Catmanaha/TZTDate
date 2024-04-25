@@ -1,85 +1,55 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using TZTBank.Core.Data.DateUser.Dtos;
 using TZTBank.Infrastructure.Data.DateUser.Commands;
-using TZTDate.WebApi.Options;
+using TZTDate.Core.Data.DateUser.Dtos;
+using TZTDate.Infrastructure.Data.DateToken.Commands;
+using TZTDate.WebApi.Filters;
 
 namespace TZTDate.WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
+[ServiceFilter(typeof(ValidationFilterAttribute))]
 public class AuthController : ControllerBase
 {
-    private readonly JwtOptions jwtOptions;
-    private readonly ISender sender;
+  private readonly ISender sender;
 
-    public AuthController(ISender sender, IOptionsSnapshot<JwtOptions> jwtOptions)
+  public AuthController(ISender sender)
+  {
+    this.sender = sender;
+  }
+
+  [HttpPost]
+  public async Task<ActionResult> Register([FromForm]UserRegisterDto userDto)
+  {
+    await sender.Send(new AddNewCommand() { UserRegisterDto = userDto });
+
+    return Ok();
+  }
+
+  [HttpPost]
+  public async Task<ActionResult> Login(UserLoginDto loginDto)
+  {
+    var result = await sender.Send(new LoginCommand() { userLoginDto = loginDto });
+
+    return Ok(result);
+  }
+
+  [HttpPut]
+  public async Task<IActionResult> UpdateTokenAsync(UpdateTokenDto updateTokenDto)
+  {
+    var result = await sender.Send(new UpdateTokenCommand { UpdateTokenDto = updateTokenDto });
+
+    if (result == null || !result.Success)
     {
-        this.sender = sender;
-        this.jwtOptions = jwtOptions.Value;
+      return BadRequest(result?.ErrorMessage ?? "Failed to update token.");
     }
 
-    [HttpPost]
-    public async Task<ActionResult> Register(UserRegisterDto userDto)
+    return Ok(new
     {
-        if (ModelState.IsValid == false)
-        {
-            return BadRequest();
-        }
-        try
-        {
-            await sender.Send(new AddNewCommand()
-            {
-                UserRegisterDto = userDto
-            });
-
-            return Ok();
-        }
-        catch (Exception ex)
-        {
-            ModelState.AddModelError("Error", ex.Message);
-            return BadRequest();
-        }
-    }
-
-    [HttpPost]
-    public async Task<ActionResult> Login(UserLoginDto loginDto)
-    {
-        try
-        {
-            await sender.Send(new LoginCommand()
-            {
-                userLoginDto = loginDto
-            });
-
-            var claims = new List<Claim>() {
-                new(ClaimTypes.Email, loginDto.Email),
-                new(ClaimTypes.Role, "User")
-            };
-
-            var securityKey = new SymmetricSecurityKey(this.jwtOptions.KeyInBytes);
-            var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-            var securityToken = new JwtSecurityToken(
-                issuer: this.jwtOptions.Issuers.First(),
-                audience: this.jwtOptions.Audience,
-                claims,
-                expires: DateTime.Now.AddMinutes(this.jwtOptions.LifetimeInMinutes),
-                signingCredentials: signingCredentials
-            );
-
-            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-            var jwt = jwtSecurityTokenHandler.WriteToken(securityToken);
-
-            return Ok(jwt);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
+      result.AccessToken,
+      result.RefreshToken
+    });
+  }
 }

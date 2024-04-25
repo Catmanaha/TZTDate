@@ -1,4 +1,5 @@
 using TZTDate.Infrastructure.Data.DependencyInjections;
+using TZTDate.Infrastructure.Data.Hubs;
 using System.Reflection;
 using System.Security.Claims;
 using TZTDate.Core.Data.DateUser.Enums;
