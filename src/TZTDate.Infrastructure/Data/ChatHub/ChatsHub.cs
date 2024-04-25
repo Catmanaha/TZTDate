@@ -2,14 +2,19 @@ namespace TZTDate.Infrastructure.Data.ChatHub;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
+using TZTDate.Core.Data.DateChat.Entities;
 using TZTDate.Core.Data.DateUser;
 
 public class ChatHub : Hub
 {
     public UserManager<User> usermanager;
-    public ChatHub(UserManager<User> usermanager)
+    private readonly TZTDateDbContext tZTDateDbContext;
+
+    public ChatHub(UserManager<User> usermanager, TZTDateDbContext tZTDateDbContext)
     {
-        this.usermanager = usermanager;        
+        this.usermanager = usermanager;
+        this.tZTDateDbContext = tZTDateDbContext;
     }
 
     public override async Task OnConnectedAsync()
@@ -30,6 +35,17 @@ public class ChatHub : Hub
 
     public async Task SendMessageToGroup(string user, string groupName, string message)
     {
+        var privateChat = await tZTDateDbContext.PrivateChats
+            .FirstOrDefaultAsync(pc => pc.PrivateChatHashName == groupName);
+
+        await tZTDateDbContext.Message.AddAsync(new Message {
+            Owner = user,
+            Content = message,
+            PrivateChatId = privateChat?.Id ?? throw new ArgumentNullException()
+        });
+        
+        await tZTDateDbContext.SaveChangesAsync();
+
         await Clients.Group(groupName).SendAsync("ReceiveMessage", user, message);
     }
 
@@ -38,9 +54,9 @@ public class ChatHub : Hub
     //     await Clients.Client(receiverConnectionId).SendAsync("ReceiveMessage", user, message);
     // }
 
-    public async Task SendMessage(string user, string message)
-    {
-        await Clients.All.SendAsync("ReceiveMessage", user, message);
-    }
+    //public async Task SendMessage(string user, string message)
+    //{
+    //    await Clients.All.SendAsync("ReceiveMessage", user, message);
+    //}
     public string GetConnectionId() => Context.ConnectionId;
 }

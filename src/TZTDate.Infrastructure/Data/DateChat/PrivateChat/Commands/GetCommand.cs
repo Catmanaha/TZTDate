@@ -1,7 +1,7 @@
 namespace TZTDate.Infrastructure.Data.DateChat.PrivateChat.Commands;
 
 using MediatR;
-using TZTDate.Core.Data.DateUser.Chat;
+using TZTDate.Core.Data.DateChat.Entities;
 
 
 public class GetCommand : IRequest<PrivateChat>

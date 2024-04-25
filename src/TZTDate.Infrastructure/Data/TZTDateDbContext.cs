@@ -1,13 +1,14 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using TZTDate.Core.Data.DateChat.Entities;
 using TZTDate.Core.Data.DateUser;
-using TZTDate.Core.Data.DateUser.Chat;
 
 namespace TZTDate.Infrastructure.Data;
 
 public class TZTDateDbContext : IdentityDbContext<User, IdentityRole, string>
 {
+    public DbSet<Message> Message { get; set; }
     public DbSet<PrivateChat> PrivateChats { get; set; }
     public DbSet<Address> Addresses { get; set; }
     public TZTDateDbContext(DbContextOptions<TZTDateDbContext> options) : base(options) { }

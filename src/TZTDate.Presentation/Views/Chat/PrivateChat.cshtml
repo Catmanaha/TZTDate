@@ -28,7 +28,7 @@
 
     <div class="row" hidden>
         <div class="col-2">Group</div>
-        <div class="col-4"><input type="text" id="groupName" value="@Model.PrivateChatHashName"/></div>
+        <div class="col-4"><input type="text" id="groupName" value="@Model.PrivateChat.PrivateChatHashName"/></div>
     </div>
 
     <div class="row">&nbsp;</div>
@@ -49,7 +49,12 @@
 
 <div class="row">
     <div class="col-6">
-        <ul id="messagesList"></ul>
+        <ul id="messagesList">
+            @foreach(var message in Model.PrivateChat.Messages ?? new List<Message>())
+            {
+                <li>@message.Owner says @message.Content</li>
+            }
+        </ul>
     </div>
 </div>
 

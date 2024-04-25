@@ -1,13 +1,15 @@
 ﻿namespace TZTDate.Presentation.Controllers;
 
-using Microsoft.AspNetCore.Identity;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using TZTDate.Core.Data.DateUser.Chat;
 using TZTDate.Core.Data.DateUser;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.Identity;
 using TZTDate.Infrastructure.Data.ChatHub;
-using MediatR;
+using TZTDate.Core.Data.DateChat.Entities;
+using TZTDate.Core.Data.DateChat.ViewModels;
 using TZTDate.Infrastructure.Data.DateChat.PrivateChat.Commands;
+using System.Security.Authentication;
 
 public class ChatController : Controller
 {
@@ -24,7 +26,7 @@ public class ChatController : Controller
     [HttpPost]
     public async Task<ActionResult> PrivateChat(string companionId)
     {
-        var user = await userManager.GetUserAsync(User);
+        var user = await userManager.GetUserAsync(User) ?? throw new AuthenticationException();
 
         var privateChat = await this.sender.Send<PrivateChat>(new GetCommand
         {
@@ -35,6 +37,11 @@ public class ChatController : Controller
         if (privateChat == null)
         {
             var newPrivateChatHashName = user.Id + companionId;
+            var newPrivate = new PrivateChat
+            {
+                PrivateChatHashName = newPrivateChatHashName,
+                Messages = new List<Message>()
+            };
             await this.sender.Send(new AddCommand
             {
                 NewPrivateChatHashName = newPrivateChatHashName,
@@ -42,13 +49,13 @@ public class ChatController : Controller
             return View(model: new CompanionsViewModel
             {
                 CurrentUser = user,
-                PrivateChatHashName = newPrivateChatHashName
+                PrivateChat = newPrivate
             });
         }
         return View(model: new CompanionsViewModel
         {
             CurrentUser = user,
-            PrivateChatHashName = privateChat.PrivateChatHashName
+            PrivateChat = privateChat,
         });
     }
 }

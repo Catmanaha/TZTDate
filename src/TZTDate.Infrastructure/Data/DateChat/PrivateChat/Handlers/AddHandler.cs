@@ -2,8 +2,7 @@ namespace TZTDate.Infrastructure.Data.DateChat.PrivateChat.Handlers;
 
 using MediatR;
 using TZTDate.Infrastructure.Data.DateChat.PrivateChat.Commands;
-using TZTDate.Core.Data.DateUser.Chat;
-
+using TZTDate.Core.Data.DateChat.Entities;
 
 public class AddHandler : IRequestHandler<AddCommand>
 {
@@ -16,7 +15,10 @@ public class AddHandler : IRequestHandler<AddCommand>
     public async Task Handle(AddCommand request, CancellationToken cancellationToken)
     {
         await tZTDateDbContext.PrivateChats
-            .AddAsync(new PrivateChat { PrivateChatHashName = request.NewPrivateChatHashName });
+            .AddAsync(new PrivateChat { 
+                PrivateChatHashName = request.NewPrivateChatHashName,
+                Messages = new List<Message>()
+            });
         await tZTDateDbContext.SaveChangesAsync();
     }
 }
