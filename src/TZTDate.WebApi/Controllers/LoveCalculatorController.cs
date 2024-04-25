@@ -9,7 +9,6 @@ namespace TZTDate.WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-[Authorize]
 [ServiceFilter(typeof(ValidationFilterAttribute))]
 public class LoveCalculatorController : ControllerBase
 {

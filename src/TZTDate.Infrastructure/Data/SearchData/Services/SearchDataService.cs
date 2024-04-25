@@ -24,7 +24,7 @@ public static class SearchDataService
         {
             if (!string.IsNullOrEmpty(searchData.SearchingUsername))
             {
-                users = users.Where(u => u.Username.Equals(searchData.SearchingUsername, StringComparison.OrdinalIgnoreCase));
+                users = users.Where(u => u.Username.Contains(searchData.SearchingUsername));
             }
 
             if (searchData.SearchingStartAge.HasValue && searchData.SearchingStartAge != 0)
