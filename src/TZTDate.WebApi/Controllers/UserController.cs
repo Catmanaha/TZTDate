@@ -16,7 +16,6 @@ namespace TZTDate.WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-[Authorize]
 [ServiceFilter(typeof(ValidationFilterAttribute))]
 public class UserController : ControllerBase
 {
@@ -119,10 +118,23 @@ public class UserController : ControllerBase
             SearchingStartAge = me.SearchingAgeStart,
             SearchingEndAge = me.SearchingAgeEnd,
             SearchingGender = me.SearchingGender.ToString(),
-            Users = users.Take(pageItemsCount)
+            Users = users
         });
+
+        // return Ok(new
+        // {
+        //     SearchingStartAge = me.SearchingAgeStart,
+        //     SearchingEndAge = me.SearchingAgeEnd,
+        //     SearchingGender = me.SearchingGender.ToString(),
+        //     Users = users.Take(pageItemsCount)
+        // });
     }
 
+    [HttpGet]
+    public async Task<ActionResult<List<User>>> GetUsersAsync()
+    {
+        return Ok(await context?.Users?.ToListAsync());
+    }
 
 
     [HttpGet]
