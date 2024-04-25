@@ -13,8 +13,14 @@ public class FollowActionHandler : IRequestHandler<FollowActionCommand>
     {
         this.tZTDateDbContext = tZTDateDbContext;
     }
+
     public async Task Handle(FollowActionCommand request, CancellationToken cancellationToken)
     {
+        if (request.currentUserId == request.userToActionId)
+        {
+            throw new InvalidOperationException("User cannot follow themselves.");
+        }
+
         var currentUser = await tZTDateDbContext.Users.Include(u => u.Followed).FirstOrDefaultAsync(user => user.Id == request.currentUserId) ?? throw new ArgumentNullException();
         var userToAction = await tZTDateDbContext.Users.Include(u => u.Followers).FirstOrDefaultAsync(user => user.Id == request.userToActionId) ?? throw new ArgumentNullException();
 
