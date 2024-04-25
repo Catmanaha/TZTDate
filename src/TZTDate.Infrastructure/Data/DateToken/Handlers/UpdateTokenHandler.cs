@@ -79,24 +79,18 @@ public class UpdateTokenHandler : IRequestHandler<UpdateTokenCommand, UpdateToke
             Claims = claims
         });
 
-        var updatedRefreshToken = await sender.Send(new UpdateRefreshTokenLifeTimeCommand
-        {
-            Token = request.UpdateTokenDto.RefreshToken,
-            UserId = id
-        });
-
         var newRefreshToken = await sender.Send(new CreateRefreshTokenCommand
         {
             UserId = id,
             CreatedByIp = request.UpdateTokenDto.IpAddress
         });
 
-        updatedRefreshToken.ReplacedByTokenId = newRefreshToken.Id;
-
         await sender.Send(new RevokeRefreshTokenCommand
         {
             Token = request.UpdateTokenDto.RefreshToken,
-            RevokedByIp = "System"
+            RevokedByIp = request.UpdateTokenDto.IpAddress,
+            RefreshTokenReplacedById = newRefreshToken.Id,
+            UserId = id
         });
 
         return new UpdateTokenResponse

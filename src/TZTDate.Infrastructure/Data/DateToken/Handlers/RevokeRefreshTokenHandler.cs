@@ -18,15 +18,20 @@ public class RevokeRefreshTokenHandler : IRequestHandler<RevokeRefreshTokenComma
     }
     public async Task Handle(RevokeRefreshTokenCommand request, CancellationToken cancellationToken)
     {
-        var refreshToken = await this.context.RefreshTokens.FirstOrDefaultAsync(rt => rt.Token == request.Token);
+        var oldRefreshToken = await sender.Send(new GetRefreshTokenCommand
+        {
+            refershToken = request.Token,
+            userId = request.UserId
+        });
 
-        if (refreshToken == null)
+        if (oldRefreshToken == null)
         {
             throw new Exception("Invalid token.");
         }
 
-        refreshToken.Revoked = true;
-        refreshToken.RevokedByIp = request.RevokedByIp;
+        oldRefreshToken.Revoked = true;
+        oldRefreshToken.RevokedByIp = request.RevokedByIp;
+        oldRefreshToken.ReplacedByTokenId = request.RefreshTokenReplacedById;
 
         await this.context.SaveChangesAsync();
 
@@ -34,7 +39,7 @@ public class RevokeRefreshTokenHandler : IRequestHandler<RevokeRefreshTokenComma
         {
             EventDate = DateTime.UtcNow,
             EventIp = request.RevokedByIp,
-            EventUserId = refreshToken.UserId,
+            EventUserId = oldRefreshToken.UserId,
             EventType = "RefreshTokenRevoked"
         };
 
