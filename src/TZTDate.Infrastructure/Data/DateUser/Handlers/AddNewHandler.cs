@@ -56,16 +56,23 @@ public class AddNewHandler : IRequestHandler<AddNewCommand>
 
         foreach (PropertyInfo property in properties)
         {
-            if (property.Name.Contains("Image"))
+            if (property.Name.Contains("Image") && !property.Name.Contains("Name"))
             {
-                if (property.GetValue(request.UserRegisterDto) is byte[] formFile)
+                var filename = string.Empty;
+                foreach (var property2 in properties)
                 {
-                    var filename = Guid.NewGuid().ToString();
-                    using var memoryStream = new MemoryStream(formFile, writable: false);
-                    await azureBlobService.UploadFile(memoryStream, filename);  
-
-                    imagePaths.Add(filename);
+                    if (property2.Name == property.Name + "Name")
+                    {
+                        filename = property2.GetValue(request.UserRegisterDto).ToString();
+                        break;
+                    }
                 }
+                byte[] fileBytes = Convert.FromBase64String(property.GetValue(request.UserRegisterDto).ToString());
+                using var memoryStream = new MemoryStream(fileBytes);
+                await azureBlobService.UploadFile(memoryStream, filename);
+
+                imagePaths.Add(filename);
+
             }
         }
 

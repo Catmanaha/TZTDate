@@ -1,3 +1,4 @@
+using System.IO;
 using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
@@ -42,7 +43,7 @@ public class AzureBlobService : IAzureBlobService
         return azureResponse;
     }
 
-    public async Task UploadFile(Stream file, string fileName = null)
+    public async Task UploadFile(Stream file, string fileName)
     {
         await blobContainerClient.UploadBlobAsync(fileName, file);
     }
