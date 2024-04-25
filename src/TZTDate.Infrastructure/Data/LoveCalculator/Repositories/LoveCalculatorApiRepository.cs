@@ -1,10 +1,9 @@
-using System.Net.Http.Json;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
-using TZTDate.Core.Data.DateApi.Managers;
 using TZTDate.Core.Data.DateApi.Models;
 using TZTDate.Core.Data.LoveCalculator.Repositories;
+using TZTDate.Core.Data.Options;
 
 namespace TZTDate.Infrastructure.Data.LoveCalculator.Repositories;
 
@@ -12,7 +11,7 @@ public class LoveCalculatorApiRepository : ILoveCalculatorRepository
 {
     private readonly HttpClient client;
 
-    public LoveCalculatorApiRepository(IOptions<ApiManager> options, HttpClient client)
+    public LoveCalculatorApiRepository(IOptions<ApiOption> options, HttpClient client)
     {
         this.client = client;
         client.BaseAddress = new Uri(options.Value.BaseUrl);

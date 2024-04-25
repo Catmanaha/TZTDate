@@ -1,12 +1,9 @@
-using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using TZTBank.Core.Data.DateUser.Dtos;
 using TZTBank.Infrastructure.Data.DateUser.Commands;
 using TZTDate.Core.Data.DateUser.Dtos;
 using TZTDate.Infrastructure.Data.DateToken.Commands;
-using TZTDate.Infrastructure.Data.DateUser.Commands;
-using TZTDate.Infrastructure.Services.Base;
 using TZTDate.WebApi.Filters;
 
 namespace TZTDate.WebApi.Controllers;
@@ -17,16 +14,14 @@ namespace TZTDate.WebApi.Controllers;
 public class AuthController : ControllerBase
 {
   private readonly ISender sender;
-  private readonly ITokenService tokenService;
 
-  public AuthController(ISender sender, ITokenService tokenService)
+  public AuthController(ISender sender)
   {
-    this.tokenService = tokenService;
     this.sender = sender;
   }
 
   [HttpPost]
-  public async Task<ActionResult> Register([FromForm] UserRegisterDto userDto)
+  public async Task<ActionResult> Register([FromForm]UserRegisterDto userDto)
   {
     await sender.Send(new AddNewCommand() { UserRegisterDto = userDto });
 

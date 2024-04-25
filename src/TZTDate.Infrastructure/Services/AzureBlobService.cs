@@ -1,3 +1,4 @@
+using System.IO;
 using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
@@ -11,11 +12,11 @@ namespace TZTDate.Infrastructure.Services;
 
 public class AzureBlobService : IAzureBlobService
 {
-    BlobServiceClient blobServiceClient;
-    BlobContainerClient blobContainerClient;
-    BlobOptions blobOptions;
+    private readonly BlobServiceClient blobServiceClient;
+    private readonly BlobContainerClient blobContainerClient;
+    private readonly BlobOption blobOptions;
 
-    public AzureBlobService(IOptionsSnapshot<BlobOptions> optionsSnapshot)
+    public AzureBlobService(IOptionsSnapshot<BlobOption> optionsSnapshot)
     {
         blobServiceClient = new BlobServiceClient(optionsSnapshot.Value.ConnectionString);
         blobContainerClient = blobServiceClient.GetBlobContainerClient(optionsSnapshot.Value.ContainerName);
@@ -42,16 +43,9 @@ public class AzureBlobService : IAzureBlobService
         return azureResponse;
     }
 
-    public async Task Uploadfile(IFormFile file, string fileName = null)
+    public async Task UploadFile(Stream file, string fileName)
     {
-        string fileNameResult = fileName is null ? file.FileName : fileName;
-        using (var memoryStream = new MemoryStream())
-        {
-            file.CopyTo(memoryStream);
-            memoryStream.Position = 0;
-
-            await blobContainerClient.UploadBlobAsync(fileNameResult, memoryStream);
-        }
+        await blobContainerClient.UploadBlobAsync(fileName, file);
     }
 
     public async Task<List<BlobItem>> GetBlob()

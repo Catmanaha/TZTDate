@@ -1,9 +1,6 @@
-using Microsoft.AspNetCore.Identity;
-using Moq;
 using TZTBank.Core.Data.DateUser.Dtos;
 using TZTBank.Infrastructure.Data.BankUser.Handlers;
 using TZTBank.Infrastructure.Data.DateUser.Commands;
-using TZTDate.Core.Data.DateUser;
 
 namespace TZTDate.UnitTests.Data.DateUser.Handlers;
 
@@ -12,7 +9,7 @@ public class LoginHandlerTest
     [Fact]
     public async Task Handle_UserDtoNull_ThrowNullReferenceException()
     {
-        var handler = new LoginHandler(null, null);
+        var handler = new LoginHandler(null);
 
         await Assert.ThrowsAsync<NullReferenceException>(() => handler.Handle(null, new CancellationToken()));
     }
@@ -26,7 +23,7 @@ public class LoginHandlerTest
     [InlineData("", "password")]
     public async Task Handle_DtoDataNullOrEmpty_ThrowNullReferenceException(string? email, string? password)
     {
-        var handler = new LoginHandler(null, null);
+        var handler = new LoginHandler(null);
 
         var command = new LoginCommand
         {

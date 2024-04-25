@@ -7,7 +7,7 @@ namespace TZTDate.Infrastructure.Services.Base;
 public interface IAzureBlobService
 {
     public Task<List<BlobContentInfo>> UploadFiles(List<IFormFile> files);
-    public Task Uploadfile(IFormFile file, string fileName = null);
+    public Task UploadFile(Stream file, string fileName);
     public Task<List<BlobItem>> GetBlob();
     public Task DeleteBlob(string blobName);
     public BlobClient GetBlobItem(string blobName);

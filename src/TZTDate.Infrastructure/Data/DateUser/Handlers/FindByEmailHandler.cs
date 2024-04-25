@@ -22,7 +22,7 @@ namespace TZTDate.Infrastructure.Data.DateUser.Handlers
 
             }
 
-            var user = await context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var user = await context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == request.Email.ToLower());
             
             return user;
         }

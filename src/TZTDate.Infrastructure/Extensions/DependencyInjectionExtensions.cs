@@ -15,12 +15,7 @@ public static class DependencyInjectionExtensions
     {
         serviceCollection.AddSingleton<ILoveCalculatorRepository, LoveCalculatorApiRepository>();
         serviceCollection.AddSingleton<IFaceDetectionRepository, FaceDetectionRepository>();
-        serviceCollection.AddScoped<ITokenService, TokenService>();
         serviceCollection.AddScoped<IAzureBlobService, AzureBlobService>();
         serviceCollection.AddSingleton<HttpClient>();
-        serviceCollection.AddMediatR(configurations =>
-                {
-                    configurations.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-                });
     }
 }
