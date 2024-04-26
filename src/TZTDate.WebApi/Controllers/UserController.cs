@@ -100,6 +100,13 @@ public class UserController : ControllerBase
 
         var users = await context.Users.ToListAsync();
 
+        users.ForEach(user => {
+            for (int i = 0; i < user?.ProfilePicPaths.Count(); i++)
+            {
+                user.ProfilePicPaths[i] = azureBlobService.GetBlobItemSAS(user.ProfilePicPaths[i]);
+            }
+        });
+
         SearchData searchData = new SearchData()
         {
             Me = me,
