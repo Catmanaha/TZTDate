@@ -21,29 +21,25 @@ public class FollowActionHandler : IRequestHandler<FollowActionCommand>
             throw new InvalidOperationException("User cannot follow themselves.");
         }
 
-        var currentUser = await tZTDateDbContext.Users.Include(u => u.Followed).FirstOrDefaultAsync(user => user.Id == request.currentUserId) ?? throw new ArgumentNullException();
-        var userToAction = await tZTDateDbContext.Users.Include(u => u.Followers).FirstOrDefaultAsync(user => user.Id == request.userToActionId) ?? throw new ArgumentNullException();
+        var currentUser = await tZTDateDbContext.Users.Include(u => u.Followed).FirstOrDefaultAsync(user => user.Id == request.currentUserId);
+        var userToAction = await tZTDateDbContext.Users.Include(u => u.Followers).FirstOrDefaultAsync(user => user.Id == request.userToActionId);
 
-        var isFollowing = await tZTDateDbContext.UserFollows
-            .AnyAsync(uf => uf.FollowerId == currentUser.Id && uf.FollowedId == userToAction.Id);
+        if (currentUser == null || userToAction == null)
+        {
+            throw new ArgumentException("User not found.");
+        }
+
+        var isFollowing = currentUser.Followed.Contains(userToAction);
 
         if (isFollowing)
         {
-            var userFollow = await tZTDateDbContext.UserFollows
-                .FirstOrDefaultAsync(uf => uf.FollowerId == currentUser.Id && uf.FollowedId == userToAction.Id);
-
-            if (userFollow != null)
-            {
-                tZTDateDbContext.UserFollows.Remove(userFollow);
-            }
+            currentUser.Followed.Remove(userToAction);
+            userToAction.Followers.Remove(currentUser);
         }
         else
         {
-            tZTDateDbContext.UserFollows.Add(new UserFollow
-            {
-                FollowerId = currentUser.Id,
-                FollowedId = userToAction.Id
-            });
+            currentUser.Followed.Add(userToAction);
+            userToAction.Followers.Add(currentUser);
         }
 
         await tZTDateDbContext.SaveChangesAsync(cancellationToken);
