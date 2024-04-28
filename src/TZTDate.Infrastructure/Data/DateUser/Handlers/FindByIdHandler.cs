@@ -21,7 +21,12 @@ namespace TZTDate.Infrastructure.Data.DateUser.Handlers
                 throw new ArgumentOutOfRangeException($"{nameof(request.Id)} cannot be negative");
             }
 
-            var user = await context.Users.FirstOrDefaultAsync(u => u.Id == request.Id);
+            var user = await context.Users
+                            .Include(u => u.Address)
+                            .Include(u => u.Followers)
+                            .Include(u => u.Followed)
+                            .Include(u => u.UserRoles)
+                            .FirstOrDefaultAsync(u => u.Id == request.Id);
 
             if (user is null)
             {

@@ -62,13 +62,30 @@ public class UserController : ControllerBase
     }
 
     [HttpGet()]
-    public async Task<ActionResult<User>> Details(int id)
+    public async Task<ActionResult<User>> Details(int currentUserId, int viewedUserId)
     {
-        var user = await context.Users.FirstOrDefaultAsync(user => user.Id == id);
+        var user = await sender.Send(new FindByIdCommand
+        {
+            Id = viewedUserId
+
+        });
 
         if (user == null)
         {
-            return NotFound($"User with id '{id}' doesn't exist!");
+            return NotFound($"User with id '{viewedUserId}' doesn't exist!");
+        }
+
+        var currentUser = await sender.Send(new FindByIdCommand
+        {
+            Id = currentUserId
+
+        });
+
+
+
+        if (currentUser == null)
+        {
+            return NotFound($"User with id '{currentUserId}' doesn't exist!");
         }
 
         var ImageUris = new List<string>();
@@ -80,7 +97,7 @@ public class UserController : ControllerBase
             ImageUris.Add(securePath);
         }
 
-        return Ok(new { User = user, ImageUris });
+        return Ok(new { User = user, ImageUris, MyUser = currentUser });
     }
 
 
@@ -100,7 +117,8 @@ public class UserController : ControllerBase
 
         var users = await context.Users.ToListAsync();
 
-        users.ForEach(user => {
+        users.ForEach(user =>
+        {
             for (int i = 0; i < user?.ProfilePicPaths.Count(); i++)
             {
                 user.ProfilePicPaths[i] = azureBlobService.GetBlobItemSAS(user.ProfilePicPaths[i]);
