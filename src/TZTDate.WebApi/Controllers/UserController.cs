@@ -244,4 +244,21 @@ public class UserController : ControllerBase
 
         return Ok();
     }
+
+    [HttpPut]
+    public async Task<IActionResult> ChangeUsernameAsync(UpdateUsernameDto dto)
+    {
+        if (string.IsNullOrWhiteSpace(dto.NewUsername)) 
+            return BadRequest("New Username can not be empty!");
+
+        if (string.IsNullOrWhiteSpace(dto.NewDescription))
+            return BadRequest("New Description can not be empty!");
+
+        var user = context.Users.Where(user => user.Id.ToString() == dto.Id).First();
+        user.Username = dto.NewUsername;
+        user.Description = dto.NewDescription;
+        await context.SaveChangesAsync();
+
+        return Ok();
+    }
 }
