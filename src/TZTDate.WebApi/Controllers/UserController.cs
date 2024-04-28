@@ -205,33 +205,31 @@ public class UserController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Followers(int userId)
     {
-        var currentUser = await sender.Send(new FindByIdCommand
+        var currentUser = await context.Users
+            .Include(u => u.Followers)
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (currentUser == null)
         {
-            Id = userId
-        });
+            return NotFound();
+        }
 
-        var followers = context.UserFollows
-            .Where(uf => uf.FollowedId == userId)
-            .Select(uf => uf.Follower)
-            .ToList();
-
-        return Ok(followers ?? new List<User>());
+        return Ok(currentUser.Followers ?? new List<User>());
     }
 
     [HttpGet]
     public async Task<IActionResult> Followed(int userId)
     {
-        var currentUser = await sender.Send(new FindByIdCommand
+        var currentUser = await context.Users
+            .Include(u => u.Followed)
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (currentUser == null)
         {
-            Id = userId
-        });
+            return NotFound();
+        }
 
-        var followedUsers = context.UserFollows
-            .Where(uf => uf.FollowerId == userId)
-            .Select(uf => uf.Followed)
-            .ToList();
-
-        return Ok(followedUsers ?? new List<User>());
+        return Ok(currentUser.Followed ?? new List<User>());
     }
 
     [HttpPost]

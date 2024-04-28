@@ -12,8 +12,8 @@ using TZTDate.Infrastructure.Data;
 namespace TZTDate.WebApi.Migrations
 {
     [DbContext(typeof(TZTDateDbContext))]
-    [Migration("20240423093926_Add Roles")]
-    partial class AddRoles
+    [Migration("20240428202655_Goddes Migration")]
+    partial class GoddesMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,115 @@ namespace TZTDate.WebApi.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("TZTDate.Core.Data.DateChat.Entities.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Owner")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("PrivateChatId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PrivateChatId");
+
+                    b.ToTable("Message");
+                });
+
+            modelBuilder.Entity("TZTDate.Core.Data.DateChat.Entities.PrivateChat", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("PrivateChatHashName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PrivateChats");
+                });
+
+            modelBuilder.Entity("TZTDate.Core.Data.DateLogEntry.Models.LogEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("EventDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("EventIp")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("EventUserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LogEntries");
+                });
+
+            modelBuilder.Entity("TZTDate.Core.Data.DateToken.Models.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedByIp")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("ReplacedByTokenId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("Revoked")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("RevokedByIp")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("Token")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RefreshTokens");
+                });
 
             modelBuilder.Entity("TZTDate.Core.Data.DateUser.Address", b =>
                 {
@@ -45,25 +154,6 @@ namespace TZTDate.WebApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Addresses");
-                });
-
-            modelBuilder.Entity("TZTDate.Core.Data.DateUser.RefreshToken", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<Guid>("Token")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("TZTDate.Core.Data.DateUser.Role", b =>
@@ -140,21 +230,6 @@ namespace TZTDate.WebApi.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("TZTDate.Core.Data.DateUser.UserFollow", b =>
-                {
-                    b.Property<int>("FollowerId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("FollowedId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("FollowerId", "FollowedId");
-
-                    b.HasIndex("FollowedId");
-
-                    b.ToTable("UserFollows");
-                });
-
             modelBuilder.Entity("TZTDate.Core.Data.DateUser.UserRole", b =>
                 {
                     b.Property<int>("UserId")
@@ -170,6 +245,30 @@ namespace TZTDate.WebApi.Migrations
                     b.ToTable("UserRoles");
                 });
 
+            modelBuilder.Entity("UserUser", b =>
+                {
+                    b.Property<int>("FollowedId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("FollowersId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("FollowedId", "FollowersId");
+
+                    b.HasIndex("FollowersId");
+
+                    b.ToTable("UserUser");
+                });
+
+            modelBuilder.Entity("TZTDate.Core.Data.DateChat.Entities.Message", b =>
+                {
+                    b.HasOne("TZTDate.Core.Data.DateChat.Entities.PrivateChat", null)
+                        .WithMany("Messages")
+                        .HasForeignKey("PrivateChatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("TZTDate.Core.Data.DateUser.User", b =>
                 {
                     b.HasOne("TZTDate.Core.Data.DateUser.Address", "Address")
@@ -177,25 +276,6 @@ namespace TZTDate.WebApi.Migrations
                         .HasForeignKey("AddressId");
 
                     b.Navigation("Address");
-                });
-
-            modelBuilder.Entity("TZTDate.Core.Data.DateUser.UserFollow", b =>
-                {
-                    b.HasOne("TZTDate.Core.Data.DateUser.User", "Followed")
-                        .WithMany("Followed")
-                        .HasForeignKey("FollowedId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("TZTDate.Core.Data.DateUser.User", "Follower")
-                        .WithMany("Followers")
-                        .HasForeignKey("FollowerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Followed");
-
-                    b.Navigation("Follower");
                 });
 
             modelBuilder.Entity("TZTDate.Core.Data.DateUser.UserRole", b =>
@@ -217,6 +297,26 @@ namespace TZTDate.WebApi.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("UserUser", b =>
+                {
+                    b.HasOne("TZTDate.Core.Data.DateUser.User", null)
+                        .WithMany()
+                        .HasForeignKey("FollowedId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TZTDate.Core.Data.DateUser.User", null)
+                        .WithMany()
+                        .HasForeignKey("FollowersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TZTDate.Core.Data.DateChat.Entities.PrivateChat", b =>
+                {
+                    b.Navigation("Messages");
+                });
+
             modelBuilder.Entity("TZTDate.Core.Data.DateUser.Role", b =>
                 {
                     b.Navigation("UserRoles");
@@ -224,10 +324,6 @@ namespace TZTDate.WebApi.Migrations
 
             modelBuilder.Entity("TZTDate.Core.Data.DateUser.User", b =>
                 {
-                    b.Navigation("Followed");
-
-                    b.Navigation("Followers");
-
                     b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
