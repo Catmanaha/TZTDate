@@ -100,7 +100,8 @@ public class UserController : ControllerBase
 
         var users = await context.Users.ToListAsync();
 
-        users.ForEach(user => {
+        users.ForEach(user =>
+        {
             for (int i = 0; i < user?.ProfilePicPaths.Count(); i++)
             {
                 user.ProfilePicPaths[i] = azureBlobService.GetBlobItemSAS(user.ProfilePicPaths[i]);
@@ -225,6 +226,23 @@ public class UserController : ControllerBase
             userToActionId = userToActionId
         };
         await sender.Send(followActionCommand);
+
+        return Ok();
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> ChangeUsernameAsync(UpdateUsernameDto dto)
+    {
+        if (string.IsNullOrWhiteSpace(dto.NewUsername)) 
+            return BadRequest("New Username can not be empty!");
+
+        if (string.IsNullOrWhiteSpace(dto.NewDescription))
+            return BadRequest("New Description can not be empty!");
+
+        var user = context.Users.Where(user => user.Id.ToString() == dto.Id).First();
+        user.Username = dto.NewUsername;
+        user.Description = dto.NewDescription;
+        await context.SaveChangesAsync();
 
         return Ok();
     }
