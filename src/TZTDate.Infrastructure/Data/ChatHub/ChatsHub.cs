@@ -8,12 +8,10 @@ using TZTDate.Core.Data.DateUser;
 
 public class ChatHub : Hub
 {
-    public UserManager<User> usermanager;
     private readonly TZTDateDbContext tZTDateDbContext;
 
-    public ChatHub(UserManager<User> usermanager, TZTDateDbContext tZTDateDbContext)
+    public ChatHub(TZTDateDbContext tZTDateDbContext)
     {
-        this.usermanager = usermanager;
         this.tZTDateDbContext = tZTDateDbContext;
     }
 

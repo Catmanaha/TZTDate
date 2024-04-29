@@ -8,6 +8,7 @@ using TZTDate.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using TZTDate.Core.Data.DateUser;
 using TZTDate.Core.Data.DateUser.Enums;
+using Microsoft.AspNetCore.ResponseCompression;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +16,11 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
 );
 builder.Services.AddEndpointsApiExplorer();
-
+builder.Services.AddResponseCompression(opts =>
+{
+   opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+         new[] { "application/octet-stream" });
+});
 builder.Services.InitResponse();
 builder.Services.Inject();
 builder.Services.InitSwagger();
@@ -73,9 +78,10 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.MapHub<ChatHub>("/chat");
+app.MapHub<NotificaitionHub>("/notifications");
 app.UseSwagger();
 app.UseSwaggerUI();
-
+app.UseResponseCompression();
 app.UseCors("BlazorWasmPolicy");
 app.UseHttpsRedirection();
 

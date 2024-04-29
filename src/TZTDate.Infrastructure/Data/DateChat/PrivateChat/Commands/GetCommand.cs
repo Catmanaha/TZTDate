@@ -6,6 +6,6 @@ using TZTDate.Core.Data.DateChat.Entities;
 
 public class GetCommand : IRequest<PrivateChat>
 {
-    public string CurrentUserId { get; set; }
-    public string CompanionUserId { get; set; }
+    public int CurrentUserId { get; set; }
+    public int CompanionUserId { get; set; }
 }
