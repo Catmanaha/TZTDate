@@ -11,12 +11,16 @@ using TZTDate.Core.Data.DateChat.ViewModels;
 using TZTDate.Infrastructure.Data.DateChat.PrivateChat.Commands;
 using System.Security.Authentication;
 using TZTDate.Infrastructure.Data.DateUser.Commands;
+using TZTDate.WebApi.Filters;
 
-public class ChatController : Controller
+[ApiController]
+[Route("api/[controller]/[action]")]
+[ServiceFilter(typeof(ValidationFilterAttribute))]
+public class ChatController : ControllerBase
 {
     private readonly IHubContext<ChatHub> hubContext;
     private readonly ISender sender;
-    public ChatController(UserManager<User> userManager, IHubContext<ChatHub> hubContext, ISender sender)
+    public ChatController(IHubContext<ChatHub> hubContext, ISender sender)
     {
         this.hubContext = hubContext;
         this.sender = sender;
@@ -25,7 +29,8 @@ public class ChatController : Controller
     [HttpPost]
     public async Task<ActionResult> PrivateChat(int companionId, int currentUserId)
     {
-        var currentUser = await sender.Send(new FindByIdCommand{Id = currentUserId});
+        var currentUser = await sender.Send(new FindByIdCommand { Id = currentUserId });
+        var companionUser = await sender.Send(new FindByIdCommand { Id = companionId });
         var privateChat = await this.sender.Send<PrivateChat>(new GetCommand
         {
             CompanionUserId = companionId,
@@ -34,25 +39,23 @@ public class ChatController : Controller
 
         if (privateChat == null)
         {
-            var newPrivateChatHashName = BCrypt.Net.BCrypt.EnhancedHashPassword(currentUserId.ToString()
-                                                                      + BCrypt.Net.BCrypt.HashPassword(currentUserId.ToString() + companionId.ToString())
-                                                                      + companionId.ToString());
+            var newPrivateChatHashName = currentUser.Email + companionUser.Email;
             var newPrivate = new PrivateChat
             {
-                PrivateChatHashName = newPrivateChatHashName,
+                PrivateChatHashName = newPrivateChatHashName.ToString(),
                 Messages = new List<Message>()
             };
             await this.sender.Send(new AddCommand
             {
-                NewPrivateChatHashName = newPrivateChatHashName,
+                NewPrivateChatHashName = newPrivateChatHashName.ToString(),
             });
-            return View(model: new CompanionsViewModel
+            return Ok(new CompanionsViewModel
             {
                 CurrentUser = currentUser,
                 PrivateChat = newPrivate
             });
         }
-        return View(model: new CompanionsViewModel
+        return Ok(new CompanionsViewModel
         {
             CurrentUser = currentUser,
             PrivateChat = privateChat,
