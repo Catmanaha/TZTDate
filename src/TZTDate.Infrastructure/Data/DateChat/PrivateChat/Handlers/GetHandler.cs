@@ -24,9 +24,9 @@ public class GetHandler : IRequestHandler<GetCommand, PrivateChat>
         var currentUser = await sender.Send(new FindByIdCommand { Id = request.CurrentUserId });
         var companionUser = await sender.Send(new FindByIdCommand { Id = request.CompanionUserId });
 
-        var privateChats = await this.tZTDateDbContext.PrivateChats
-            .Include(pc => pc.Messages).FirstOrDefaultAsync(o => o.PrivateChatHashName.Contains(currentUser.Email) && o.PrivateChatHashName.Contains(companionUser.Email));
-
+        var privateChats = await this.tZTDateDbContext.PrivateChats.FirstOrDefaultAsync(o => o.PrivateChatHashName.Contains(currentUser.Email) && o.PrivateChatHashName.Contains(companionUser.Email));
+        privateChats.Messages = await this.tZTDateDbContext.Message.Where(m => m.PrivateChatId == privateChats.Id).ToListAsync()
+        ;
         return privateChats;
     }
 }

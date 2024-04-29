@@ -78,6 +78,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.MapHub<ChatHub>("/chat");
+app.MapHub<NotificaitionHub>("/notifications");
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseResponseCompression();
