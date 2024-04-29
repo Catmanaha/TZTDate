@@ -39,7 +39,7 @@ builder.Services.AddCors(options =>
   options.AddPolicy("BlazorWasmPolicy", corsBuilder =>
   {
     corsBuilder
-        .AllowAnyOrigin()
+        .WithOrigins("http://www.flirtify.tech")
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials();
