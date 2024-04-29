@@ -17,10 +17,10 @@ public class GetHandler : IRequestHandler<GetCommand, PrivateChat>
     }
     public async Task<PrivateChat?> Handle(GetCommand request, CancellationToken cancellationToken)
     {
+        var combinedString = request.CurrentUserId.ToString() + request.CompanionUserId.ToString();
         return await this.tZTDateDbContext.PrivateChats
             .Include(pc => pc.Messages)
-            .FirstOrDefaultAsync<PrivateChat>(privateChat =>
-                                privateChat.PrivateChatHashName.Contains(request.CurrentUserId)
-                                && privateChat.PrivateChatHashName.Contains(request.CompanionUserId)) ?? null;
+            .FirstOrDefaultAsync<PrivateChat>(privateChat => 
+                            BCrypt.Net.BCrypt.EnhancedVerify(combinedString, privateChat.PrivateChatHashName, BCrypt.Net.HashType.SHA384));
     }
 }
